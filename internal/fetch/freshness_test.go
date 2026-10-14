@@ -1,4 +1,4 @@
-package freshness_test
+package fetch_test
 
 import (
 	"net/http"
@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/pantafive/embisto/card"
-	"github.com/pantafive/embisto/internal/freshness"
+	"github.com/pantafive/embisto/internal/fetch"
 )
 
-func TestOf(t *testing.T) {
+func TestFreshnessOf(t *testing.T) {
 	const date = "Tue, 13 Oct 2026 12:00:00 GMT"
 	tests := []struct {
 		name   string
@@ -33,7 +33,7 @@ func TestOf(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, freshness.Of(tt.header))
+			assert.Equal(t, tt.want, fetch.FreshnessOf(tt.header))
 		})
 	}
 }

@@ -19,7 +19,6 @@ import (
 	"github.com/pantafive/embisto"
 	"github.com/pantafive/embisto/cache"
 	"github.com/pantafive/embisto/card"
-	"github.com/pantafive/embisto/internal/rediscache"
 	"github.com/pantafive/embisto/internal/valkeytest"
 )
 
@@ -116,7 +115,7 @@ func TestAnInstanceMakesThePreviewItselfWhenTheLockHolderVanishes(t *testing.T) 
 	observer := &recorder{}
 	previews := instance(t, valkey.URL, observer)
 	// A holder that crashed: the lock is taken and nobody will write the preview or free the lock.
-	locks, err := rediscache.New(valkey.URL)
+	locks, err := cache.NewRedisStore(valkey.URL)
 	require.NoError(t, err)
 	_, ok, err := locks.Lock(context.Background(), cache.LockKeyOf(origin.URL+"/post"), 300*time.Millisecond)
 	require.NoError(t, err)

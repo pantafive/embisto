@@ -1,4 +1,4 @@
-package meta
+package sources
 
 import (
 	"cmp"
@@ -197,4 +197,9 @@ func dimension(value any) int {
 	default:
 		return 0
 	}
+}
+
+// clean collapses the whitespace runs markup leaves in text.
+func clean(s string) string {
+	return strings.Join(strings.Fields(s), " ")
 }

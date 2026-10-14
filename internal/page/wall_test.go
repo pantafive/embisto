@@ -1,4 +1,4 @@
-package meta_test
+package page_test
 
 import (
 	"net/url"
@@ -8,14 +8,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/pantafive/embisto/card"
-	"github.com/pantafive/embisto/internal/meta"
+	"github.com/pantafive/embisto/internal/page"
 )
 
-func page(t *testing.T, final, html string) card.Page {
+func parsed(t *testing.T, final, html string) card.Page {
 	t.Helper()
 	served, err := url.Parse(final)
 	require.NoError(t, err)
-	return meta.Parse(card.Response{URL: served, MediaType: "text/html", Body: []byte(html)})
+	return page.Parse(card.Response{URL: served, MediaType: "text/html", Body: []byte(html)})
 }
 
 func TestWall(t *testing.T) {
@@ -36,7 +36,7 @@ func TestWall(t *testing.T) {
 			requested, err := url.Parse(tt.requested)
 			require.NoError(t, err)
 
-			assert.Equal(t, tt.want, meta.Wall(requested, page(t, tt.final, tt.html)))
+			assert.Equal(t, tt.want, page.Wall(requested, parsed(t, tt.final, tt.html)))
 		})
 	}
 }

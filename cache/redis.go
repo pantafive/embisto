@@ -7,8 +7,6 @@ import (
 	"log/slog"
 	"sync"
 	"time"
-
-	"github.com/pantafive/embisto/internal/rediscache"
 )
 
 // downFor is how long a shared cache that failed is left alone before it is tried again.
@@ -34,7 +32,7 @@ const defaultFallbackBudget = 64 << 20
 
 // Redis is the shared store while it answers, the fallback while it does not.
 type Redis struct {
-	shared *rediscache.Cache
+	shared *redisStore
 	opts   RedisOptions
 
 	mu        sync.Mutex
@@ -47,9 +45,9 @@ type Redis struct {
 // starts and ends; a purge then fails, since what it drops would reappear when the shared store is back. It is also
 // the Locker the instances agree through.
 func NewRedis(rawURL string, opts RedisOptions) (*Redis, error) {
-	shared, err := rediscache.New(rawURL)
+	shared, err := newRedisStore(rawURL)
 	if err != nil {
-		return nil, err //nolint:wrapcheck // it says what is wrong with the URL without repeating it
+		return nil, err
 	}
 	if opts.Log == nil {
 		opts.Log = slog.New(slog.DiscardHandler)

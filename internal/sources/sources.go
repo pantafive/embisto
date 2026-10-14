@@ -1,4 +1,6 @@
-package meta
+// Package sources holds the generic sources, which read any page whatever its site: Open Graph, Twitter Cards, plain
+// HTML and JSON-LD.
+package sources
 
 import (
 	"cmp"

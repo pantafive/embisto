@@ -20,7 +20,7 @@ import (
 	"github.com/pantafive/embisto/card"
 	"github.com/pantafive/embisto/internal/assemble"
 	"github.com/pantafive/embisto/internal/homepage"
-	"github.com/pantafive/embisto/internal/meta"
+	"github.com/pantafive/embisto/internal/page"
 	"github.com/pantafive/embisto/internal/quality"
 	"github.com/pantafive/embisto/internal/target"
 	"github.com/pantafive/embisto/internal/trace"
@@ -149,7 +149,7 @@ func (p *Pipeline) make(ctx context.Context, r *run, in card.Input) (card.Previe
 	if resp.MediaType != "text/html" && resp.MediaType != "application/xhtml+xml" {
 		return p.enrich(ctx, r, assemble.Media(requested, resp.URL.String(), resp.MediaType)), "", nil
 	}
-	in.Page = meta.Parse(resp)
+	in.Page = page.Parse(resp)
 	return p.fromPage(ctx, r, provider, in)
 }
 
@@ -161,7 +161,7 @@ func (p *Pipeline) fromPage(ctx context.Context, r *run, provider card.Provider,
 	if ctx.Err() != nil {
 		return card.Preview{}, "", &card.Error{Code: card.CodeTimeout, Err: ctx.Err()}
 	}
-	if wall := meta.Wall(in.URL, in.Page); wall != "" {
+	if wall := page.Wall(in.URL, in.Page); wall != "" {
 		trace.From(ctx).Step(trace.Step{Kind: trace.KindWall, Name: string(wall), Detail: "the page is a wall: " + in.Page.URL.String()})
 		return p.standIn(ctx, r, provider, in, walled(ctx, requested, in.Facts, wall), nil)
 	}

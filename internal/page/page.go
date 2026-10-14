@@ -1,6 +1,5 @@
-// Package meta parses a page's metadata and reads the generic sources from it: Open Graph, Twitter Cards and plain
-// HTML.
-package meta
+// Package page reads a fetched HTML page into a card.Page, and tells a wall from the item it stands in for.
+package page
 
 import (
 	"bytes"

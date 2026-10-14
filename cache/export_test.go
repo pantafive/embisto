@@ -15,3 +15,6 @@ func LockKeyOf(raw string) string {
 func CostOf(group, key string, size int) int64 {
 	return (&memoryEntry{group: group, key: key, value: make([]byte, size)}).cost()
 }
+
+// NewRedisStore is the store Redis wraps, without its fallback, for a test that plays another instance.
+var NewRedisStore = newRedisStore

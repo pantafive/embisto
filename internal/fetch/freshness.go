@@ -1,5 +1,4 @@
-// Package freshness reads how long an origin lets a response be kept, as a shared cache reads it.
-package freshness
+package fetch
 
 import (
 	"net/http"
@@ -13,11 +12,11 @@ import (
 // uncacheable are the directives under which a shared cache keeps nothing.
 var uncacheable = []string{"no-store", "no-cache", "private"}
 
-// Of reads the headers: s-maxage before max-age, since embisto is a shared cache; otherwise Expires against the
-// response's own Date, never the local clock, so a skewed clock changes nothing; Age taken off either. An Expires
-// that is not a date means already expired.
-func Of(header http.Header) card.Freshness {
-	directives := parse(header.Values("Cache-Control"))
+// freshnessOf is how long an origin lets a response be kept, as a shared cache reads it from the headers: s-maxage
+// before max-age, since embisto is a shared cache; otherwise Expires against the response's own Date, never the local
+// clock, so a skewed clock changes nothing; Age taken off either. An Expires that is not a date means already expired.
+func freshnessOf(header http.Header) card.Freshness {
+	directives := directivesOf(header.Values("Cache-Control"))
 	for _, name := range uncacheable {
 		if _, ok := directives[name]; ok {
 			return card.Freshness{Known: true}
@@ -39,7 +38,7 @@ func Of(header http.Header) card.Freshness {
 	return card.Freshness{MaxAge: max(0, maxAge), Known: true}
 }
 
-func parse(values []string) map[string]string {
+func directivesOf(values []string) map[string]string {
 	directives := map[string]string{}
 	for _, value := range values {
 		for directive := range strings.SplitSeq(value, ",") {
