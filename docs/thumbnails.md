@@ -47,7 +47,7 @@ A preset that comes out the same size as one before it is left out. That happens
 
 `EMBISTO_IMAGE_PRESETS` replaces the presets, written as `name=WxH-mode` separated by commas, such as `thumb=160x160-fill,card=600x0-fit`. A zero side does not bound.
 
-An explicit size is accepted only when both sides come from 0, 64, 96, 128, 160, 240, 320, 480, 600, 640, 800, 960 and 1200, so that the thumbnails of one picture, and with them the cache, stay few. Pictures are never enlarged.
+An explicit size is accepted only when both sides come from 0, 64, 96, 128, 160, 240, 320, 480, 600, 640, 800, 960 and 1200, so that the thumbnails of one picture, and with them the cache, stay few. Any other size, and a preset the server does not know, is refused with 400 `invalid_size`. Pictures are never enlarged.
 
 ## Processing
 
