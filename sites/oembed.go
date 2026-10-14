@@ -10,22 +10,22 @@ import (
 	"github.com/pantafive/embisto/internal/oembed"
 )
 
-// OEmbed covers every site of the oembed.com provider list without code of its own: the list is data, and a page
+// OEmbedList covers every site of the oembed.com provider list without code of its own: the list is data, and a page
 // that did not link to its oEmbed endpoint is asked about at the endpoint the list names for its URL.
-type OEmbed struct{}
+type OEmbedList struct{}
 
-func (OEmbed) Name() string {
+func (OEmbedList) Name() string {
 	return card.SourceOEmbed
 }
 
-func (OEmbed) Match(u *url.URL) card.Match {
+func (OEmbedList) Match(u *url.URL) card.Match {
 	if _, ok := oembed.Known().Endpoint(u); ok {
 		return card.MatchedWithPage
 	}
 	return card.Unmatched
 }
 
-func (OEmbed) Provide(ctx context.Context, in card.Input) (card.Facts, error) {
+func (OEmbedList) Provide(ctx context.Context, in card.Input) (card.Facts, error) {
 	for _, facts := range in.Facts {
 		if facts.Source == card.SourceOEmbed && !facts.IsEmpty() {
 			return card.Facts{}, nil

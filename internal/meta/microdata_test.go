@@ -32,7 +32,7 @@ func TestADateNoCardCanCarryIsDropped(t *testing.T) {
 		Body: []byte(`<meta property="article:published_time" content="9999-12-31T23:00:00-05:00">`),
 	})
 
-	facts, err := meta.OpenGraph{}.Extract(context.Background(), card.Input{Page: page})
+	facts, err := meta.OpenGraph{}.Read(context.Background(), card.Input{Page: page})
 
 	require.NoError(t, err)
 	assert.True(t, facts.PublishedAt.IsZero())

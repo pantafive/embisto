@@ -48,9 +48,9 @@ func imageServer(t *testing.T, files map[string][]byte) (*httptest.Server, *http
 	signer, err := thumbnails.NewSigner([]byte(strings.Repeat("k", thumbnails.MinKeyLength)), thumbnails.DefaultPresets)
 	require.NoError(t, err)
 	fetcher := embisto.NewFetcher(embisto.Options{AllowedNetworks: []netip.Prefix{netip.MustParsePrefix("127.0.0.0/8")}})
-	server := httptest.NewServer(api.NewServer(api.Deps{Renderers: renderers, Images: &api.Images{
+	server := httptest.NewServer(api.NewServer(api.Deps{Renderers: renderers, Thumbnails: &api.Thumbnails{
 		Signer:    signer,
-		Processor: thumbnails.NewBuiltin(fetcher, thumbnails.Limits{MaxBytes: 1 << 20, MaxPixels: 1_000_000, MaxMemory: 64 << 20, Concurrency: 2, Wait: time.Second}),
+		Processor: thumbnails.NewResizer(fetcher, thumbnails.Limits{MaxBytes: 1 << 20, MaxPixels: 1_000_000, MaxMemory: 64 << 20, Concurrency: 2, Wait: time.Second}),
 	}}))
 	t.Cleanup(server.Close)
 	return origin, server, signer
@@ -111,7 +111,7 @@ func TestImageRefusals(t *testing.T) {
 	}{
 		{"tampered signature", "/i/AAAA" + segments[2][4:] + "/" + segments[3] + "/" + segments[4], http.StatusForbidden, "invalid_signature"},
 		{"size changed after signing", "/i/" + segments[2] + "/large/" + segments[4], http.StatusForbidden, "invalid_signature"},
-		{"unlisted size, signed", signer.Path("321x0-fit", origin.URL+"/cover.png"), http.StatusBadRequest, "invalid_options"},
+		{"unlisted size, signed", signer.Path("321x0-fit", origin.URL+"/cover.png"), http.StatusBadRequest, "invalid_size"},
 		{"too many pixels", signer.Path("card", origin.URL+"/huge.png"), http.StatusRequestEntityTooLarge, "too_many_pixels"},
 		{"svg is never served", signer.Path("card", origin.URL+"/logo.svg"), http.StatusUnsupportedMediaType, "unsupported_image"},
 	}

@@ -58,7 +58,7 @@ type said struct {
 	Boilerplate card.Boilerplate `json:"boilerplate"`
 }
 
-func (s *Source) Extract(ctx context.Context, in card.Input) (card.Facts, error) {
+func (s *Source) Read(ctx context.Context, in card.Input) (card.Facts, error) {
 	page := in.Page.URL
 	if page == nil || isRoot(in.URL, "") || isRoot(page, "") || !hasAnything(in.Page) {
 		return card.Facts{}, nil

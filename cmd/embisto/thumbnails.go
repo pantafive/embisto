@@ -52,14 +52,14 @@ func providers(loaded settings.Settings) []card.Provider {
 // debugHomePages is how many bytes of home pages the debug page remembers.
 const debugHomePages = 4 << 20
 
-func debugPage(ctx context.Context, opts embisto.Options, variants *api.Images, log *slog.Logger) http.Handler {
+func debugPage(ctx context.Context, opts embisto.Options, served *api.Thumbnails, log *slog.Logger) http.Handler {
 	log.WarnContext(ctx, "the debug page is on, on the internal listener", slog.String("path", "/debug"))
 	opts.Observer = nil
 	// Its own memory of home pages: what it learns must not change what the API serves.
 	opts.HomePages = cache.NewMemory(debugHomePages, nil)
 	page := debug.Page{Core: embisto.New(opts), Log: log}
-	if variants != nil {
-		page.Images = variants.Processor
+	if served != nil {
+		page.Thumbnails = served.Processor
 	}
 	return page
 }
@@ -79,9 +79,9 @@ func templateFormats(ctx context.Context, loaded settings.Settings, log *slog.Lo
 
 var errNoImageKey = errors.New("EMBISTO_IMAGE_KEY is not set: thumbnails are off")
 
-// images are the parts that serve thumbnails, and the enricher that hands out their URLs when clients have an
+// newThumbnails are the parts that serve thumbnails, and the enricher that hands out their URLs when clients have an
 // address to reach them at; nil and nil when thumbnails are off.
-func images(ctx context.Context, loaded settings.Settings, log *slog.Logger, measured *metrics.Metrics) (*api.Images, card.Enricher, error) {
+func newThumbnails(ctx context.Context, loaded settings.Settings, log *slog.Logger, measured *metrics.Metrics) (*api.Thumbnails, card.Enricher, error) {
 	if loaded.ImageKey == "" {
 		log.InfoContext(ctx, "thumbnails are off: cards link pictures on their sites; set EMBISTO_IMAGE_KEY to turn them on")
 		return nil, nil, nil
@@ -91,9 +91,9 @@ func images(ctx context.Context, loaded settings.Settings, log *slog.Logger, mea
 		return nil, nil, fmt.Errorf("thumbnails: %w", err)
 	}
 	fetcher := embisto.NewFetcher(embisto.Options{Timeout: imageTimeout, UserAgent: embisto.Defaults().UserAgent})
-	served := &api.Images{
+	served := &api.Thumbnails{
 		Signer: signer, Observer: measured,
-		Processor: thumbnails.NewBuiltin(fetcher, thumbnails.Limits{
+		Processor: thumbnails.NewResizer(fetcher, thumbnails.Limits{
 			MaxBytes: imageMaxBytes, MaxPixels: imageMaxPixels, MaxMemory: imageMaxMemory, Concurrency: imageConcurrency, Wait: imageWait,
 		}),
 	}

@@ -17,7 +17,7 @@ const appleTouchSize = 180
 // OpenGraph reads the og: and article: properties.
 type OpenGraph struct{}
 
-func (OpenGraph) Extract(_ context.Context, in card.Input) (card.Facts, error) {
+func (OpenGraph) Read(_ context.Context, in card.Input) (card.Facts, error) {
 	doc := in.Page
 	fields := card.Facts{
 		Source:       card.SourceOpenGraph,
@@ -88,7 +88,7 @@ func openGraphVideo(doc card.Page, video *card.Video, t card.Tag) {
 // Twitter reads the twitter: card properties.
 type Twitter struct{}
 
-func (Twitter) Extract(_ context.Context, in card.Input) (card.Facts, error) {
+func (Twitter) Read(_ context.Context, in card.Input) (card.Facts, error) {
 	doc := in.Page
 	fields := card.Facts{
 		Source:      card.SourceTwitter,
@@ -114,7 +114,7 @@ func (Twitter) Extract(_ context.Context, in card.Input) (card.Facts, error) {
 // canonical link and the icons, falling back to /favicon.ico.
 type HTML struct{}
 
-func (HTML) Extract(_ context.Context, in card.Input) (card.Facts, error) {
+func (HTML) Read(_ context.Context, in card.Input) (card.Facts, error) {
 	doc := in.Page
 	fields := card.Facts{
 		Source:      card.SourceHTML,

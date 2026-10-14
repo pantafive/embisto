@@ -55,7 +55,7 @@ func TestSourceOffersWhatTheHomePageSaysAsBoilerplate(t *testing.T) {
 	var homes atomic.Int32
 	server := site(t, &homes)
 
-	facts, err := source().Extract(context.Background(), input(t, server.URL+"/post"))
+	facts, err := source().Read(context.Background(), input(t, server.URL+"/post"))
 
 	require.NoError(t, err)
 	assert.Equal(t, card.Boilerplate{Texts: []string{"Everything about everything."}, Images: []string{server.URL + "/logo.png"}}, facts.Boilerplate)
@@ -65,10 +65,10 @@ func TestSourceReadsAHomePageOncePerSite(t *testing.T) {
 	var homes atomic.Int32
 	server := site(t, &homes)
 	src := source()
-	_, err := src.Extract(context.Background(), input(t, server.URL+"/one"))
+	_, err := src.Read(context.Background(), input(t, server.URL+"/one"))
 	require.NoError(t, err)
 
-	_, err = src.Extract(context.Background(), input(t, server.URL+"/two"))
+	_, err = src.Read(context.Background(), input(t, server.URL+"/two"))
 
 	require.NoError(t, err)
 	assert.Equal(t, int32(1), homes.Load())
@@ -79,12 +79,12 @@ func TestSourceLeavesTheHomePageItselfAlone(t *testing.T) {
 	server := site(t, &homes)
 	src := source()
 	// Learns the site's home page, served at / for this test's site.
-	_, err := src.Extract(context.Background(), input(t, server.URL+"/post"))
+	_, err := src.Read(context.Background(), input(t, server.URL+"/post"))
 	require.NoError(t, err)
 	tests := []string{"/", "/?utm_source=news&utm_medium=mail", "/index.html", "/?fbclid=abc"}
 	for _, path := range tests {
 		t.Run(path, func(t *testing.T) {
-			facts, err := src.Extract(context.Background(), input(t, server.URL+path))
+			facts, err := src.Read(context.Background(), input(t, server.URL+path))
 
 			require.NoError(t, err)
 			assert.True(t, facts.IsEmpty())
@@ -107,10 +107,10 @@ func TestSourceTakesThePageTheRootRedirectsToForTheHomePage(t *testing.T) {
 	}))
 	t.Cleanup(server.Close)
 	src := source()
-	_, err := src.Extract(context.Background(), input(t, server.URL+"/post"))
+	_, err := src.Read(context.Background(), input(t, server.URL+"/post"))
 	require.NoError(t, err)
 
-	facts, err := src.Extract(context.Background(), input(t, server.URL+"/en/"))
+	facts, err := src.Read(context.Background(), input(t, server.URL+"/en/"))
 
 	require.NoError(t, err)
 	assert.Equal(t, []any{true, int32(1)}, []any{facts.IsEmpty(), homes.Load()})
@@ -128,7 +128,7 @@ func TestSourceReadsTheHomePageWithinTheCallersDeadline(t *testing.T) {
 	defer cancel()
 
 	started := time.Now()
-	_, err := slow.Extract(ctx, in)
+	_, err := slow.Read(ctx, in)
 
 	require.NoError(t, err)
 	assert.Less(t, time.Since(started), time.Second)
@@ -141,7 +141,7 @@ func TestSourceKeepsNoMoreOfAHomePageThanOfAnyPage(t *testing.T) {
 	}))
 	t.Cleanup(server.Close)
 
-	facts, err := source().Extract(context.Background(), input(t, server.URL+"/post"))
+	facts, err := source().Read(context.Background(), input(t, server.URL+"/post"))
 
 	require.NoError(t, err)
 	require.Len(t, facts.Boilerplate.Texts, 1)

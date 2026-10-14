@@ -35,7 +35,7 @@ A preview goes through a fixed pipeline:
 
 Each stage is an interface in the `card` package, which imports nothing else from this module. That lets you write a site provider (`card.Provider`) or an output format (`card.Renderer`) against `card` alone, then add it to the lists in `embisto.Defaults()`. Built-in providers live in `sites` and formats in `render`, whose `Defaults()` lists embisto's own. `render.LoadTemplates` makes formats of template files in any `fs.FS`; see [templates](templates.md#in-the-library).
 
-Site providers handle the platforms where a page alone makes a poor card. The first provider in `Options.Providers` that knows a URL is the only one asked about it; `Options.Fallbacks`, such as `sites.OEmbed`, which knows every site on the oEmbed list, are asked only about a URL no provider knows. A provider you add to `Providers` therefore wins over them wherever it is in the list. When the page fails or turns out to be a wall, the provider that knows the requested URL stands in for it. None of them needs an API key.
+Site providers handle the platforms where a page alone makes a poor card. The first provider in `Options.Providers` that knows a URL is the only one asked about it; `Options.Fallbacks`, such as `sites.OEmbedList`, which knows every site on the oEmbed list, are asked only about a URL no provider knows. A provider you add to `Providers` therefore wins over them wherever it is in the list. When the page fails or turns out to be a wall, the provider that knows the requested URL stands in for it. None of them needs an API key.
 
 | Provider | Covers | Setting |
 |---|---|---|
@@ -44,7 +44,7 @@ Site providers handle the platforms where a page alone makes a poor card. The fi
 | `sites.Reddit` | Posts, from Reddit's oEmbed endpoint; Reddit refuses most servers' requests for its pages. A deleted post is `not_found`. | — |
 | `sites.TikTok` | Videos and photo posts, from TikTok's oEmbed endpoint, after following short links. It adds TikTok's own player. | — |
 | `sites.Walled` | Instagram, Facebook and LinkedIn pages are read as any other when served. When the page is a login wall, or the site refuses the request (LinkedIn answers 999), the card is an honest minimal one: the URL, the site's name and icon, `limited: login_wall`. | — |
-| `sites.OEmbed` | Every site on the [oembed.com provider list](https://oembed.com/providers.json), which ships inside the binary. | — |
+| `sites.OEmbedList` | Every site on the [oembed.com provider list](https://oembed.com/providers.json), which ships inside the binary. | — |
 
 Any other page that turns out to be a wall also gets a minimal card marked `limited` instead of the wall's text. Three signals count:
 

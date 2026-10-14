@@ -40,7 +40,7 @@ func (Walled) Match(u *url.URL) card.Match {
 // a wall.
 func (Walled) Provide(ctx context.Context, in card.Input) (card.Facts, error) {
 	if in.Page.URL != nil {
-		return OEmbed{}.Provide(ctx, in)
+		return OEmbedList{}.Provide(ctx, in)
 	}
 	host := strings.TrimPrefix(strings.ToLower(in.URL.Hostname()), "www.")
 	icon := url.URL{Scheme: schemeHTTPS, Host: in.URL.Host, Path: "/favicon.ico"}

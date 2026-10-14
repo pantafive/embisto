@@ -121,8 +121,8 @@ func (m *Metrics) TTLChosen(source string) {
 	m.ttls.WithLabelValues(source).Inc()
 }
 
-// BackendUp records whether the shared cache answers.
-func (m *Metrics) BackendUp(isUp bool) {
+// RedisUp records whether the shared cache answers.
+func (m *Metrics) RedisUp(isUp bool) {
 	value := 0.0
 	if isUp {
 		value = 1
@@ -130,8 +130,8 @@ func (m *Metrics) BackendUp(isUp bool) {
 	m.backendUp.Set(value)
 }
 
-// BackendFailed counts an operation the shared cache failed, which memory then served.
-func (m *Metrics) BackendFailed() {
+// RedisFailed counts an operation the shared cache failed, which memory then served.
+func (m *Metrics) RedisFailed() {
 	m.backendErrors.Inc()
 }
 

@@ -75,7 +75,7 @@ func Defaults() Options {
 		},
 		HomePages: cache.NewMemory(defaultHomePages, nil),
 		Providers: []card.Provider{sites.YouTube{}, sites.X{}, sites.Reddit{}, sites.TikTok{}, sites.Walled{}},
-		Fallbacks: []card.Provider{sites.OEmbed{}},
+		Fallbacks: []card.Provider{sites.OEmbedList{}},
 		Enrichers: []card.Enricher{imagesize.Enricher{
 			Concurrency: 4, Timeout: 2 * time.Second, MaxBytes: 64 << 10, MaxImages: 8,
 		}},

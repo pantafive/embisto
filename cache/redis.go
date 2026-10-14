@@ -24,7 +24,7 @@ type RedisOptions struct {
 	// meanwhile on the shared store.
 	Fallback *Memory
 	Log      *slog.Logger
-	Observer BackendObserver
+	Observer RedisObserver
 	// Now is the clock the outage is timed by; nil is the real one.
 	Now func() time.Time
 }
@@ -143,7 +143,7 @@ func (f *Redis) failed(ctx context.Context, err error) bool {
 		return true
 	}
 	if f.opts.Observer != nil {
-		f.opts.Observer.BackendFailed()
+		f.opts.Observer.RedisFailed()
 	}
 	if !f.isDown {
 		f.opts.Log.WarnContext(ctx, "the shared cache does not answer; this instance serves from memory", slog.Any("error", err))
@@ -155,6 +155,6 @@ func (f *Redis) failed(ctx context.Context, err error) bool {
 
 func (f *Redis) backendUp(isUp bool) {
 	if f.opts.Observer != nil {
-		f.opts.Observer.BackendUp(isUp)
+		f.opts.Observer.RedisUp(isUp)
 	}
 }

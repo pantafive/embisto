@@ -30,7 +30,7 @@ const (
 	CodeCacheUnavailable Code = "cache_unavailable"
 	// CodeInvalidSignature and the codes after it are the refusals of thumbnails, at /i/.
 	CodeInvalidSignature Code = "invalid_signature"
-	CodeInvalidOptions   Code = "invalid_options"
+	CodeInvalidSize      Code = "invalid_size"
 	CodeTooManyPixels    Code = "too_many_pixels"
 	CodeUnsupportedImage Code = "unsupported_image"
 	CodeImageTooLarge    Code = "image_too_large"
@@ -41,8 +41,8 @@ const (
 	CodeInternal Code = "internal"
 )
 
-// Entry is a code with the HTTP status it is answered with and the words a client is shown.
-type Entry struct {
+// CodeEntry is a code with the HTTP status it is answered with and the words a client is shown.
+type CodeEntry struct {
 	Code   Code
 	Status int
 	Text   string
@@ -50,7 +50,7 @@ type Entry struct {
 
 // catalogue is every code embisto fails with; answers, the image route, the Iframely format and the API's spec are
 // derived from it. A text never holds what a page or the network said.
-var catalogue = []Entry{
+var catalogue = []CodeEntry{
 	{CodeInvalidRequest, http.StatusBadRequest, "a parameter is malformed or out of range"},
 	{CodeInvalidURL, http.StatusBadRequest, "the URL is not an http or https address embisto can preview"},
 	{CodeBlockedURL, http.StatusForbidden, "the URL resolves to an address that is not public"},
@@ -62,7 +62,7 @@ var catalogue = []Entry{
 	{CodeNotCached, http.StatusNotFound, "nothing of this URL was cached"},
 	{CodeCacheUnavailable, http.StatusServiceUnavailable, "the cache did not answer; nothing was purged"},
 	{CodeInvalidSignature, http.StatusForbidden, "the URL's signature does not match"},
-	{CodeInvalidOptions, http.StatusBadRequest, "the size is neither a preset nor an allowed size"},
+	{CodeInvalidSize, http.StatusBadRequest, "the size is neither a preset nor an allowed size"},
 	{CodeTooManyPixels, http.StatusRequestEntityTooLarge, "the picture has more pixels than the limit"},
 	{CodeUnsupportedImage, http.StatusUnsupportedMediaType, "the source is not a JPEG, PNG, GIF or WebP picture"},
 	{CodeImageTooLarge, http.StatusRequestEntityTooLarge, "the picture's file is over the size limit"},
@@ -72,7 +72,7 @@ var catalogue = []Entry{
 }
 
 // Catalogue is every code embisto fails with, with its status and words.
-func Catalogue() []Entry {
+func Catalogue() []CodeEntry {
 	return slices.Clone(catalogue)
 }
 
@@ -86,8 +86,8 @@ func (c Code) Text() string {
 	return c.entry().Text
 }
 
-func (c Code) entry() Entry {
-	if at := slices.IndexFunc(catalogue, func(e Entry) bool { return e.Code == c }); at >= 0 {
+func (c Code) entry() CodeEntry {
+	if at := slices.IndexFunc(catalogue, func(e CodeEntry) bool { return e.Code == c }); at >= 0 {
 		return catalogue[at]
 	}
 	return catalogue[len(catalogue)-1]

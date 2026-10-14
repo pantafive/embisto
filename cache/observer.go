@@ -13,12 +13,12 @@ type Observer interface {
 	TTLChosen(source string)
 }
 
-// BackendObserver hears whether a shared store answers.
-type BackendObserver interface {
-	// BackendUp is the shared store starting or stopping to answer.
-	BackendUp(isUp bool)
-	// BackendFailed is an operation it failed, which the fallback served instead.
-	BackendFailed()
+// RedisObserver hears whether the shared store in Redis answers.
+type RedisObserver interface {
+	// RedisUp is the shared store starting or stopping to answer.
+	RedisUp(isUp bool)
+	// RedisFailed is an operation it failed, which the fallback served instead.
+	RedisFailed()
 }
 
 // Lookup results, TTL sources, lock outcomes and coalescing scopes, as the observer hears them.

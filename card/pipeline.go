@@ -56,9 +56,9 @@ type Input struct {
 	Facts []Facts
 }
 
-// Source is a generic extractor that reads any page: Open Graph, Twitter Cards, oEmbed, HTML.
+// Source reads facts from any page, whatever its site: Open Graph, Twitter Cards, oEmbed, HTML.
 type Source interface {
-	Extract(ctx context.Context, in Input) (Facts, error)
+	Read(ctx context.Context, in Input) (Facts, error)
 }
 
 // Match is how a provider answers for a URL.

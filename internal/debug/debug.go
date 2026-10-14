@@ -32,9 +32,9 @@ var page = template.Must(template.New("debug").Funcs(template.FuncMap{
 // Page makes previews afresh, without a cache, and shows how.
 type Page struct {
 	Core card.Extractor
-	// Images, when the server has thumbnails on, also resizes the card's image into the card preset.
-	Images thumbnails.Processor
-	Log    *slog.Logger
+	// Thumbnails, when the server has them on, also resizes the card's image into the card preset.
+	Thumbnails thumbnails.Processor
+	Log        *slog.Logger
 }
 
 type view struct {
@@ -105,14 +105,14 @@ func (p Page) explain(ctx context.Context, shown *view) {
 // pictures resizes the card's image into the card preset in each format, as /i/ would.
 func (p Page) pictures(ctx context.Context, preview card.Preview) []picture {
 	source, err := urlOf(preview.Image.URL)
-	if p.Images == nil || err != nil {
+	if p.Thumbnails == nil || err != nil {
 		return nil
 	}
 	box := thumbnails.DefaultPresets[1].Box
 	var made []picture
 	for _, format := range []thumbnails.Format{thumbnails.Classic, thumbnails.WebP} {
 		started := time.Now()
-		result, err := p.Images.Process(ctx, source, box, format)
+		result, err := p.Thumbnails.Process(ctx, source, box, format)
 		made = append(made, picture{Format: cmp.Or(string(format), "jpeg/png"), Type: result.ContentType, Bytes: len(result.Body), Took: time.Since(started), Error: errorText(err)})
 	}
 	return made
