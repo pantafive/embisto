@@ -83,6 +83,7 @@ var errNoImageKey = errors.New("EMBISTO_IMAGE_KEY is not set: the image proxy is
 // them at; nil and nil when the proxy is off.
 func images(ctx context.Context, loaded settings.Settings, log *slog.Logger, measured *metrics.Metrics) (*api.Images, card.Enricher, error) {
 	if loaded.ImageKey == "" {
+		log.InfoContext(ctx, "the image proxy is off: cards link pictures on their sites; set EMBISTO_IMAGE_KEY to turn it on")
 		return nil, nil, nil
 	}
 	signer, err := thumbs.NewSigner([]byte(loaded.ImageKey), loaded.ImagePresets)
