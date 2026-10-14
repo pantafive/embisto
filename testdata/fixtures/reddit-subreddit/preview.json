@@ -1,0 +1,27 @@
+{
+  "url": "https://www.reddit.com/r/golang/",
+  "canonical_url": "https://www.reddit.com/r/golang/",
+  "type": "link",
+  "site_name": "Reddit",
+  "icon": {
+    "url": "https://www.redditstatic.com/shreddit/assets/favicon/64x64.png",
+    "width": 64,
+    "height": 64
+  },
+  "limited": "blocked",
+  "links": [
+    {
+      "href": "https://www.redditstatic.com/shreddit/assets/favicon/64x64.png",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 64,
+        "height": 64,
+        "aspect_ratio": 1
+      }
+    }
+  ]
+}

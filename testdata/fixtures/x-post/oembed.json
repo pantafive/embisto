@@ -1,0 +1,11 @@
+{
+  "type": "rich",
+  "version": "1.0",
+  "title": "jack on X",
+  "url": "https://x.com/jack/status/20",
+  "author": "jack",
+  "author_url": "https://x.com/jack",
+  "provider_name": "X",
+  "description": "just setting up my twttr",
+  "html": "<blockquote class=\"twitter-tweet\"><p lang=\"en\" dir=\"ltr\">just setting up my twttr</p>&mdash; jack (@jack) <a href=\"https://x.com/jack/status/20?ref_src=twsrc%5Etfw\">March 21, 2006</a></blockquote>\n<script async src=\"https://platform.x.com/widgets.js\" charset=\"utf-8\"></script>\n\n"
+}

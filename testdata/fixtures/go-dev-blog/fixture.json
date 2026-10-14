@@ -1,0 +1,37 @@
+{
+  "request": {
+    "url": "https://go.dev/blog/"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://go.dev/blog/",
+      "media_type": "text/html",
+      "file": "1.html"
+    },
+    {
+      "method": "peek",
+      "url": "https://go.dev/images/favicon-gopher.png",
+      "media_type": "image/png",
+      "file": "2.bin"
+    },
+    {
+      "method": "peek",
+      "url": "https://go.dev/images/favicon-gopher.svg",
+      "media_type": "image/svg+xml",
+      "file": "3.bin"
+    },
+    {
+      "method": "peek",
+      "url": "https://go.dev/doc/gopher/runningsquare.jpg",
+      "media_type": "image/jpeg",
+      "file": "4.bin"
+    },
+    {
+      "method": "peek",
+      "url": "https://go.dev/doc/gopher/gopher5logo.jpg",
+      "media_type": "image/jpeg",
+      "file": "5.bin"
+    }
+  ]
+}

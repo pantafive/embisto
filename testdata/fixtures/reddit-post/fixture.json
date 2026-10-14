@@ -1,0 +1,13 @@
+{
+  "request": {
+    "url": "https://www.reddit.com/r/golang/comments/1wym3v0/hooking_into_the_go_toolchain/"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://www.reddit.com/oembed?format=json\u0026url=https%3A%2F%2Fwww.reddit.com%2Fr%2Fgolang%2Fcomments%2F1wym3v0%2Fhooking_into_the_go_toolchain%2F",
+      "media_type": "application/json",
+      "file": "1.json"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "url": "https://go.dev/blog/",
+  "meta": {
+    "title": "The Go Blog - The Go Programming Language",
+    "canonical": "https://go.dev/blog/",
+    "medium": "link"
+  },
+  "links": {
+    "icon": [
+      {
+        "href": "https://go.dev/images/favicon-gopher-plain.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 180,
+          "height": 180
+        }
+      },
+      {
+        "href": "https://go.dev/images/favicon-gopher.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 288,
+          "height": 288
+        }
+      },
+      {
+        "href": "https://go.dev/images/favicon-gopher.svg",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/svg+xml",
+        "media": {
+          "width": 32,
+          "height": 32
+        }
+      }
+    ],
+    "thumbnail": [
+      {
+        "href": "https://go.dev/doc/gopher/gopher5logo.jpg",
+        "rel": [
+          "thumbnail",
+          "og",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 1262,
+          "height": 733
+        }
+      },
+      {
+        "href": "https://go.dev/doc/gopher/runningsquare.jpg",
+        "rel": [
+          "thumbnail",
+          "twitter",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 299,
+          "height": 281
+        }
+      }
+    ]
+  },
+  "rel": []
+}

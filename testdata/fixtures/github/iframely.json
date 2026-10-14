@@ -1,0 +1,55 @@
+{
+  "url": "https://github.com",
+  "meta": {
+    "title": "GitHub · Change is constant. GitHub keeps you ahead. · GitHub",
+    "description": "Join the world's most widely adopted, AI-powered developer platform where millions of developers, businesses, and the largest open source community build software that advances humanity.",
+    "site": "GitHub",
+    "canonical": "https://github.com",
+    "medium": "link"
+  },
+  "links": {
+    "icon": [
+      {
+        "href": "https://github.githubassets.com/favicons/favicon.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 32,
+          "height": 32
+        }
+      },
+      {
+        "href": "https://github.githubassets.com/favicons/favicon.svg",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/svg+xml",
+        "media": {
+          "width": 32,
+          "height": 32
+        }
+      }
+    ],
+    "thumbnail": [
+      {
+        "href": "https://images.ctfassets.net/8aevphvgewt8/4pe4eOtUJ0ARpZRE4fNekf/f52b1f9c52f059a33170229883731ed0/GH-Homepage-Universe-img.png",
+        "rel": [
+          "thumbnail",
+          "og",
+          "twitter",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 1200,
+          "height": 630
+        }
+      }
+    ]
+  },
+  "rel": []
+}

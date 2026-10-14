@@ -1,0 +1,42 @@
+fail_fast: false
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  - id: trailing-whitespace
+    exclude: &verbatim (^|/)testdata/|providers\.json$
+  - id: end-of-file-fixer
+    exclude: *verbatim
+  - id: check-toml
+  - id: check-yaml
+  - id: check-added-large-files
+
+- repo: local
+  hooks:
+  # The pinned binary from mise.toml: the hook's own build lags behind the Go release go.mod targets.
+  - id: golangci-lint
+    name: golangci-lint
+    entry: golangci-lint run --fix
+    language: system
+    types: [go]
+    pass_filenames: false
+    require_serial: true
+  - id: go-test
+    name: go test
+    entry: mise run test
+    language: system
+    pass_filenames: false
+    files: \.(go|json|html)$
+
+- repo: https://github.com/crate-ci/typos
+  rev: v1.44.0
+  hooks:
+  - id: typos
+    # Sites' own words in other languages are data, not English to spell-check.
+    exclude: (^go\.(mod|sum)$|(^|/)testdata/|providers\.json$|_boilerplate\.go$)
+
+- repo: https://github.com/gitleaks/gitleaks
+  rev: v8.30.1
+  hooks:
+  - id: gitleaks

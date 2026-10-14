@@ -1,0 +1,153 @@
+{
+  "url": "https://www.theguardian.com/technology/2026/oct/13/human-connection-threat-children-ai-technology",
+  "meta": {
+    "title": "I’m a pediatrician. Loss of human connection is the biggest threat to kids, not AI | Megan Moreno",
+    "description": "Amid worries about children’s relationship to tech, the solution is often spending more time talking openly with each other",
+    "author": "Guardian staff reporter",
+    "site": "the Guardian",
+    "canonical": "https://www.theguardian.com/technology/2026/oct/13/human-connection-threat-children-ai-technology",
+    "date": "2026-10-13T11:00:56.000Z",
+    "medium": "link"
+  },
+  "links": {
+    "icon": [
+      {
+        "href": "https://assets.guim.co.uk/static/frontend/icons/homescreen/apple-touch-icon-512.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 512,
+          "height": 512
+        }
+      },
+      {
+        "href": "https://assets.guim.co.uk/static/frontend/icons/homescreen/apple-touch-icon-360.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 360,
+          "height": 360
+        }
+      },
+      {
+        "href": "https://assets.guim.co.uk/static/frontend/icons/homescreen/apple-touch-icon-240.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 240,
+          "height": 240
+        }
+      },
+      {
+        "href": "https://assets.guim.co.uk/static/frontend/icons/homescreen/apple-touch-icon-120.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 120,
+          "height": 120
+        }
+      },
+      {
+        "href": "https://static.guim.co.uk/images/favicon-32x32.ico",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/x-icon",
+        "media": {
+          "width": 32,
+          "height": 32
+        }
+      },
+      {
+        "href": "https://assets.guim.co.uk/static/frontend/icons/homescreen/apple-touch-icon.svg",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/svg+xml",
+        "media": {
+          "width": 180,
+          "height": 180
+        }
+      }
+    ],
+    "thumbnail": [
+      {
+        "href": "https://i.guim.co.uk/img/media/e4cac13e9d2a58b118f17b68f47d9d58f29d6418/397_0_4680_3744/master/4680.jpg?width=1200&height=630&quality=85&auto=format&fit=crop&precrop=40:21,offset-x50,offset-y0&overlay-align=bottom%2Cleft&overlay-width=100p&overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctb3BpbmlvbnMucG5n&enable=upscale&s=63cd413b534f4936453a278e0b1f8409",
+        "rel": [
+          "thumbnail",
+          "og",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 1200,
+          "height": 630
+        }
+      },
+      {
+        "href": "https://i.guim.co.uk/img/media/e4cac13e9d2a58b118f17b68f47d9d58f29d6418/397_0_4680_3744/master/4680.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=51461e9b47bcc181d74768ca8a7be4d6",
+        "rel": [
+          "thumbnail",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 1200,
+          "height": 1200
+        }
+      },
+      {
+        "href": "https://i.guim.co.uk/img/media/e4cac13e9d2a58b118f17b68f47d9d58f29d6418/397_0_4680_3744/master/4680.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=a16a95ea03dcee4b981c87766200a770",
+        "rel": [
+          "thumbnail",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 1200,
+          "height": 900
+        }
+      },
+      {
+        "href": "https://i.guim.co.uk/img/media/e4cac13e9d2a58b118f17b68f47d9d58f29d6418/397_0_4680_3744/master/4680.jpg?width=1200&quality=85&auto=format&fit=max&s=fc999d44c2c582835d7ce9c24b1320eb",
+        "rel": [
+          "thumbnail",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 1200,
+          "height": 960
+        }
+      },
+      {
+        "href": "https://i.guim.co.uk/img/media/e4cac13e9d2a58b118f17b68f47d9d58f29d6418/397_0_4680_3744/master/4680.jpg?width=1200&height=630&quality=85&auto=format&fit=crop&precrop=40:21,offset-x50,offset-y0&overlay-align=bottom%2Cleft&overlay-width=100p&overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctb3BpbmlvbnMucG5n&s=b51e8deb680fd095b04e7eab5a32e357",
+        "rel": [
+          "thumbnail",
+          "twitter",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 1200,
+          "height": 630
+        }
+      }
+    ]
+  },
+  "rel": []
+}

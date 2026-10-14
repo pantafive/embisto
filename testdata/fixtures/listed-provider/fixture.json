@@ -1,0 +1,19 @@
+{
+  "request": {
+    "url": "https://vimeo.com/76979871"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://vimeo.com/76979871",
+      "media_type": "text/html",
+      "file": "1.html"
+    },
+    {
+      "method": "fetch",
+      "url": "https://vimeo.com/api/oembed.json?format=json&url=https%3A%2F%2Fvimeo.com%2F76979871",
+      "media_type": "application/json",
+      "file": "2.json"
+    }
+  ]
+}

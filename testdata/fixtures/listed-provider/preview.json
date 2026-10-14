@@ -1,0 +1,70 @@
+{
+  "url": "https://vimeo.com/76979871",
+  "canonical_url": "https://vimeo.com/76979871",
+  "type": "video",
+  "title": "A listed video",
+  "site_name": "Vimeo",
+  "author": "A filmmaker",
+  "icon": {
+    "url": "https://vimeo.com/favicon.ico"
+  },
+  "image": {
+    "url": "https://i.vimeocdn.com/video/452001751-640.jpg",
+    "width": 640,
+    "height": 360
+  },
+  "images": [
+    {
+      "url": "https://i.vimeocdn.com/video/452001751-640.jpg",
+      "width": 640,
+      "height": 360
+    }
+  ],
+  "embed": {
+    "html": "<iframe src=\"https://player.vimeo.com/video/76979871\" width=\"640\" height=\"360\"></iframe>",
+    "width": 640,
+    "height": 360,
+    "provider": "Vimeo"
+  },
+  "links": [
+    {
+      "href": "https://i.vimeocdn.com/video/452001751-640.jpg",
+      "rel": [
+        "thumbnail",
+        "oembed"
+      ],
+      "type": "image/jpeg",
+      "media": {
+        "width": 640,
+        "height": 360,
+        "aspect_ratio": 1.7778
+      }
+    },
+    {
+      "href": "https://player.vimeo.com/video/76979871",
+      "rel": [
+        "player",
+        "oembed"
+      ],
+      "type": "text/html",
+      "media": {
+        "width": 640,
+        "height": 360,
+        "aspect_ratio": 1.7778
+      },
+      "html": "<iframe src=\"https://player.vimeo.com/video/76979871\" width=\"640\" height=\"360\"></iframe>"
+    },
+    {
+      "href": "https://vimeo.com/favicon.ico",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/x-icon"
+    }
+  ],
+  "sources": [
+    "oembed",
+    "html"
+  ]
+}

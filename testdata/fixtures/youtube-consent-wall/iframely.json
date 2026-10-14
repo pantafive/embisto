@@ -1,0 +1,50 @@
+{
+  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "meta": {
+    "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+    "author": "Rick Astley",
+    "author_url": "https://www.youtube.com/@RickAstleyYT",
+    "site": "YouTube",
+    "canonical": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "medium": "video"
+  },
+  "links": {
+    "player": [
+      {
+        "href": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "rel": [
+          "player",
+          "ssl",
+          "html5",
+          "responsive"
+        ],
+        "type": "text/html",
+        "media": {
+          "aspect-ratio": 1.7778
+        },
+        "html": "<div style=\"left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;\"><iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" style=\"border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;\" allowfullscreen=\"\" scrolling=\"no\" allow=\"encrypted-media; accelerometer; clipboard-write; gyroscope; picture-in-picture; web-share; fullscreen\"></iframe></div>"
+      }
+    ],
+    "thumbnail": [
+      {
+        "href": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+        "rel": [
+          "thumbnail",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 480,
+          "height": 360
+        }
+      }
+    ]
+  },
+  "rel": [
+    "player",
+    "ssl",
+    "html5",
+    "responsive"
+  ],
+  "html": "<div style=\"left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;\"><iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" style=\"border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;\" allowfullscreen=\"\" scrolling=\"no\" allow=\"encrypted-media; accelerometer; clipboard-write; gyroscope; picture-in-picture; web-share; fullscreen\"></iframe></div>"
+}

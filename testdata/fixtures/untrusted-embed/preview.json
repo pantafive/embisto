@@ -1,0 +1,25 @@
+{
+  "url": "https://example.com/post",
+  "canonical_url": "https://example.com/post",
+  "type": "link",
+  "title": "A post, by oEmbed",
+  "site_name": "Example",
+  "author": "Someone",
+  "icon": {
+    "url": "https://example.com/favicon.ico"
+  },
+  "links": [
+    {
+      "href": "https://example.com/favicon.ico",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/x-icon"
+    }
+  ],
+  "sources": [
+    "oembed",
+    "html"
+  ]
+}

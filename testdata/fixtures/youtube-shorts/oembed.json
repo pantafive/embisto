@@ -1,0 +1,14 @@
+{
+  "type": "video",
+  "version": "1.0",
+  "title": "Shortest Video on Youtube",
+  "url": "https://www.youtube.com/shorts/tPEE9ZwTmy0",
+  "author": "Mylo the Cat",
+  "author_url": "https://www.youtube.com/@hiddentracktv2",
+  "provider_name": "YouTube",
+  "description": "The original \"Shortest Video on Youtube\" video, starring Internet sensation, Mylo the Cat. Believe it or not, due to the popularity of this one second video,...",
+  "thumbnail_url": "https://i.ytimg.com/vi/tPEE9ZwTmy0/hqdefault.jpg?sqp=-oaymwEmCOADEOgC8quKqQMa8AEB-AHUBoAC1gOKAgwIABABGHIgXigyMA8=&rs=AOn4CLBnm1z6VS673zx2fYvROcm9xKMNAg",
+  "thumbnail_width": 480,
+  "thumbnail_height": 360,
+  "html": "<div style=\"left: 0; width: 100%; height: 0; position: relative; padding-bottom: 177.7778%;\"><iframe src=\"https://www.youtube.com/embed/tPEE9ZwTmy0\" style=\"border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;\" allowfullscreen=\"\" scrolling=\"no\" allow=\"encrypted-media; accelerometer; clipboard-write; gyroscope; picture-in-picture; web-share; fullscreen\"></iframe></div>"
+}

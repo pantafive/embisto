@@ -1,0 +1,30 @@
+{
+  "url": "https://www.instagram.com/p/C0Q8vYvR5u6/",
+  "canonical_url": "https://www.instagram.com/p/C0Q8vYvR5u6/",
+  "type": "link",
+  "site_name": "Instagram",
+  "icon": {
+    "url": "https://www.instagram.com/favicon.ico",
+    "width": 32,
+    "height": 32
+  },
+  "limited": "login_wall",
+  "links": [
+    {
+      "href": "https://www.instagram.com/favicon.ico",
+      "rel": [
+        "icon",
+        "walled"
+      ],
+      "type": "image/x-icon",
+      "media": {
+        "width": 32,
+        "height": 32,
+        "aspect_ratio": 1
+      }
+    }
+  ],
+  "sources": [
+    "walled"
+  ]
+}

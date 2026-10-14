@@ -1,0 +1,40 @@
+{{- /* A card for Flutter's Remote Flutter Widgets (package:rfw), in its text format. The app parses it at run time
+with parseLibraryFile, so a server can change the card without an app release; a Dart snippet would have to be
+compiled into the app. It uses only core.widgets, and tapping it sends the event "open" with the page's url. Strings
+are JSON-escaped (json), which is how rfw's text format writes them. */ -}}
+{{- $url := default .URL .CanonicalURL -}}
+{{- $title := default (default $url .SiteName) .Title -}}
+{{- $picture := picture . 600 false -}}
+import core.widgets;
+
+widget root = GestureDetector(
+  onTap: event "open" { url: {{json $url}} },
+  child: Column(
+    crossAxisAlignment: "start",
+    mainAxisSize: "min",
+    children: [
+      {{- if $picture.URL}}
+      AspectRatio(
+        aspectRatio: {{ratio $picture.Width $picture.Height}},
+        child: Image(source: {{json $picture.URL}}, fit: "cover"),
+      ),
+      {{- end}}
+      Padding(
+        padding: [12.0, 10.0, 12.0, 12.0],
+        child: Column(
+          crossAxisAlignment: "start",
+          mainAxisSize: "min",
+          children: [
+            {{- with .SiteName}}
+            Text(text: {{json .}}, maxLines: 1, overflow: "ellipsis", style: { fontSize: 12.0 }),
+            {{- end}}
+            Text(text: {{json $title}}, maxLines: 2, overflow: "ellipsis", style: { fontSize: 16.0, fontWeight: "w600" }),
+            {{- with .Description}}
+            Text(text: {{json (truncate 300 .)}}, maxLines: 3, overflow: "ellipsis", style: { fontSize: 14.0 }),
+            {{- end}}
+          ],
+        ),
+      ),
+    ],
+  ),
+);

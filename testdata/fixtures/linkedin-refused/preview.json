@@ -1,0 +1,23 @@
+{
+  "url": "https://www.linkedin.com/company/google",
+  "canonical_url": "https://www.linkedin.com/company/google",
+  "type": "link",
+  "site_name": "LinkedIn",
+  "icon": {
+    "url": "https://www.linkedin.com/favicon.ico"
+  },
+  "limited": "login_wall",
+  "links": [
+    {
+      "href": "https://www.linkedin.com/favicon.ico",
+      "rel": [
+        "icon",
+        "walled"
+      ],
+      "type": "image/x-icon"
+    }
+  ],
+  "sources": [
+    "walled"
+  ]
+}

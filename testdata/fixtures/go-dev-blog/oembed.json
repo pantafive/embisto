@@ -1,0 +1,9 @@
+{
+  "type": "link",
+  "version": "1.0",
+  "title": "The Go Blog - The Go Programming Language",
+  "url": "https://go.dev/blog/",
+  "thumbnail_url": "https://go.dev/doc/gopher/gopher5logo.jpg",
+  "thumbnail_width": 1262,
+  "thumbnail_height": 733
+}

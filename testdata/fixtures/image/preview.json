@@ -1,0 +1,23 @@
+{
+  "url": "https://example.com/cat.png",
+  "canonical_url": "https://example.com/cat.png",
+  "type": "photo",
+  "image": {
+    "url": "https://example.com/cat.png"
+  },
+  "images": [
+    {
+      "url": "https://example.com/cat.png"
+    }
+  ],
+  "links": [
+    {
+      "href": "https://example.com/cat.png",
+      "rel": [
+        "image",
+        "file"
+      ],
+      "type": "image/png"
+    }
+  ]
+}

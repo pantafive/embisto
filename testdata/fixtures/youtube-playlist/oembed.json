@@ -1,0 +1,14 @@
+{
+  "type": "video",
+  "version": "1.0",
+  "title": "Python for Beginners",
+  "url": "https://www.youtube.com/playlist?list=PLlrxD0HtieHhS8VzuMCfQD4uJ9yne1mE6",
+  "author": "Microsoft Developer",
+  "author_url": "https://www.youtube.com/@MicrosoftDeveloper",
+  "provider_name": "YouTube",
+  "description": "Probably the largest hurdle when learning any new programming language is simply knowing where to get started. This is why we, Chris and Susan, decided to cr...",
+  "thumbnail_url": "https://i.ytimg.com/vi/jFCNu1-Xdsw/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLBWH7YrNvOMU0BK1uhcl1HqSJnGcw&days_since_epoch=20739",
+  "thumbnail_width": 480,
+  "thumbnail_height": 270,
+  "html": "<div style=\"left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;\"><iframe src=\"https://www.youtube.com/embed/videoseries?list=PLlrxD0HtieHhS8VzuMCfQD4uJ9yne1mE6\" style=\"border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;\" allowfullscreen=\"\" scrolling=\"no\" allow=\"encrypted-media; accelerometer; clipboard-write; gyroscope; picture-in-picture; web-share; fullscreen\"></iframe></div>"
+}

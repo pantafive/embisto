@@ -1,0 +1,13 @@
+{
+  "request": {
+    "url": "https://example.com/blog/an-article?utm_source=feed#comments"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://example.com/blog/an-article?utm_source=feed",
+      "media_type": "text/html",
+      "file": "1.html"
+    }
+  ]
+}

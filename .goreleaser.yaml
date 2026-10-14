@@ -1,0 +1,36 @@
+# Static binaries for every platform, on a tag v*. The image is built by the release workflow from the Dockerfile.
+version: 2
+
+project_name: embisto
+
+builds:
+  - id: embisto
+    main: ./cmd/embisto
+    binary: embisto
+    env:
+      - CGO_ENABLED=0
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+    ldflags: [-s -w]
+
+archives:
+  - id: embisto
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files: [LICENSE, README.md, CHANGELOG.md]
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  disable: true
+
+release:
+  github:
+    owner: pantafive
+    name: embisto
+  footer: "See [CHANGELOG.md](https://github.com/pantafive/embisto/blob/main/CHANGELOG.md)."

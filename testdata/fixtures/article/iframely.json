@@ -1,0 +1,94 @@
+{
+  "url": "https://cdn.example.com/blog/an-article",
+  "meta": {
+    "title": "The Open Graph title",
+    "description": "The Open Graph description, from the body.",
+    "author": "Jane Doe, John Roe",
+    "site": "Example Blog",
+    "canonical": "https://cdn.example.com/blog/an-article",
+    "date": "2026-03-01T07:30:00.000Z",
+    "medium": "link"
+  },
+  "links": {
+    "icon": [
+      {
+        "href": "https://cdn.example.com/apple-touch-icon.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 180,
+          "height": 180
+        }
+      },
+      {
+        "href": "https://cdn.example.com/favicon-32.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 32,
+          "height": 32
+        }
+      },
+      {
+        "href": "https://cdn.example.com/favicon.svg",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/svg+xml"
+      }
+    ],
+    "thumbnail": [
+      {
+        "href": "https://cdn.example.com/blog/images/cover.jpg",
+        "rel": [
+          "thumbnail",
+          "og",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 1200,
+          "height": 630
+        }
+      },
+      {
+        "href": "https://cdn.example.com/blog/images/second.jpg",
+        "rel": [
+          "thumbnail",
+          "og",
+          "ssl"
+        ],
+        "type": "image/jpeg"
+      },
+      {
+        "href": "https://cdn.example.com/images/structured.jpg",
+        "rel": [
+          "thumbnail",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 1600,
+          "height": 900
+        }
+      },
+      {
+        "href": "https://cdn.example.com/images/cover.jpg",
+        "rel": [
+          "thumbnail",
+          "twitter",
+          "ssl"
+        ],
+        "type": "image/jpeg"
+      }
+    ]
+  },
+  "rel": []
+}

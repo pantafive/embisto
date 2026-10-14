@@ -1,0 +1,13 @@
+{
+  "text": "Say \"hi\" \\ and then \u0026lt;/script\u0026gt; \u0026lt;!channel\u0026gt; \u0026lt;https://x.test|y\u0026gt; ${env} it's done 🚀",
+  "blocks": [
+    {
+      "type": "section",
+      "text": {"type": "mrkdwn", "text": "*\u003chttps://example.com/x?a=1\u0026amp;b=2|Say \"hi\" \\ and then \u0026lt;/script\u0026gt; \u0026lt;!channel\u0026gt; \u0026lt;https://x.test|y\u0026gt; ${env} it's done 🚀\u003e*\n*bold* [link](x) next"}
+    },
+    {
+      "type": "context",
+      "elements": [{"type": "mrkdwn", "text": "Site \"$x\" \u0026lt;b\u0026gt;"}]
+    }
+  ]
+}

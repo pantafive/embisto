@@ -1,0 +1,13 @@
+{
+  "request": {
+    "url": "https://www.tiktok.com/@scout2015/video/6718335390845095173"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://www.tiktok.com/oembed?format=json\u0026url=https%3A%2F%2Fwww.tiktok.com%2F%40scout2015%2Fvideo%2F6718335390845095173",
+      "media_type": "application/json",
+      "file": "1.json"
+    }
+  ]
+}

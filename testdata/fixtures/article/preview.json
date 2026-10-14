@@ -1,0 +1,122 @@
+{
+  "url": "https://example.com/blog/an-article?utm_source=feed",
+  "canonical_url": "https://cdn.example.com/blog/an-article",
+  "type": "link",
+  "title": "The Open Graph title",
+  "description": "The Open Graph description, from the body.",
+  "site_name": "Example Blog",
+  "author": "Jane Doe, John Roe",
+  "published_at": "2026-03-01T07:30:00Z",
+  "icon": {
+    "url": "https://cdn.example.com/apple-touch-icon.png",
+    "width": 180,
+    "height": 180
+  },
+  "image": {
+    "url": "https://cdn.example.com/blog/images/cover.jpg",
+    "width": 1200,
+    "height": 630
+  },
+  "images": [
+    {
+      "url": "https://cdn.example.com/blog/images/cover.jpg",
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "url": "https://cdn.example.com/blog/images/second.jpg"
+    },
+    {
+      "url": "https://cdn.example.com/images/cover.jpg"
+    },
+    {
+      "url": "https://cdn.example.com/images/structured.jpg",
+      "width": 1600,
+      "height": 900
+    }
+  ],
+  "links": [
+    {
+      "href": "https://cdn.example.com/blog/images/cover.jpg",
+      "rel": [
+        "thumbnail",
+        "opengraph"
+      ],
+      "type": "image/jpeg",
+      "media": {
+        "width": 1200,
+        "height": 630,
+        "aspect_ratio": 1.9048
+      }
+    },
+    {
+      "href": "https://cdn.example.com/blog/images/second.jpg",
+      "rel": [
+        "thumbnail",
+        "opengraph"
+      ],
+      "type": "image/jpeg"
+    },
+    {
+      "href": "https://cdn.example.com/images/structured.jpg",
+      "rel": [
+        "thumbnail",
+        "jsonld"
+      ],
+      "type": "image/jpeg",
+      "media": {
+        "width": 1600,
+        "height": 900,
+        "aspect_ratio": 1.7778
+      }
+    },
+    {
+      "href": "https://cdn.example.com/images/cover.jpg",
+      "rel": [
+        "thumbnail",
+        "twitter"
+      ],
+      "type": "image/jpeg"
+    },
+    {
+      "href": "https://cdn.example.com/apple-touch-icon.png",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 180,
+        "height": 180,
+        "aspect_ratio": 1
+      }
+    },
+    {
+      "href": "https://cdn.example.com/favicon-32.png",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 32,
+        "height": 32,
+        "aspect_ratio": 1
+      }
+    },
+    {
+      "href": "https://cdn.example.com/favicon.svg",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/svg+xml"
+    }
+  ],
+  "sources": [
+    "opengraph",
+    "jsonld",
+    "twitter",
+    "html"
+  ]
+}

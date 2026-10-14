@@ -1,0 +1,12 @@
+{
+  "request": {
+    "url": "https://example.com/cat.png"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://example.com/cat.png",
+      "media_type": "image/png"
+    }
+  ]
+}

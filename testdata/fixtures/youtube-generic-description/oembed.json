@@ -1,0 +1,13 @@
+{
+  "type": "video",
+  "version": "1.0",
+  "title": "dotGo 2015 - Rob Pike - Simplicity is Complicated",
+  "url": "https://www.youtube.com/watch?v=rFejpH_tAHM",
+  "author": "dotconferences",
+  "author_url": "https://www.youtube.com/@dotconferences",
+  "provider_name": "YouTube",
+  "thumbnail_url": "https://i.ytimg.com/vi/rFejpH_tAHM/hqdefault.jpg",
+  "thumbnail_width": 480,
+  "thumbnail_height": 360,
+  "html": "<div style=\"left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;\"><iframe src=\"https://www.youtube.com/embed/rFejpH_tAHM\" style=\"border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;\" allowfullscreen=\"\" scrolling=\"no\" allow=\"encrypted-media; accelerometer; clipboard-write; gyroscope; picture-in-picture; web-share; fullscreen\"></iframe></div>"
+}

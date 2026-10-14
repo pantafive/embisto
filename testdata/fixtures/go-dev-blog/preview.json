@@ -1,0 +1,100 @@
+{
+  "url": "https://go.dev/blog/",
+  "canonical_url": "https://go.dev/blog/",
+  "type": "link",
+  "title": "The Go Blog - The Go Programming Language",
+  "icon": {
+    "url": "https://go.dev/images/favicon-gopher-plain.png",
+    "width": 180,
+    "height": 180
+  },
+  "image": {
+    "url": "https://go.dev/doc/gopher/gopher5logo.jpg",
+    "width": 1262,
+    "height": 733
+  },
+  "images": [
+    {
+      "url": "https://go.dev/doc/gopher/gopher5logo.jpg",
+      "width": 1262,
+      "height": 733
+    },
+    {
+      "url": "https://go.dev/doc/gopher/runningsquare.jpg",
+      "width": 299,
+      "height": 281
+    }
+  ],
+  "links": [
+    {
+      "href": "https://go.dev/doc/gopher/gopher5logo.jpg",
+      "rel": [
+        "thumbnail",
+        "opengraph"
+      ],
+      "type": "image/jpeg",
+      "media": {
+        "width": 1262,
+        "height": 733,
+        "aspect_ratio": 1.7217
+      }
+    },
+    {
+      "href": "https://go.dev/doc/gopher/runningsquare.jpg",
+      "rel": [
+        "thumbnail",
+        "twitter"
+      ],
+      "type": "image/jpeg",
+      "media": {
+        "width": 299,
+        "height": 281,
+        "aspect_ratio": 1.0641
+      }
+    },
+    {
+      "href": "https://go.dev/images/favicon-gopher-plain.png",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 180,
+        "height": 180,
+        "aspect_ratio": 1
+      }
+    },
+    {
+      "href": "https://go.dev/images/favicon-gopher.png",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 288,
+        "height": 288,
+        "aspect_ratio": 1
+      }
+    },
+    {
+      "href": "https://go.dev/images/favicon-gopher.svg",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/svg+xml",
+      "media": {
+        "width": 32,
+        "height": 32,
+        "aspect_ratio": 1
+      }
+    }
+  ],
+  "sources": [
+    "opengraph",
+    "twitter",
+    "html"
+  ]
+}

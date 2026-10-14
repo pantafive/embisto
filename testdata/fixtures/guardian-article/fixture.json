@@ -1,0 +1,49 @@
+{
+  "request": {
+    "url": "https://www.theguardian.com/technology/2026/oct/13/human-connection-threat-children-ai-technology"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://www.theguardian.com/technology/2026/oct/13/human-connection-threat-children-ai-technology",
+      "media_type": "text/html",
+      "file": "1.html"
+    },
+    {
+      "method": "peek",
+      "url": "https://i.guim.co.uk/img/media/e4cac13e9d2a58b118f17b68f47d9d58f29d6418/397_0_4680_3744/master/4680.jpg?width=1200\u0026height=630\u0026quality=85\u0026auto=format\u0026fit=crop\u0026precrop=40:21,offset-x50,offset-y0\u0026overlay-align=bottom%2Cleft\u0026overlay-width=100p\u0026overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctb3BpbmlvbnMucG5n\u0026enable=upscale\u0026s=63cd413b534f4936453a278e0b1f8409",
+      "media_type": "image/jpeg",
+      "file": "2.bin"
+    },
+    {
+      "method": "peek",
+      "url": "https://i.guim.co.uk/img/media/e4cac13e9d2a58b118f17b68f47d9d58f29d6418/397_0_4680_3744/master/4680.jpg?width=1200\u0026height=630\u0026quality=85\u0026auto=format\u0026fit=crop\u0026precrop=40:21,offset-x50,offset-y0\u0026overlay-align=bottom%2Cleft\u0026overlay-width=100p\u0026overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctb3BpbmlvbnMucG5n\u0026s=b51e8deb680fd095b04e7eab5a32e357",
+      "media_type": "image/jpeg",
+      "file": "3.bin"
+    },
+    {
+      "method": "peek",
+      "url": "https://static.guim.co.uk/images/favicon-32x32.ico",
+      "media_type": "image/x-icon",
+      "file": "4.bin"
+    },
+    {
+      "method": "peek",
+      "url": "https://i.guim.co.uk/img/media/e4cac13e9d2a58b118f17b68f47d9d58f29d6418/397_0_4680_3744/master/4680.jpg?width=1200\u0026quality=85\u0026auto=format\u0026fit=max\u0026s=fc999d44c2c582835d7ce9c24b1320eb",
+      "media_type": "image/jpeg",
+      "file": "5.bin"
+    },
+    {
+      "method": "peek",
+      "url": "https://i.guim.co.uk/img/media/e4cac13e9d2a58b118f17b68f47d9d58f29d6418/397_0_4680_3744/master/4680.jpg?width=1200\u0026height=900\u0026quality=85\u0026auto=format\u0026fit=crop\u0026s=a16a95ea03dcee4b981c87766200a770",
+      "media_type": "image/jpeg",
+      "file": "6.bin"
+    },
+    {
+      "method": "peek",
+      "url": "https://i.guim.co.uk/img/media/e4cac13e9d2a58b118f17b68f47d9d58f29d6418/397_0_4680_3744/master/4680.jpg?width=1200\u0026height=1200\u0026quality=85\u0026auto=format\u0026fit=crop\u0026s=51461e9b47bcc181d74768ca8a7be4d6",
+      "media_type": "image/jpeg",
+      "file": "7.bin"
+    }
+  ]
+}

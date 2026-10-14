@@ -1,0 +1,27 @@
+{{- /* A Slack message in Block Kit: post it with chat.postMessage, or return it from a slash command. Text from the
+page is escaped twice: for mrkdwn (slack), then as a JSON string (json); the top-level text, the notification's,
+is mrkdwn too, so a page's <!channel> pings nobody. Slack refuses section text over 3000
+characters and alt text over 2000, so both are truncated. */ -}}
+{{- $url := default .URL .CanonicalURL -}}
+{{- $title := truncate 150 (default (default $url .SiteName) .Title) -}}
+{{- $text := printf "*<%s|%s>*" (slack $url) (slack $title) -}}
+{{- if .Description}}{{$text = printf "%s\n%s" $text (slack (truncate 600 .Description))}}{{end -}}
+{{- $picture := picture . 160 false -}}
+{
+  "text": {{json (slack $title)}},
+  "blocks": [
+    {
+      "type": "section",
+      "text": {"type": "mrkdwn", "text": {{json $text}}}
+      {{- if $picture.URL}},
+      "accessory": {"type": "image", "image_url": {{json $picture.URL}}, "alt_text": {{json $title}}}
+      {{- end}}
+    }
+    {{- if .SiteName}},
+    {
+      "type": "context",
+      "elements": [{"type": "mrkdwn", "text": {{json (slack (truncate 150 .SiteName))}}}]
+    }
+    {{- end}}
+  ]
+}

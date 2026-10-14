@@ -1,0 +1,27 @@
+import core.widgets;
+
+widget root = GestureDetector(
+  onTap: event "open" { url: "https://www.theguardian.com/technology/2026/oct/13/human-connection-threat-children-ai-technology" },
+  child: Column(
+    crossAxisAlignment: "start",
+    mainAxisSize: "min",
+    children: [
+      AspectRatio(
+        aspectRatio: 1.9048,
+        child: Image(source: "https://embisto.example/i/oqU1n0J8UnWmE4lekRkD1sB7_QTXnVU2Er8_PWCwsBs/card/aHR0cHM6Ly9pLmd1aW0uY28udWsvaW1nL21lZGlhL2U0Y2FjMTNlOWQyYTU4YjExOGYxN2I2OGY0N2Q5ZDU4ZjI5ZDY0MTgvMzk3XzBfNDY4MF8zNzQ0L21hc3Rlci80NjgwLmpwZz93aWR0aD0xMjAwJmhlaWdodD02MzAmcXVhbGl0eT04NSZhdXRvPWZvcm1hdCZmaXQ9Y3JvcCZwcmVjcm9wPTQwOjIxLG9mZnNldC14NTAsb2Zmc2V0LXkwJm92ZXJsYXktYWxpZ249Ym90dG9tJTJDbGVmdCZvdmVybGF5LXdpZHRoPTEwMHAmb3ZlcmxheS1iYXNlNjQ9TDJsdFp5OXpkR0YwYVdNdmIzWmxjbXhoZVhNdmRHY3RiM0JwYm1sdmJuTXVjRzVuJmVuYWJsZT11cHNjYWxlJnM9NjNjZDQxM2I1MzRmNDkzNjQ1M2EyNzhlMGIxZjg0MDk", fit: "cover"),
+      ),
+      Padding(
+        padding: [12.0, 10.0, 12.0, 12.0],
+        child: Column(
+          crossAxisAlignment: "start",
+          mainAxisSize: "min",
+          children: [
+            Text(text: "the Guardian", maxLines: 1, overflow: "ellipsis", style: { fontSize: 12.0 }),
+            Text(text: "I’m a pediatrician. Loss of human connection is the biggest threat to kids, not AI | Megan Moreno", maxLines: 2, overflow: "ellipsis", style: { fontSize: 16.0, fontWeight: "w600" }),
+            Text(text: "Amid worries about children’s relationship to tech, the solution is often spending more time talking openly with each other", maxLines: 3, overflow: "ellipsis", style: { fontSize: 14.0 }),
+          ],
+        ),
+      ),
+    ],
+  ),
+);

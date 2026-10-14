@@ -1,0 +1,13 @@
+{
+  "request": {
+    "url": "example.com/bare"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://example.com/bare",
+      "media_type": "text/html",
+      "file": "1.html"
+    }
+  ]
+}

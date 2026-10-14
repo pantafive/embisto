@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>embisto debug{{if .URL}}: {{.URL}}{{end}}</title>
+<style>
+body { font: 14px/1.4 system-ui, sans-serif; margin: 1.5rem; color: #111; }
+table { border-collapse: collapse; margin: .5rem 0 1.5rem; width: 100%; }
+th, td { border: 1px solid #ddd; padding: .3rem .5rem; text-align: left; vertical-align: top; }
+th { background: #f5f5f5; }
+td.n { text-align: right; white-space: nowrap; }
+pre { background: #f7f7f7; padding: .75rem; overflow: auto; max-height: 30rem; }
+.win { font-weight: 600; }
+.bad { color: #b00; }
+input[name=url] { width: 40rem; max-width: 90%; }
+</style>
+</head>
+<body>
+<h1>embisto debug</h1>
+<form method="get">
+<input name="url" value="{{.URL}}" placeholder="https://…" autofocus>
+<input name="lang" value="{{.Language}}" placeholder="lang" size="5">
+<button>Preview</button>
+</form>
+{{if .URL}}
+<p>Made afresh, without the cache, in {{ms .Took}}. Class: <b>{{.Class}}</b>.{{if .Error}} <span class="bad">Failed: {{.Error}}</span>{{end}}</p>
+{{if not .Error}}
+<h2>Card</h2>
+<table>
+<tr><th>Type</th><td>{{.Card.Type}}{{with .Card.Limited}} — limited: {{.}}{{end}}</td></tr>
+<tr><th>Title</th><td>{{.Card.Title}}</td></tr>
+<tr><th>Description</th><td>{{.Card.Description}}</td></tr>
+<tr><th>Site</th><td>{{.Card.SiteName}}</td></tr>
+<tr><th>Author</th><td>{{.Card.Author}}</td></tr>
+<tr><th>Image</th><td>{{with .Card.Image.URL}}<img src="{{.}}" alt="" style="max-width:240px;max-height:160px"><br>{{.}}{{end}}</td></tr>
+<tr><th>Sources</th><td>{{range .Card.Sources}}{{.}} {{end}}</td></tr>
+</table>
+{{end}}
+<h2>Steps</h2>
+<table>
+<tr><th>Kind</th><th>Name</th><th>What</th><th>Outcome</th><th>Time</th></tr>
+{{range .Steps}}<tr><td>{{.Kind}}</td><td>{{.Name}}</td><td>{{.Detail}}</td><td{{if and .Outcome (ne .Outcome "ok")}} class="bad"{{end}}>{{.Outcome}}</td><td class="n">{{ms .Took}}</td></tr>
+{{end}}</table>
+<h2>Fields</h2>
+<table>
+<tr><th>Field</th><th>Candidates, in the order asked</th><th>Won</th><th>Why</th></tr>
+{{range .Decisions}}<tr><td>{{.Field}}</td><td>{{$winner := .Winner}}{{range .Candidates}}<div{{if eq .Source $winner}} class="win"{{end}}>{{.Source}}: {{.Value}}</div>{{end}}</td><td>{{.Winner}}</td><td>{{.Reason}}</td></tr>
+{{end}}</table>
+{{if .Pictures}}
+<h2>Image proxy, card preset</h2>
+<table>
+<tr><th>Format</th><th>Type</th><th>Bytes</th><th>Time</th></tr>
+{{range .Pictures}}<tr><td>{{.Format}}</td><td>{{.Type}}{{with .Error}} <span class="bad">{{.}}</span>{{end}}</td><td class="n">{{.Bytes}}</td><td class="n">{{ms .Took}}</td></tr>
+{{end}}</table>
+{{end}}
+{{if .JSON}}<h2>JSON</h2><pre>{{.JSON}}</pre>{{end}}
+{{end}}
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "type": "link",
+  "version": "1.0",
+  "title": "The Open Graph title",
+  "url": "https://cdn.example.com/blog/an-article",
+  "author": "Jane Doe, John Roe",
+  "provider_name": "Example Blog",
+  "description": "The Open Graph description, from the body.",
+  "thumbnail_url": "https://cdn.example.com/blog/images/cover.jpg",
+  "thumbnail_width": 1200,
+  "thumbnail_height": 630
+}

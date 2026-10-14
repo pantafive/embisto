@@ -1,0 +1,13 @@
+{
+  "request": {
+    "url": "https://www.reddit.com/r/golang/"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://www.reddit.com/r/golang/",
+      "media_type": "text/html",
+      "file": "1.html"
+    }
+  ]
+}

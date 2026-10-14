@@ -1,0 +1,27 @@
+import core.widgets;
+
+widget root = GestureDetector(
+  onTap: event "open" { url: "https://github.com" },
+  child: Column(
+    crossAxisAlignment: "start",
+    mainAxisSize: "min",
+    children: [
+      AspectRatio(
+        aspectRatio: 1.9048,
+        child: Image(source: "https://embisto.example/i/2BiAiVdjODSiDm1e53999YowUQaLi67QrlAroMdOBnc/card/aHR0cHM6Ly9pbWFnZXMuY3RmYXNzZXRzLm5ldC84YWV2cGh2Z2V3dDgvNHBlNGVPdFVKMEFScFpSRTRmTmVrZi9mNTJiMWY5YzUyZjA1OWEzMzE3MDIyOTg4MzczMWVkMC9HSC1Ib21lcGFnZS1Vbml2ZXJzZS1pbWcucG5n", fit: "cover"),
+      ),
+      Padding(
+        padding: [12.0, 10.0, 12.0, 12.0],
+        child: Column(
+          crossAxisAlignment: "start",
+          mainAxisSize: "min",
+          children: [
+            Text(text: "GitHub", maxLines: 1, overflow: "ellipsis", style: { fontSize: 12.0 }),
+            Text(text: "GitHub · Change is constant. GitHub keeps you ahead. · GitHub", maxLines: 2, overflow: "ellipsis", style: { fontSize: 16.0, fontWeight: "w600" }),
+            Text(text: "Join the world's most widely adopted, AI-powered developer platform where millions of developers, businesses, and the largest open source community build software that advances humanity.", maxLines: 3, overflow: "ellipsis", style: { fontSize: 14.0 }),
+          ],
+        ),
+      ),
+    ],
+  ),
+);

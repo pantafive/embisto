@@ -1,0 +1,92 @@
+{
+  "url": "https://www.youtube.com/watch?v=rFejpH_tAHM",
+  "canonical_url": "https://www.youtube.com/watch?v=rFejpH_tAHM",
+  "type": "video",
+  "title": "dotGo 2015 - Rob Pike - Simplicity is Complicated",
+  "site_name": "YouTube",
+  "author": "dotconferences",
+  "author_url": "https://www.youtube.com/@dotconferences",
+  "icon": {
+    "url": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_32x32.png",
+    "width": 32,
+    "height": 32
+  },
+  "image": {
+    "url": "https://i.ytimg.com/vi/rFejpH_tAHM/hqdefault.jpg",
+    "width": 480,
+    "height": 360
+  },
+  "images": [
+    {
+      "url": "https://i.ytimg.com/vi/rFejpH_tAHM/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+    }
+  ],
+  "video": {
+    "url": "https://www.youtube.com/embed/rFejpH_tAHM",
+    "type": "text/html",
+    "width": 560,
+    "height": 315
+  },
+  "embed": {
+    "html": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/rFejpH_tAHM\" title=\"dotGo 2015 - Rob Pike - Simplicity is Complicated\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>",
+    "width": 560,
+    "height": 315,
+    "provider": "YouTube"
+  },
+  "links": [
+    {
+      "href": "https://i.ytimg.com/vi/rFejpH_tAHM/hqdefault.jpg",
+      "rel": [
+        "thumbnail",
+        "youtube"
+      ],
+      "type": "image/jpeg",
+      "media": {
+        "width": 480,
+        "height": 360,
+        "aspect_ratio": 1.3333
+      }
+    },
+    {
+      "href": "https://www.youtube.com/embed/rFejpH_tAHM",
+      "rel": [
+        "player",
+        "youtube"
+      ],
+      "type": "text/html",
+      "media": {
+        "width": 560,
+        "height": 315,
+        "aspect_ratio": 1.7778
+      },
+      "html": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/rFejpH_tAHM\" title=\"dotGo 2015 - Rob Pike - Simplicity is Complicated\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>"
+    },
+    {
+      "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_32x32.png",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 32,
+        "height": 32,
+        "aspect_ratio": 1
+      }
+    },
+    {
+      "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon.ico",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/x-icon"
+    }
+  ],
+  "sources": [
+    "youtube",
+    "html"
+  ]
+}

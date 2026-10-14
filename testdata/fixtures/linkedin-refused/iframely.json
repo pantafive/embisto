@@ -1,0 +1,21 @@
+{
+  "url": "https://www.linkedin.com/company/google",
+  "meta": {
+    "site": "LinkedIn",
+    "canonical": "https://www.linkedin.com/company/google",
+    "medium": "link"
+  },
+  "links": {
+    "icon": [
+      {
+        "href": "https://www.linkedin.com/favicon.ico",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/x-icon"
+      }
+    ]
+  },
+  "rel": []
+}

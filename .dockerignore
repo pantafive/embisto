@@ -1,0 +1,8 @@
+.git
+.github
+.idea
+.vscode
+**/*_test.go
+**/testdata
+Dockerfile
+README.md
