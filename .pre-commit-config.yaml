@@ -12,22 +12,11 @@ repos:
   - id: check-yaml
   - id: check-added-large-files
 
-- repo: local
+- repo: https://github.com/golangci/golangci-lint
+  rev: v2.14.0
   hooks:
-  # The pinned binary from mise.toml: the hook's own build lags behind the Go release go.mod targets.
-  - id: golangci-lint
-    name: golangci-lint
-    entry: golangci-lint run --fix
-    language: system
-    types: [go]
-    pass_filenames: false
-    require_serial: true
-  - id: go-test
-    name: go test
-    entry: mise run test
-    language: system
-    pass_filenames: false
-    files: \.(go|json|html)$
+  - id: golangci-lint-config-verify
+  - id: golangci-lint-full
 
 - repo: https://github.com/crate-ci/typos
   rev: v1.44.0
