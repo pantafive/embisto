@@ -13,6 +13,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - `card.Entry` is `card.CodeEntry`.
 - `sites.OEmbed` is `sites.OEmbedList`, the provider for every site on the oembed.com list.
 - `cache.BackendObserver` is `cache.RedisObserver`, with `RedisUp` and `RedisFailed`.
+- Iframely's shapes move from `render` to the new package `iframely`: `render.Iframely` is `iframely.Renderer`, `render.IframelyOf` is `iframely.Of`, and `IframelyResponse`, `IframelyMeta`, `IframelyLink`, `IframelyMedia`, `IframelyError` and `IframelyErrorBody` drop their prefix. Their OpenAPI schema names are unchanged.
 
 ## [0.1.0] - 2026-10-14
 

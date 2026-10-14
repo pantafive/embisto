@@ -12,8 +12,8 @@ import (
 
 	"github.com/pantafive/embisto"
 	"github.com/pantafive/embisto/card"
+	"github.com/pantafive/embisto/iframely"
 	"github.com/pantafive/embisto/internal/api"
-	"github.com/pantafive/embisto/render"
 )
 
 func catalogueCodes() []string {
@@ -77,7 +77,7 @@ func TestCompatiblePathsRefuseMalformedParametersInIframelysShape(t *testing.T) 
 		t.Run(query, func(t *testing.T) {
 			resp := get(t, server.URL+"/iframely?url="+url.QueryEscape("https://example.com")+"&"+query)
 
-			var refused render.IframelyError
+			var refused iframely.Error
 			require.NoError(t, json.NewDecoder(resp.Body).Decode(&refused))
 			assert.Equal(t, []any{http.StatusBadRequest, "application/json", http.StatusBadRequest, card.CodeInvalidRequest.Text()},
 				[]any{resp.StatusCode, resp.Header.Get("Content-Type"), refused.Error.Code, refused.Error.Message})

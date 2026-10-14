@@ -33,7 +33,7 @@ A preview goes through a fixed pipeline:
 5. Run the enrichers, such as the one that measures pictures.
 6. Render the preview in a format.
 
-Each stage is an interface in the `card` package, which imports nothing else from this module. That lets you write a site provider (`card.Provider`) or an output format (`card.Renderer`) against `card` alone, then add it to the lists in `embisto.Defaults()`. Built-in providers live in `sites` and formats in `render`, whose `Defaults()` lists embisto's own. `render.LoadTemplates` makes formats of template files in any `fs.FS`; see [templates](templates.md#in-the-library).
+Each stage is an interface in the `card` package, which imports nothing else from this module. That lets you write a site provider (`card.Provider`) or an output format (`card.Renderer`) against `card` alone, then add it to the lists in `embisto.Defaults()`. Built-in providers live in `sites` and formats in `render`, whose `Defaults()` lists embisto's own; Iframely's response and failure shapes are in `iframely`. `render.LoadTemplates` makes formats of template files in any `fs.FS`; see [templates](templates.md#in-the-library).
 
 Site providers handle the platforms where a page alone makes a poor card. The first provider in `Options.Providers` that knows a URL is the only one asked about it; `Options.Fallbacks`, such as `sites.OEmbedList`, which knows every site on the oEmbed list, are asked only about a URL no provider knows. A provider you add to `Providers` therefore wins over them wherever it is in the list. When the page fails or turns out to be a wall, the provider that knows the requested URL stands in for it. None of them needs an API key.
 

@@ -1,6 +1,6 @@
 # Iframely compatibility
 
-`/iframely` and `/oembed` answer in the formats of [Iframely](https://github.com/itteco/iframely)'s API, so a client of Iframely can switch to embisto by changing the address. Both are renderers over the same card as `/v1/preview` (`render.Iframely`, `render.OEmbed`), not separate pipelines.
+`/iframely` and `/oembed` answer in the formats of [Iframely](https://github.com/itteco/iframely)'s API, so a client of Iframely can switch to embisto by changing the address. Both are renderers over the same card as `/v1/preview` (`iframely.Renderer`, `render.OEmbed`), not separate pipelines.
 
 The formats follow Iframely's cloud API: `links` are grouped by rel, which the open-source Iframely does with `group=true`.
 

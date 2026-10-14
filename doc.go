@@ -10,6 +10,6 @@
 //	previews := cache.New(core, cache.NewMemory(64<<20, nil), cache.Options{TTL: time.Hour, FailureTTL: time.Minute})
 //	result, err := previews.Extract(ctx, card.Request{URL: "https://github.com"})
 //
-// The modules of each stage are in their own packages: site providers in sites, output formats in render, the
-// resized pictures in thumbnails. The contract they share is package card.
+// The modules of each stage are in their own packages: site providers in sites, output formats in render, with
+// Iframely's shapes in iframely, and thumbnails in thumbnails. The contract they share is package card.
 package embisto

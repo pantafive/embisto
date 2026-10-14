@@ -5,6 +5,7 @@ import (
 	"slices"
 
 	"github.com/pantafive/embisto/card"
+	"github.com/pantafive/embisto/iframely"
 )
 
 // OEmbed writes the preview as an oEmbed 1.0 answer with the fields Iframely adds: a description, and the author as
@@ -42,7 +43,7 @@ func (OEmbed) Render(w io.Writer, preview card.Preview) error {
 }
 
 func (OEmbed) RenderError(w io.Writer, failed *card.Error) (int, error) {
-	return Iframely{}.RenderError(w, failed)
+	return iframely.Renderer{}.RenderError(w, failed) //nolint:wrapcheck // the same failure in the same shape; its error is the writer's
 }
 
 // OEmbedOf is the preview as an oEmbed answer, its type from the primary embed.
@@ -52,7 +53,7 @@ func OEmbedOf(preview card.Preview) OEmbedResponse {
 		Author: preview.Author, AuthorURL: preview.AuthorURL, ProviderName: preview.SiteName, Description: preview.Description,
 		ThumbnailURL: preview.Image.URL, ThumbnailWidth: preview.Image.Width, ThumbnailHeight: preview.Image.Height,
 	}
-	primary := IframelyOf(preview)
+	primary := iframely.Of(preview)
 	switch {
 	case preview.Type == card.TypePhoto:
 		response.Type, response.URL = string(card.TypePhoto), preview.Image.URL

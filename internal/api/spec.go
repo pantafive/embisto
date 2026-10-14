@@ -1,9 +1,12 @@
 package api
 
 import (
+	"reflect"
+
 	"github.com/danielgtaylor/huma/v2"
 
 	"github.com/pantafive/embisto"
+	"github.com/pantafive/embisto/iframely"
 )
 
 const description = `embisto turns a URL into the data a client needs to draw a link preview: title, description, site,
@@ -23,6 +26,7 @@ func spec(publicURL string) huma.Config {
 	// /docs is a page of its own, to pin Scalar's version.
 	config.DocsPath = ""
 	config.Info.Description = description
+	config.Components.Schemas = huma.NewMapRegistry("#/components/schemas/", schemaName)
 	config.Tags = []*huma.Tag{
 		{Name: tagPreviews, Description: "embisto's own card."},
 		{Name: tagCompatible, Description: "The formats of Iframely's API, for clients moving from it."},
@@ -34,4 +38,19 @@ func spec(publicURL string) huma.Config {
 		config.Servers = []*huma.Server{{URL: publicURL}}
 	}
 	return config
+}
+
+// iframelyPackage is where Iframely's shapes live; their schemas keep the prefix their Go names dropped, so that
+// iframely.Link is not taken for card.Link.
+var iframelyPackage = reflect.TypeFor[iframely.Response]().PkgPath()
+
+func schemaName(t reflect.Type, hint string) string {
+	name := huma.DefaultSchemaNamer(t, hint)
+	for t.Kind() == reflect.Pointer || t.Kind() == reflect.Slice || t.Kind() == reflect.Array || t.Kind() == reflect.Map {
+		t = t.Elem()
+	}
+	if t.PkgPath() == iframelyPackage {
+		return "Iframely" + name
+	}
+	return name
 }
