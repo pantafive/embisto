@@ -13,7 +13,7 @@ import (
 	"github.com/pantafive/embisto/thumbs"
 )
 
-// Images are the image proxy's parts: the signer that checks its URLs and the processor that makes the pictures.
+// Images are the parts that serve image variants: the signer that checks its URLs and the processor that makes the pictures.
 type Images struct {
 	Signer    *thumbs.Signer
 	Processor thumbs.Processor
@@ -56,7 +56,7 @@ type imageOutput struct {
 // retryBusy is how soon a processing slot frees, for a picture refused as busy.
 const retryBusy = "1"
 
-// imageRefusals are the codes of the image proxy's own failures.
+// imageRefusals are the codes of the failures of /i/ itself.
 var imageRefusals = []struct {
 	err  error
 	code card.Code

@@ -48,7 +48,7 @@ input[name=url] { width: 40rem; max-width: 90%; }
 {{range .Decisions}}<tr><td>{{.Field}}</td><td>{{$winner := .Winner}}{{range .Candidates}}<div{{if eq .Source $winner}} class="win"{{end}}>{{.Source}}: {{.Value}}</div>{{end}}</td><td>{{.Winner}}</td><td>{{.Reason}}</td></tr>
 {{end}}</table>
 {{if .Pictures}}
-<h2>Image proxy, card preset</h2>
+<h2>Image variants, card preset</h2>
 <table>
 <tr><th>Format</th><th>Type</th><th>Bytes</th><th>Time</th></tr>
 {{range .Pictures}}<tr><td>{{.Format}}</td><td>{{.Type}}{{with .Error}} <span class="bad">{{.}}</span>{{end}}</td><td class="n">{{.Bytes}}</td><td class="n">{{ms .Took}}</td></tr>

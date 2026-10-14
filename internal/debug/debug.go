@@ -1,5 +1,5 @@
 // Package debug serves a page that shows how a preview was made: the card, every fetch, source, provider and
-// enricher with its time and outcome, which source won each field and why, and the image proxy's output. It is for
+// enricher with its time and outcome, which source won each field and why, and the card's image variants. It is for
 // operators, on the internal listener only.
 package debug
 
@@ -32,7 +32,7 @@ var page = template.Must(template.New("debug").Funcs(template.FuncMap{
 // Page makes previews afresh, without a cache, and shows how.
 type Page struct {
 	Core card.Extractor
-	// Images, when the server runs the image proxy, also resizes the card's image into the card preset.
+	// Images, when the server has image variants on, also resizes the card's image into the card preset.
 	Images thumbs.Processor
 	Log    *slog.Logger
 }
@@ -50,7 +50,7 @@ type view struct {
 	Pictures  []picture
 }
 
-// picture is the image proxy's output for one format.
+// picture is the card's image variant in one format.
 type picture struct {
 	Format string
 	Type   string
@@ -102,7 +102,7 @@ func (p Page) explain(ctx context.Context, shown *view) {
 	shown.Pictures = p.pictures(ctx, preview)
 }
 
-// pictures resizes the card's image into the card preset in each format, as the image proxy would.
+// pictures resizes the card's image into the card preset in each format, as /i/ would.
 func (p Page) pictures(ctx context.Context, preview card.Preview) []picture {
 	source, err := urlOf(preview.Image.URL)
 	if p.Images == nil || err != nil {

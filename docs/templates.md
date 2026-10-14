@@ -17,7 +17,7 @@ The extension, in any case, sets the `Content-Type`. Every answer also carries t
 
 ## Writing a template
 
-Templates use Go's [template language](https://pkg.go.dev/text/template). `.` is the card: the fields of [`card.Preview`](../card/preview.go) by their Go names, such as `.Title`, `.SiteName`, `.Image.Width` or `.Limited`. A misspelt field fails at startup.
+Templates use Go's [template language](https://pkg.go.dev/text/template). `.` is the card: the fields of [`card.Preview`](https://github.com/pantafive/embisto/blob/main/card/preview.go) by their Go names, such as `.Title`, `.SiteName`, `.Image.Width` or `.Limited`. A misspelt field fails at startup.
 
 A markup template (`.html`, `.htm`, `.xhtml`, `.xml`, `.svg`) runs as `html/template`, which escapes every value for where it appears. Any other runs as `text/template`, which escapes nothing, so wrap every value from the page in the escaper for the output:
 
@@ -30,18 +30,18 @@ A markup template (`.html`, `.htm`, `.xhtml`, `.xml`, `.svg`) runs as `html/temp
 | `shell s` | One single-quoted POSIX shell word. |
 | `truncate n s` | `s` cut at a word to at most `n` characters, with `…` at the cut. |
 | `default d s` | `s`, or `d` when `s` is empty. |
-| `picture . w webp` | The picture for a box `w` pixels wide: the smallest proxied variant at least that wide, else the largest, else the original; the WebP version when `webp` is true and there is one. It has `.URL`, `.Width`, `.Height` and `.Type`. |
+| `picture . w webp` | The picture for a box `w` pixels wide: the smallest variant at least that wide, else the largest, else the original; the WebP version when `webp` is true and there is one. It has `.URL`, `.Width`, `.Height` and `.Type`. |
 | `ratio w h` | `w/h` as a decimal, for a layout that wants an aspect ratio. |
 
 Helpers reach no file, environment, clock or network.
 
 ## Checks at startup
 
-Each template is run on four cards: a full one with proxied variants, an empty one, one behind a login wall, and one whose text holds quotes, a backslash, a newline, `</script>`, a Slack link, `${…}`, U+2028 and an emoji. If any run fails, or the output does not parse as its type (JSON for `.json`, well-formed XML for `.xml`, `.svg` and `.xhtml`, CSV for `.csv`), the server does not start and the error names the file. A template that fails on a real card answers 500 with nothing of its output.
+Each template is run on four cards: a full one with image variants, an empty one, one behind a login wall, and one whose text holds quotes, a backslash, a newline, `</script>`, a Slack link, `${…}`, U+2028 and an emoji. If any run fails, or the output does not parse as its type (JSON for `.json`, well-formed XML for `.xml`, `.svg` and `.xhtml`, CSV for `.csv`), the server does not start and the error names the file. A template that fails on a real card answers 500 with nothing of its output.
 
 ## Examples
 
-[`examples/templates`](../examples/templates) holds four, each with goldens on real cards under `testdata/`:
+[`examples/templates`](https://github.com/pantafive/embisto/blob/main/examples/templates) holds four, each with goldens on real cards under `testdata/`:
 
 - `slack.json.tmpl`: a Block Kit message, the picture as the section's accessory.
 - `telegram.html.tmpl`: a message for Telegram's `parse_mode=HTML`, using only `<b>` and `<a>`.

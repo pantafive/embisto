@@ -38,7 +38,7 @@ func opaquePNG(t *testing.T, width, height int) []byte {
 	return out.Bytes()
 }
 
-// imageServer serves pictures and the proxy that resizes them, signed with one key.
+// imageServer serves pictures and the /i/ handler that resizes them, signed with one key.
 func imageServer(t *testing.T, files map[string][]byte) (*httptest.Server, *httptest.Server, *thumbs.Signer) {
 	t.Helper()
 	origin := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +86,7 @@ func TestImageAnswersACurrentCopyWithNotModified(t *testing.T) {
 	assert.Equal(t, http.StatusNotModified, resp.StatusCode)
 }
 
-// hugePNG is a small PNG whose header claims a size far over the limit; the proxy must refuse it from the header.
+// hugePNG is a small PNG whose header claims a size far over the limit; /i/ must refuse it from the header.
 func hugePNG(t *testing.T) []byte {
 	t.Helper()
 	file := opaquePNG(t, 4, 4)

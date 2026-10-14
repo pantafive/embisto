@@ -21,7 +21,7 @@ import (
 // examples are the example templates, at the module's root.
 var examples = filepath.Join("..", "..", "examples", "templates")
 
-// exampleCards are real cards, replayed from fixtures with the image proxy's variants, and one of hostile text.
+// exampleCards are real cards, replayed from fixtures with image variants, and one of hostile text.
 func exampleCards(t *testing.T) map[string]card.Preview {
 	t.Helper()
 	signer, err := thumbs.NewSigner([]byte(strings.Repeat("k", thumbs.MinKeyLength)), thumbs.DefaultPresets)

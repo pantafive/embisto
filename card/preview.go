@@ -24,11 +24,11 @@ type Image struct {
 	URL    string `json:"url"`
 	Width  int    `json:"width,omitempty"`
 	Height int    `json:"height,omitempty"`
-	// Variants are the picture resized and served by embisto's image proxy, when the server runs one.
+	// Variants are the picture resized and served by embisto at /i/, when the server has image variants on.
 	Variants []Variant `json:"variants,omitempty"`
 }
 
-// Variant is a picture resized to a preset by the image proxy; its size is known when the original's is.
+// Variant is a picture resized to a preset and served by embisto; its size is known when the original's is.
 type Variant struct {
 	Preset string `json:"preset" doc:"The preset's name, such as thumb (160x160, cropped), card (600 wide) or large (1200 wide)"`
 	URL    string `json:"url" doc:"The picture as JPEG, or PNG when it has transparency"`

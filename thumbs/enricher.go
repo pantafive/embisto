@@ -10,11 +10,11 @@ import (
 	"github.com/pantafive/embisto/card"
 )
 
-// refused are the extensions of pictures the proxy refuses, so no URL is handed out for them: it serves only what it
+// refused are the extensions of pictures /i/ refuses, so no variant is handed out for them: it serves only what it
 // re-encodes, and SVG and ICO are not decoded.
 var refused = []string{".svg", ".svgz", ".ico"}
 
-// Enricher gives a preview's icon and images their variants: a proxied URL for every preset, at the address clients
+// Enricher gives a preview's icon and images their variants: a signed URL for every preset, at the address clients
 // reach the server at. Run it after the sizes are measured, so the variants know theirs.
 type Enricher struct {
 	Signer  *Signer
@@ -38,7 +38,7 @@ func (e Enricher) Enrich(_ context.Context, preview card.Preview, _ card.Fetcher
 // varied is the picture with a variant for each preset; a preset that comes out the same size as one before it, as
 // every preset does for a small icon, is left out.
 func (e Enricher) varied(image card.Image) card.Image {
-	if !isProxied(image.URL) {
+	if !isResizable(image.URL) {
 		return image
 	}
 	image.Variants = nil
@@ -56,7 +56,7 @@ func (e Enricher) varied(image card.Image) card.Image {
 	return image
 }
 
-func isProxied(source string) bool {
+func isResizable(source string) bool {
 	parsed, err := url.Parse(source)
 	if err != nil || parsed.Scheme != "http" && parsed.Scheme != "https" {
 		return false
