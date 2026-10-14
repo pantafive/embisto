@@ -2,7 +2,7 @@
 
 All notable changes are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
-## [0.1.0] - unreleased
+## [0.1.0] - 2026-10-14
 
 The first release.
 
@@ -16,3 +16,5 @@ The first release.
 - A guarded fetcher refusing non-public addresses at connect time, with limits on size, time and memory.
 - Prometheus metrics, an OpenAPI spec with a reference page, and a debug page showing how a card was made.
 - The Go library behind the server: `embisto.New`, the `cache` layers, and the `card`, `sites`, `render` and `thumbs` packages.
+
+[0.1.0]: https://github.com/pantafive/embisto/releases/tag/v0.1.0
