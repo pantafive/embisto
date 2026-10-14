@@ -25,7 +25,7 @@ func (Discovery) Name() string {
 	return card.SourceOEmbed
 }
 
-func (d Discovery) Extract(ctx context.Context, in card.Input) (card.Facts, error) {
+func (d Discovery) Read(ctx context.Context, in card.Input) (card.Facts, error) {
 	href := in.Page.Alternate(MediaType)
 	if href == "" {
 		return card.Facts{}, nil

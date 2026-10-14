@@ -24,8 +24,8 @@ type Deps struct {
 	// Renderers write the answers: json for /v1/preview, iframely and oembed for the paths of those names. A path
 	// whose renderer is missing is not served.
 	Renderers []card.Renderer
-	// Images serves thumbnails at /i/; nil serves no pictures.
-	Images *Images
+	// Thumbnails, served at /i/; nil serves no pictures.
+	Thumbnails *Thumbnails
 	// PublicURL is where clients reach the API, named in the spec's servers; empty names none.
 	PublicURL string
 	formats   map[string]card.Renderer

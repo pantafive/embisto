@@ -19,8 +19,8 @@ import (
 var (
 	// ErrSignature is a URL whose signature does not match.
 	ErrSignature = errors.New("the signature does not match")
-	// ErrOptions is a URL whose size is neither a preset nor an allowed size.
-	ErrOptions = errors.New("the size is neither a preset nor an allowed size")
+	// ErrSize is a URL whose size is neither a preset nor an allowed size.
+	ErrSize = errors.New("the size is neither a preset nor an allowed size")
 	// ErrShortKey is a signing key too short to resist guessing.
 	ErrShortKey = errors.New("the image key is too short")
 	// ErrSource is a URL whose source is not an http or https URL.
@@ -84,7 +84,7 @@ func NewSigner(key []byte, presets []Preset) (*Signer, error) {
 	}
 	for _, preset := range presets {
 		if !presetName.MatchString(preset.Name) {
-			return nil, fmt.Errorf("%w: the preset name %q", ErrOptions, preset.Name)
+			return nil, fmt.Errorf("%w: the preset name %q", ErrSize, preset.Name)
 		}
 	}
 	return &Signer{key: key, presets: presets}, nil
@@ -154,14 +154,14 @@ func (s *Signer) box(size string) (Box, error) {
 	}
 	match := explicitSize.FindStringSubmatch(size)
 	if match == nil {
-		return Box{}, fmt.Errorf("%w: %q", ErrOptions, size)
+		return Box{}, fmt.Errorf("%w: %q", ErrSize, size)
 	}
 	width, _ := strconv.Atoi(match[1])
 	height, _ := strconv.Atoi(match[2])
 	mode := Mode(match[3])
 	if !slices.Contains(AllowedSides, width) || !slices.Contains(AllowedSides, height) || width == 0 && height == 0 ||
 		mode == Fill && (width == 0 || height == 0) {
-		return Box{}, fmt.Errorf("%w: %q", ErrOptions, size)
+		return Box{}, fmt.Errorf("%w: %q", ErrSize, size)
 	}
 	return Box{Width: width, Height: height, Mode: mode}, nil
 }
@@ -183,7 +183,7 @@ func ParsePresets(raw string) ([]Preset, error) {
 		name, size, ok := strings.Cut(strings.TrimSpace(entry), "=")
 		match := explicitSize.FindStringSubmatch(size)
 		if !ok || match == nil || !presetName.MatchString(name) {
-			return nil, fmt.Errorf("%w: the preset %q is not name=WxH-fit or name=WxH-fill", ErrOptions, entry)
+			return nil, fmt.Errorf("%w: the preset %q is not name=WxH-fit or name=WxH-fill", ErrSize, entry)
 		}
 		width, _ := strconv.Atoi(match[1])
 		height, _ := strconv.Atoi(match[2])

@@ -59,7 +59,7 @@ func TestAPageCannotMakeTheCardAsLargeAsItLikes(t *testing.T) {
 // slow is a source that finishes after the preview's deadline and ignores it.
 type slow struct{}
 
-func (slow) Extract(context.Context, card.Input) (card.Facts, error) {
+func (slow) Read(context.Context, card.Input) (card.Facts, error) {
 	time.Sleep(300 * time.Millisecond)
 	return card.Facts{Source: "slow", Title: "Too late"}, nil
 }

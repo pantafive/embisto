@@ -12,7 +12,7 @@ import (
 // TestEveryCodeAnswerableIsInTheCatalogue covers the codes the server names itself, besides the core's.
 func TestEveryCodeAnswerableIsInTheCatalogue(t *testing.T) {
 	known := func(code card.Code) bool {
-		return slices.ContainsFunc(card.Catalogue(), func(entry card.Entry) bool { return entry.Code == code })
+		return slices.ContainsFunc(card.Catalogue(), func(entry card.CodeEntry) bool { return entry.Code == code })
 	}
 	var unknown []card.Code
 	for _, refusal := range imageRefusals {

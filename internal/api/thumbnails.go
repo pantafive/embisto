@@ -13,8 +13,9 @@ import (
 	"github.com/pantafive/embisto/thumbnails"
 )
 
-// Images are the parts that serve thumbnails: the signer that checks its URLs and the processor that makes the pictures.
-type Images struct {
+// Thumbnails are the parts that serve thumbnails: the signer that checks their URLs and the processor that makes the
+// pictures.
+type Thumbnails struct {
 	Signer    *thumbnails.Signer
 	Processor thumbnails.Processor
 	// Observer hears about every picture asked for; nil hears nothing.
@@ -30,8 +31,8 @@ const (
 	// cacheForever lets every cache keep a picture for good: its URL is signed and never changes.
 	cacheForever = "public, max-age=31536000, immutable"
 	// cacheNever keeps a failure out of every cache, so a passing upstream fault does not stick for a year.
-	cacheNever = "no-store"
-	tagImages  = "Images"
+	cacheNever    = "no-store"
+	tagThumbnails = "Thumbnails"
 
 	outcomeOK          = "ok"
 	outcomeNotModified = "not_modified"
@@ -62,7 +63,7 @@ var imageRefusals = []struct {
 	code card.Code
 }{
 	{thumbnails.ErrSignature, card.CodeInvalidSignature},
-	{thumbnails.ErrOptions, card.CodeInvalidOptions},
+	{thumbnails.ErrSize, card.CodeInvalidSize},
 	{thumbnails.ErrSource, card.CodeInvalidURL},
 	{thumbnails.ErrTooLarge, card.CodeImageTooLarge},
 	{thumbnails.ErrTooManyPixels, card.CodeTooManyPixels},
@@ -74,7 +75,7 @@ var imageRefusals = []struct {
 var binary = &huma.Schema{Type: huma.TypeString, Format: "binary"}
 
 func addImageRoute(api huma.API, deps Deps) {
-	if deps.Images == nil {
+	if deps.Thumbnails == nil {
 		return
 	}
 	huma.Register(api, huma.Operation{
@@ -86,9 +87,9 @@ func addImageRoute(api huma.API, deps Deps) {
 			"The picture is fetched, decoded, resized into the size's box without ever growing, and served as JPEG, or as PNG when it has transparency; " +
 			"a size ending in .webp serves lossy WebP, transparency kept, at about half the bytes. The format is part of the signed size, so caches never mix them. " +
 			"Only JPEG, PNG, GIF and WebP are served, always re-encoded. Pictures are immutable and served with immutable cache headers. " +
-			"Failures are problem+json and never cached: invalid_signature (403), invalid_options or invalid_url (400), image_too_large or too_many_pixels (413), " +
+			"Failures are problem+json and never cached: invalid_signature (403), invalid_size or invalid_url (400), image_too_large or too_many_pixels (413), " +
 			"unsupported_image (415), busy (503, with Retry-After), and the fetch failures of a preview.",
-		Tags: []string{tagImages},
+		Tags: []string{tagThumbnails},
 		Responses: map[string]*huma.Response{
 			"200": {Description: "The resized picture.", Content: map[string]*huma.MediaType{
 				"image/jpeg": {Schema: binary}, "image/png": {Schema: binary}, "image/webp": {Schema: binary},
@@ -101,11 +102,11 @@ func addImageRoute(api huma.API, deps Deps) {
 func (deps Deps) image(ctx context.Context, in *imageInput) (*imageOutput, error) {
 	started := time.Now()
 	observe := func(outcome string, picture thumbnails.Picture) {
-		if deps.Images.Observer != nil {
-			deps.Images.Observer.Processed(outcome, time.Since(started), picture.SourceBytes, len(picture.Body))
+		if deps.Thumbnails.Observer != nil {
+			deps.Thumbnails.Observer.Processed(outcome, time.Since(started), picture.SourceBytes, len(picture.Body))
 		}
 	}
-	request, err := deps.Images.Signer.Verify(in.Signature, in.Size, in.Source)
+	request, err := deps.Thumbnails.Signer.Verify(in.Signature, in.Size, in.Source)
 	if err != nil {
 		return nil, deps.refuseImage(ctx, err, observe)
 	}
@@ -115,7 +116,7 @@ func (deps Deps) image(ctx context.Context, in *imageInput) (*imageOutput, error
 		observe(outcomeNotModified, thumbnails.Picture{})
 		return &imageOutput{Status: http.StatusNotModified, CacheControl: cacheForever, ETag: tag}, nil
 	}
-	picture, err := deps.Images.Processor.Process(ctx, request.Source, request.Box, request.Format)
+	picture, err := deps.Thumbnails.Processor.Process(ctx, request.Source, request.Box, request.Format)
 	if err != nil {
 		return nil, deps.refuseImage(ctx, err, observe)
 	}

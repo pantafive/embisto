@@ -79,7 +79,7 @@ func runServer(ctx context.Context, environ func() []string) error {
 		return err
 	}
 	renderers := append(render.Defaults(), templates...)
-	variants, enricher, err := images(ctx, loaded, log, measured)
+	served, enricher, err := newThumbnails(ctx, loaded, log, measured)
 	if err != nil {
 		return err
 	}
@@ -98,13 +98,13 @@ func runServer(ctx context.Context, environ func() []string) error {
 	previews := layered(embisto.New(opts), shared, loaded, log, measured)
 	var draining atomic.Bool
 	deps := api.Deps{
-		Log: log, Previews: previews, Renderers: renderers, PublicURL: loaded.PublicURL, Requests: measured, Images: variants,
+		Log: log, Previews: previews, Renderers: renderers, PublicURL: loaded.PublicURL, Requests: measured, Thumbnails: served,
 		Draining: draining.Load,
 	}
 	metricsMux := http.NewServeMux()
 	metricsMux.Handle("GET /metrics", measured.Handler())
 	if loaded.Debug {
-		metricsMux.Handle("GET /debug", debugPage(ctx, opts, variants, log))
+		metricsMux.Handle("GET /debug", debugPage(ctx, opts, served, log))
 	}
 
 	return serve(ctx, &draining, log,
@@ -122,7 +122,7 @@ func sharedStore(loaded settings.Settings, log *slog.Logger, measured *metrics.M
 	if err != nil {
 		return nil, fmt.Errorf("the shared cache: %w", err)
 	}
-	measured.BackendUp(true)
+	measured.RedisUp(true)
 	return shared, nil
 }
 

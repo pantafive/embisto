@@ -48,50 +48,50 @@ type Limits struct {
 	Wait        time.Duration
 }
 
-// Builtin resizes in the process, in pure Go: JPEG, PNG, the first frame of a GIF and WebP in; JPEG, or PNG for a
+// Resizer resizes in the process, in pure Go: JPEG, PNG, the first frame of a GIF and WebP in; JPEG, or PNG for a
 // picture with transparency, out, or WebP when asked.
-type Builtin struct {
+type Resizer struct {
 	fetcher card.Fetcher
 	limits  Limits
 	slots   chan struct{}
 	memory  *semaphore.Weighted
 }
 
-// NewBuiltin fetches sources through the fetcher, which should be the one that refuses addresses that are not
+// NewResizer fetches sources through the fetcher, which should be the one that refuses addresses that are not
 // public.
-func NewBuiltin(fetcher card.Fetcher, limits Limits) *Builtin {
-	return &Builtin{fetcher: fetcher, limits: limits, slots: make(chan struct{}, limits.Concurrency), memory: semaphore.NewWeighted(limits.MaxMemory)}
+func NewResizer(fetcher card.Fetcher, limits Limits) *Resizer {
+	return &Resizer{fetcher: fetcher, limits: limits, slots: make(chan struct{}, limits.Concurrency), memory: semaphore.NewWeighted(limits.MaxMemory)}
 }
 
-func (b *Builtin) Process(ctx context.Context, source *url.URL, box Box, format Format) (Picture, error) {
+func (r *Resizer) Process(ctx context.Context, source *url.URL, box Box, format Format) (Picture, error) {
 	// The slot comes first: a request waiting for one holds no file in memory.
-	waiting, cancel := context.WithTimeout(ctx, b.limits.Wait)
+	waiting, cancel := context.WithTimeout(ctx, r.limits.Wait)
 	defer cancel()
 	select {
-	case b.slots <- struct{}{}:
-		defer func() { <-b.slots }()
+	case r.slots <- struct{}{}:
+		defer func() { <-r.slots }()
 	case <-waiting.Done():
 		if ctx.Err() != nil {
 			return Picture{}, ctx.Err() //nolint:wrapcheck // the caller's own cancellation
 		}
 		return Picture{}, ErrBusy
 	}
-	resp, err := b.fetcher.Peek(ctx, source, b.limits.MaxBytes+1)
+	resp, err := r.fetcher.Peek(ctx, source, r.limits.MaxBytes+1)
 	if err != nil {
 		return Picture{}, err //nolint:wrapcheck // the fetcher's *card.Error is the contract
 	}
-	if int64(len(resp.Body)) > b.limits.MaxBytes {
-		return Picture{}, fmt.Errorf("%w: over %d bytes", ErrTooLarge, b.limits.MaxBytes)
+	if int64(len(resp.Body)) > r.limits.MaxBytes {
+		return Picture{}, fmt.Errorf("%w: over %d bytes", ErrTooLarge, r.limits.MaxBytes)
 	}
-	cost, err := Cost(resp.Body, box, b.limits.MaxPixels)
+	cost, err := Cost(resp.Body, box, r.limits.MaxPixels)
 	if err != nil {
 		return Picture{}, err
 	}
-	if err := b.admit(ctx, cost); err != nil {
+	if err := r.admit(ctx, cost); err != nil {
 		return Picture{}, err
 	}
-	defer b.memory.Release(cost)
-	result, err := resize(resp.Body, box, b.limits.MaxPixels, format)
+	defer r.memory.Release(cost)
+	result, err := resize(resp.Body, box, r.limits.MaxPixels, format)
 	if err != nil {
 		return Picture{}, err
 	}
@@ -99,14 +99,14 @@ func (b *Builtin) Process(ctx context.Context, source *url.URL, box Box, format 
 }
 
 // admit waits up to Wait for room for a picture that will take cost bytes; one that could never fit is refused.
-func (b *Builtin) admit(ctx context.Context, cost int64) error {
-	if cost > b.limits.MaxMemory {
-		return fmt.Errorf("%w: resizing takes %d bytes, over the %d all pictures share", ErrTooManyPixels, cost, b.limits.MaxMemory)
+func (r *Resizer) admit(ctx context.Context, cost int64) error {
+	if cost > r.limits.MaxMemory {
+		return fmt.Errorf("%w: resizing takes %d bytes, over the %d all pictures share", ErrTooManyPixels, cost, r.limits.MaxMemory)
 	}
 	// The wait starts afresh: the fetch may have taken the slot's whole wait.
-	admitted, cancel := context.WithTimeout(ctx, b.limits.Wait)
+	admitted, cancel := context.WithTimeout(ctx, r.limits.Wait)
 	defer cancel()
-	if err := b.memory.Acquire(admitted, cost); err != nil {
+	if err := r.memory.Acquire(admitted, cost); err != nil {
 		if ctx.Err() != nil {
 			return ctx.Err() //nolint:wrapcheck // the caller's own cancellation
 		}

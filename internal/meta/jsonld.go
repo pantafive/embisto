@@ -26,7 +26,7 @@ type item map[string]any
 // JSONLD reads schema.org structured data. Malformed blocks are common and skipped, never failing the source.
 type JSONLD struct{}
 
-func (JSONLD) Extract(_ context.Context, in card.Input) (card.Facts, error) {
+func (JSONLD) Read(_ context.Context, in card.Input) (card.Facts, error) {
 	items := make([]item, 0, len(in.Page.LinkedData))
 	for _, block := range in.Page.LinkedData {
 		items = append(items, nodes(block)...)

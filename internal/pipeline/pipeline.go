@@ -321,7 +321,7 @@ func (p *Pipeline) extract(ctx context.Context, r *run, in card.Input) []card.Fa
 		}
 		in.Fetcher = p.fetcherFor(r, stageOf(source, "source"))
 		started := time.Now()
-		facts, err := source.Extract(ctx, in)
+		facts, err := source.Read(ctx, in)
 		trace.From(ctx).Step(trace.Step{Kind: trace.KindSource, Name: sourceName(source, facts), Detail: summary(facts), Outcome: outcomeOf(err), Took: time.Since(started)})
 		if err != nil {
 			p.opts.Log.WarnContext(ctx, "a source failed; the preview goes on without it", slog.String("source", fmt.Sprintf("%T", source)), slog.String("url", in.URL.String()), slog.Any("error", err))

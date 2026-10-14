@@ -6,7 +6,13 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Changed
 
-- Package `thumbs` is renamed `thumbnails`, after the feature.
+- The error code `invalid_options` of `/i/` is `invalid_size`, since the size is what it refuses; `card.CodeInvalidOptions` is `card.CodeInvalidSize` and `thumbnails.ErrOptions` is `thumbnails.ErrSize`.
+- The OpenAPI tag of `/i/` is `Thumbnails`, no longer `Images`.
+- Package `thumbs` is renamed `thumbnails`, after the feature; its `Builtin` and `NewBuiltin` are `Resizer` and `NewResizer`.
+- `card.Source`'s method is `Read`, no longer `Extract`, which is `card.Extractor`'s.
+- `card.Entry` is `card.CodeEntry`.
+- `sites.OEmbed` is `sites.OEmbedList`, the provider for every site on the oembed.com list.
+- `cache.BackendObserver` is `cache.RedisObserver`, with `RedisUp` and `RedisFailed`.
 
 ## [0.1.0] - 2026-10-14
 

@@ -184,13 +184,13 @@ type backends struct {
 	events []string
 }
 
-func (b *backends) BackendUp(isUp bool) {
+func (b *backends) RedisUp(isUp bool) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	b.events = append(b.events, map[bool]string{true: "up", false: "down"}[isUp])
 }
 
-func (b *backends) BackendFailed() {
+func (b *backends) RedisFailed() {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	b.events = append(b.events, "failed")
