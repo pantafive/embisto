@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/pantafive/embisto/internal/settings"
-	"github.com/pantafive/embisto/thumbs"
+	"github.com/pantafive/embisto/thumbnails"
 )
 
 func environ(pairs ...string) func() []string {
@@ -26,9 +26,9 @@ func TestLoadReadsTheEnvironment(t *testing.T) {
 	assert.Equal(t, settings.Settings{
 		Addr: ":9000", MetricsAddr: ":9100", PublicURL: "https://api.example.com", DefaultAcceptLanguage: "de-DE,de;q=0.9",
 		ImageKey: "0123456789abcdef0123456789abcdef", YouTubeNoCookie: true, Debug: true,
-		ImagePresets: []thumbs.Preset{
-			{Name: "tiny", Box: thumbs.Box{Width: 64, Height: 64, Mode: thumbs.Fill}},
-			{Name: "wide", Box: thumbs.Box{Width: 960, Mode: thumbs.Fit}},
+		ImagePresets: []thumbnails.Preset{
+			{Name: "tiny", Box: thumbnails.Box{Width: 64, Height: 64, Mode: thumbnails.Fill}},
+			{Name: "wide", Box: thumbnails.Box{Width: 960, Mode: thumbnails.Fit}},
 		},
 		CacheURL: "redis://cache:6379/0", CacheMemory: 256 << 20, CacheTTL: time.Hour, CacheMinTTL: time.Minute, CacheMaxTTL: 2 * time.Hour, FailureTTL: time.Minute, LogLevel: slog.LevelDebug,
 	}, loaded)
@@ -39,7 +39,7 @@ func TestLoadDefaultsAnEmptyEnvironment(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, settings.Settings{
-		Addr: ":8080", MetricsAddr: ":9090", DefaultAcceptLanguage: "en", ImagePresets: thumbs.DefaultPresets, CacheMemory: 128 << 20, CacheTTL: time.Hour, CacheMinTTL: 5 * time.Minute, CacheMaxTTL: 24 * time.Hour, FailureTTL: time.Minute,
+		Addr: ":8080", MetricsAddr: ":9090", DefaultAcceptLanguage: "en", ImagePresets: thumbnails.DefaultPresets, CacheMemory: 128 << 20, CacheTTL: time.Hour, CacheMinTTL: 5 * time.Minute, CacheMaxTTL: 24 * time.Hour, FailureTTL: time.Minute,
 	}, loaded)
 }
 

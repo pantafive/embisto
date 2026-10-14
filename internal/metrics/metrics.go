@@ -70,7 +70,7 @@ func New() *Metrics {
 			Name: "embisto_cache_backend_errors_total", Help: "Shared cache operations that failed and fell back to memory.",
 		}),
 		images: prometheus.NewHistogramVec(prometheus.HistogramOpts{
-			Name: "embisto_image_duration_seconds", Help: "How long an image variant took to serve, fetching its source included, by outcome.",
+			Name: "embisto_image_duration_seconds", Help: "How long a thumbnail took to serve, fetching its source included, by outcome.",
 			Buckets: prometheus.DefBuckets,
 		}, []string{labelOutcome}),
 		cards: prometheus.NewCounterVec(prometheus.CounterOpts{
@@ -78,7 +78,7 @@ func New() *Metrics {
 			Help: "Cards made afresh, cache hits not counted, by class (full, partial, minimal, wall, error) and by the provider that shaped them or generic.",
 		}, []string{"class", "source"}),
 		bytes: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Name: "embisto_image_bytes_total", Help: "Bytes of image variants: read from sources (in) and served (out).",
+			Name: "embisto_image_bytes_total", Help: "Bytes of thumbnails: read from sources (in) and served (out).",
 		}, []string{"direction"}),
 	}
 	m.registry.MustRegister(collectors.NewGoCollector(), collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
@@ -140,7 +140,7 @@ func (m *Metrics) Made(class, source string) {
 	m.cards.WithLabelValues(class, source).Inc()
 }
 
-// Processed counts one image variant asked for; the histogram's count is the number by outcome.
+// Processed counts one thumbnail asked for; the histogram's count is the number by outcome.
 func (m *Metrics) Processed(outcome string, took time.Duration, bytesIn, bytesOut int) {
 	m.images.WithLabelValues(outcome).Observe(took.Seconds())
 	m.bytes.WithLabelValues("in").Add(float64(bytesIn))

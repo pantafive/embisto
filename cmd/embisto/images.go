@@ -20,11 +20,11 @@ import (
 	"github.com/pantafive/embisto/internal/settings"
 	"github.com/pantafive/embisto/render"
 	"github.com/pantafive/embisto/sites"
-	"github.com/pantafive/embisto/thumbs"
+	"github.com/pantafive/embisto/thumbnails"
 )
 
-// The limits of image variants. Pictures being resized share imageMaxMemory, each admitted by what its header says
-// decoding and scaling it will take; with the source files read, variants hold at most imageMaxMemory +
+// The limits of thumbnails. Pictures being resized share imageMaxMemory, each admitted by what its header says
+// decoding and scaling it will take; with the source files read, thumbnails hold at most imageMaxMemory +
 // imageConcurrency × imageMaxBytes: some 300 MB. A picture at the pixel limit takes about half a second to resize.
 const (
 	imageMaxBytes    = 10 << 20
@@ -77,31 +77,31 @@ func templateFormats(ctx context.Context, loaded settings.Settings, log *slog.Lo
 	return templates, nil
 }
 
-var errNoImageKey = errors.New("EMBISTO_IMAGE_KEY is not set: image variants are off")
+var errNoImageKey = errors.New("EMBISTO_IMAGE_KEY is not set: thumbnails are off")
 
-// images are the parts that serve image variants, and the enricher that hands out their URLs when clients have an
-// address to reach them at; nil and nil when variants are off.
+// images are the parts that serve thumbnails, and the enricher that hands out their URLs when clients have an
+// address to reach them at; nil and nil when thumbnails are off.
 func images(ctx context.Context, loaded settings.Settings, log *slog.Logger, measured *metrics.Metrics) (*api.Images, card.Enricher, error) {
 	if loaded.ImageKey == "" {
-		log.InfoContext(ctx, "image variants are off: cards link pictures on their sites; set EMBISTO_IMAGE_KEY to turn them on")
+		log.InfoContext(ctx, "thumbnails are off: cards link pictures on their sites; set EMBISTO_IMAGE_KEY to turn them on")
 		return nil, nil, nil
 	}
-	signer, err := thumbs.NewSigner([]byte(loaded.ImageKey), loaded.ImagePresets)
+	signer, err := thumbnails.NewSigner([]byte(loaded.ImageKey), loaded.ImagePresets)
 	if err != nil {
-		return nil, nil, fmt.Errorf("image variants: %w", err)
+		return nil, nil, fmt.Errorf("thumbnails: %w", err)
 	}
 	fetcher := embisto.NewFetcher(embisto.Options{Timeout: imageTimeout, UserAgent: embisto.Defaults().UserAgent})
 	served := &api.Images{
 		Signer: signer, Observer: measured,
-		Processor: thumbs.NewBuiltin(fetcher, thumbs.Limits{
+		Processor: thumbnails.NewBuiltin(fetcher, thumbnails.Limits{
 			MaxBytes: imageMaxBytes, MaxPixels: imageMaxPixels, MaxMemory: imageMaxMemory, Concurrency: imageConcurrency, Wait: imageWait,
 		}),
 	}
 	if loaded.PublicURL == "" {
-		log.WarnContext(ctx, "image variants are served at /i/, but cards carry no URLs of them without EMBISTO_PUBLIC_URL")
+		log.WarnContext(ctx, "thumbnails are served at /i/, but cards carry no URLs of them without EMBISTO_PUBLIC_URL")
 		return served, nil, nil
 	}
-	return served, thumbs.Enricher{Signer: signer, BaseURL: loaded.PublicURL}, nil
+	return served, thumbnails.Enricher{Signer: signer, BaseURL: loaded.PublicURL}, nil
 }
 
 // runSign prints the URL of a picture's variant in a size, for a client backend to see how URLs are made, or to test one.
@@ -116,9 +116,9 @@ func runSign(args []string, environ func() []string, out io.Writer) error {
 	if loaded.ImageKey == "" {
 		return errNoImageKey
 	}
-	signer, err := thumbs.NewSigner([]byte(loaded.ImageKey), loaded.ImagePresets)
+	signer, err := thumbnails.NewSigner([]byte(loaded.ImageKey), loaded.ImagePresets)
 	if err != nil {
-		return fmt.Errorf("image variants: %w", err)
+		return fmt.Errorf("thumbnails: %w", err)
 	}
 	_, err = fmt.Fprintln(out, loaded.PublicURL+signer.Path(args[0], args[1]))
 	return err //nolint:wrapcheck // a failed print to the terminal

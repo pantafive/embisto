@@ -41,7 +41,7 @@ The OpenAPI spec is served at `/openapi.json`. `/docs` is the API reference, ren
 | `GET /oembed?url=` | The same preview as an oEmbed answer, with the fields Iframely adds. |
 | `GET /healthz` | The process is up. |
 | `GET /readyz` | The server takes new requests. It returns 503 while the server shuts down. |
-| `GET /i/<signature>/<size>/<source>` | A variant of a card's picture, resized by embisto. The URLs come signed in the card's `variants`; see [image variants](images.md). |
+| `GET /i/<signature>/<size>/<source>` | A thumbnail of a card's picture. The URLs come signed in the card's `variants`; see [thumbnails](thumbnails.md). |
 | `GET :9090/metrics` | Prometheus metrics, on a separate listener. |
 | `GET :9090/debug?url=` | With `EMBISTO_DEBUG=true`: how a preview is made, on the internal listener only. |
 
@@ -67,4 +67,4 @@ A failed request returns a non-2xx status with an [RFC 9457](https://www.rfc-edi
 | `cache_unavailable` | 503 | A purge the shared cache did not answer. |
 | `internal` | 500 | embisto itself failed; the cause is logged, never answered. |
 
-The codes of `/i/` are in [image variants](images.md). `card.Catalogue()` lists every code with its status and the words a client is shown; the `code` enum in `/openapi.json` is generated from it. A `card.Error`'s text is always the catalogue's words or a detail written for clients: what went wrong underneath, which may name a resolved address or quote a page, is only logged.
+The codes of `/i/` are in [thumbnails](thumbnails.md). `card.Catalogue()` lists every code with its status and the words a client is shown; the `code` enum in `/openapi.json` is generated from it. A `card.Error`'s text is always the catalogue's words or a detail written for clients: what went wrong underneath, which may name a resolved address or quote a page, is only logged.

@@ -37,7 +37,7 @@ Helpers reach no file, environment, clock or network.
 
 ## Checks at startup
 
-Each template is run on four cards: a full one with image variants, an empty one, one behind a login wall, and one whose text holds quotes, a backslash, a newline, `</script>`, a Slack link, `${…}`, U+2028 and an emoji. If any run fails, or the output does not parse as its type (JSON for `.json`, well-formed XML for `.xml`, `.svg` and `.xhtml`, CSV for `.csv`), the server does not start and the error names the file. A template that fails on a real card answers 500 with nothing of its output.
+Each template is run on four cards: a full one with thumbnails, an empty one, one behind a login wall, and one whose text holds quotes, a backslash, a newline, `</script>`, a Slack link, `${…}`, U+2028 and an emoji. If any run fails, or the output does not parse as its type (JSON for `.json`, well-formed XML for `.xml`, `.svg` and `.xhtml`, CSV for `.csv`), the server does not start and the error names the file. A template that fails on a real card answers 500 with nothing of its output.
 
 ## Examples
 

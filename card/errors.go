@@ -28,7 +28,7 @@ const (
 	CodeNotCached Code = "not_cached"
 	// CodeCacheUnavailable is a purge the shared cache did not answer.
 	CodeCacheUnavailable Code = "cache_unavailable"
-	// CodeInvalidSignature and the codes after it are the refusals of image variants, at /i/.
+	// CodeInvalidSignature and the codes after it are the refusals of thumbnails, at /i/.
 	CodeInvalidSignature Code = "invalid_signature"
 	CodeInvalidOptions   Code = "invalid_options"
 	CodeTooManyPixels    Code = "too_many_pixels"

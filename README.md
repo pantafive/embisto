@@ -55,7 +55,7 @@ fmt.Println(result.Preview.Title)
 - **Reads what pages say:** oEmbed, Open Graph, Twitter Cards, JSON-LD and plain HTML, merged field by field.
 - **Knows the hard sites:** YouTube, X, Reddit and TikTok providers, honest cards for login walls, and every site on the [oembed.com](https://oembed.com/providers.json) list.
 - **Answers in the format you need:** the JSON card, plain text, a self-contained HTML card, Iframely-compatible `/iframely` and `/oembed`, or your own [template](docs/templates.md).
-- **Serves the pictures itself:** signed, resized JPEG, PNG and WebP variants, so clients never load them from other sites ([details](docs/images.md)).
+- **Serves thumbnails:** signed, resized JPEG, PNG and WebP copies of a card's pictures, so clients never load them from other sites ([details](docs/thumbnails.md)).
 - **Caches by the origin's rules:** keeps a card as long as its page allows, makes one fetch for many identical requests, and shares the cache between instances through Redis or Valkey.
 - **Safe to point at the internet:** refuses private addresses at connect time, and caps sizes, time and memory ([details](docs/hardening.md)).
 - **Easy to run:** a single static binary or a multi-arch image, Prometheus metrics, OpenAPI at `/openapi.json` with a reference at `/docs`, and a debug page that shows how a card was made.
@@ -66,7 +66,7 @@ fmt.Println(result.Preview.Title)
 - [Configuration](docs/configuration.md): environment variables and memory
 - [Caching](docs/caching.md) and [operations](docs/operations.md): metrics and the debug page
 - [Go library](docs/library.md): the pipeline, site providers and layers
-- [Templates](docs/templates.md), [image variants](docs/images.md), [Iframely compatibility](docs/iframely-compat.md), [hardening](docs/hardening.md)
+- [Templates](docs/templates.md), [thumbnails](docs/thumbnails.md), [Iframely compatibility](docs/iframely-compat.md), [hardening](docs/hardening.md)
 - [Contributing](CONTRIBUTING.md) and [security](SECURITY.md)
 
 ## License

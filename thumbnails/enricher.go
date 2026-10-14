@@ -1,4 +1,4 @@
-package thumbs
+package thumbnails
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/pantafive/embisto/card"
 )
 
-// refused are the extensions of pictures /i/ refuses, so no variant is handed out for them: it serves only what it
+// refused are the extensions of pictures /i/ refuses, so no thumbnail is handed out for them: it serves only what it
 // re-encodes, and SVG and ICO are not decoded.
 var refused = []string{".svg", ".svgz", ".ico"}
 
@@ -22,7 +22,7 @@ type Enricher struct {
 }
 
 func (Enricher) Name() string {
-	return "thumbs"
+	return "thumbnails"
 }
 
 func (e Enricher) Enrich(_ context.Context, preview card.Preview, _ card.Fetcher) (card.Preview, error) {

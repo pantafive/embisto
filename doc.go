@@ -11,5 +11,5 @@
 //	result, err := previews.Extract(ctx, card.Request{URL: "https://github.com"})
 //
 // The modules of each stage are in their own packages: site providers in sites, output formats in render, the
-// resized pictures in thumbs. The contract they share is package card.
+// resized pictures in thumbnails. The contract they share is package card.
 package embisto

@@ -1,4 +1,4 @@
-package thumbs
+package thumbnails
 
 // Pictures are resized in pure Go: the size is read from the header before decoding, what is too large is refused,
 // x/image/draw scales, and PNG is encoded when the result has transparency, JPEG otherwise.
