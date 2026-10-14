@@ -10,13 +10,13 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 
 	"github.com/pantafive/embisto/card"
-	"github.com/pantafive/embisto/thumbs"
+	"github.com/pantafive/embisto/thumbnails"
 )
 
-// Images are the parts that serve image variants: the signer that checks its URLs and the processor that makes the pictures.
+// Images are the parts that serve thumbnails: the signer that checks its URLs and the processor that makes the pictures.
 type Images struct {
-	Signer    *thumbs.Signer
-	Processor thumbs.Processor
+	Signer    *thumbnails.Signer
+	Processor thumbnails.Processor
 	// Observer hears about every picture asked for; nil hears nothing.
 	Observer ImageObserver
 }
@@ -61,13 +61,13 @@ var imageRefusals = []struct {
 	err  error
 	code card.Code
 }{
-	{thumbs.ErrSignature, card.CodeInvalidSignature},
-	{thumbs.ErrOptions, card.CodeInvalidOptions},
-	{thumbs.ErrSource, card.CodeInvalidURL},
-	{thumbs.ErrTooLarge, card.CodeImageTooLarge},
-	{thumbs.ErrTooManyPixels, card.CodeTooManyPixels},
-	{thumbs.ErrUnsupported, card.CodeUnsupportedImage},
-	{thumbs.ErrBusy, card.CodeBusy},
+	{thumbnails.ErrSignature, card.CodeInvalidSignature},
+	{thumbnails.ErrOptions, card.CodeInvalidOptions},
+	{thumbnails.ErrSource, card.CodeInvalidURL},
+	{thumbnails.ErrTooLarge, card.CodeImageTooLarge},
+	{thumbnails.ErrTooManyPixels, card.CodeTooManyPixels},
+	{thumbnails.ErrUnsupported, card.CodeUnsupportedImage},
+	{thumbnails.ErrBusy, card.CodeBusy},
 }
 
 // binary is the schema of a picture's bytes.
@@ -100,7 +100,7 @@ func addImageRoute(api huma.API, deps Deps) {
 
 func (deps Deps) image(ctx context.Context, in *imageInput) (*imageOutput, error) {
 	started := time.Now()
-	observe := func(outcome string, picture thumbs.Picture) {
+	observe := func(outcome string, picture thumbnails.Picture) {
 		if deps.Images.Observer != nil {
 			deps.Images.Observer.Processed(outcome, time.Since(started), picture.SourceBytes, len(picture.Body))
 		}
@@ -112,7 +112,7 @@ func (deps Deps) image(ctx context.Context, in *imageInput) (*imageOutput, error
 	// The signature names exactly one picture, which never changes: it is the picture's tag.
 	tag := `"` + in.Signature + `"`
 	if in.IfNoneMatch == tag {
-		observe(outcomeNotModified, thumbs.Picture{})
+		observe(outcomeNotModified, thumbnails.Picture{})
 		return &imageOutput{Status: http.StatusNotModified, CacheControl: cacheForever, ETag: tag}, nil
 	}
 	picture, err := deps.Images.Processor.Process(ctx, request.Source, request.Box, request.Format)
@@ -127,9 +127,9 @@ func (deps Deps) image(ctx context.Context, in *imageInput) (*imageOutput, error
 }
 
 // refuseImage answers a failed picture as problem+json that no cache keeps.
-func (deps Deps) refuseImage(ctx context.Context, err error, observe func(string, thumbs.Picture)) error {
+func (deps Deps) refuseImage(ctx context.Context, err error, observe func(string, thumbnails.Picture)) error {
 	refused := imageRefusalOf(err)
-	observe(string(refused.Code), thumbs.Picture{})
+	observe(string(refused.Code), thumbnails.Picture{})
 	deps.Log.InfoContext(ctx, "no picture", slog.Any("error", refused))
 	problem := problemOf(refused)
 	problem.headers = http.Header{"Cache-Control": {cacheNever}}

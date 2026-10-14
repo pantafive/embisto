@@ -1,5 +1,5 @@
 // Package debug serves a page that shows how a preview was made: the card, every fetch, source, provider and
-// enricher with its time and outcome, which source won each field and why, and the card's image variants. It is for
+// enricher with its time and outcome, which source won each field and why, and the card's thumbnails. It is for
 // operators, on the internal listener only.
 package debug
 
@@ -18,7 +18,7 @@ import (
 	"github.com/pantafive/embisto/card"
 	"github.com/pantafive/embisto/internal/quality"
 	"github.com/pantafive/embisto/internal/trace"
-	"github.com/pantafive/embisto/thumbs"
+	"github.com/pantafive/embisto/thumbnails"
 )
 
 //go:embed page.html
@@ -32,8 +32,8 @@ var page = template.Must(template.New("debug").Funcs(template.FuncMap{
 // Page makes previews afresh, without a cache, and shows how.
 type Page struct {
 	Core card.Extractor
-	// Images, when the server has image variants on, also resizes the card's image into the card preset.
-	Images thumbs.Processor
+	// Images, when the server has thumbnails on, also resizes the card's image into the card preset.
+	Images thumbnails.Processor
 	Log    *slog.Logger
 }
 
@@ -50,7 +50,7 @@ type view struct {
 	Pictures  []picture
 }
 
-// picture is the card's image variant in one format.
+// picture is the card's thumbnail in one format.
 type picture struct {
 	Format string
 	Type   string
@@ -108,9 +108,9 @@ func (p Page) pictures(ctx context.Context, preview card.Preview) []picture {
 	if p.Images == nil || err != nil {
 		return nil
 	}
-	box := thumbs.DefaultPresets[1].Box
+	box := thumbnails.DefaultPresets[1].Box
 	var made []picture
-	for _, format := range []thumbs.Format{thumbs.Classic, thumbs.WebP} {
+	for _, format := range []thumbnails.Format{thumbnails.Classic, thumbnails.WebP} {
 		started := time.Now()
 		result, err := p.Images.Process(ctx, source, box, format)
 		made = append(made, picture{Format: cmp.Or(string(format), "jpeg/png"), Type: result.ContentType, Bytes: len(result.Body), Took: time.Since(started), Error: errorText(err)})

@@ -13,7 +13,7 @@ import (
 
 	"golang.org/x/text/language"
 
-	"github.com/pantafive/embisto/thumbs"
+	"github.com/pantafive/embisto/thumbnails"
 )
 
 // ErrInvalid names a setting that cannot be used.
@@ -44,7 +44,7 @@ type Settings struct {
 	PublicURL string
 	// DefaultAcceptLanguage is the language pages are asked in, unless a request names its own.
 	DefaultAcceptLanguage string
-	// ImageKey signs the URLs of image variants; empty turns variants off.
+	// ImageKey signs the URLs of thumbnails; empty turns thumbnails off.
 	ImageKey string
 	// YouTubeNoCookie embeds YouTube's player from youtube-nocookie.com.
 	YouTubeNoCookie bool
@@ -52,8 +52,8 @@ type Settings struct {
 	Debug bool
 	// TemplatesDir holds template files, each an output format; empty adds none.
 	TemplatesDir string
-	// ImagePresets are the sizes the URLs of image variants name.
-	ImagePresets []thumbs.Preset
+	// ImagePresets are the sizes the URLs of thumbnails name.
+	ImagePresets []thumbnails.Preset
 	// CacheURL names a cache shared by every instance; empty keeps previews in each instance's memory.
 	CacheURL string
 	// CacheMemory is how many bytes of previews the in-memory cache holds; zero turns the cache off.
@@ -105,16 +105,16 @@ func Load(environ func() []string) (Settings, error) {
 	return loaded, nil
 }
 
-// images are the key and presets of image variants; a key too short to resist guessing is refused.
-func images(env map[string]string) (string, []thumbs.Preset, error) {
+// images are the key and presets of thumbnails; a key too short to resist guessing is refused.
+func images(env map[string]string) (string, []thumbnails.Preset, error) {
 	key := env["EMBISTO_IMAGE_KEY"]
-	if key != "" && len(key) < thumbs.MinKeyLength {
-		return "", nil, fmt.Errorf("%w: EMBISTO_IMAGE_KEY needs at least %d bytes; make one with `openssl rand -hex 32`", ErrInvalid, thumbs.MinKeyLength)
+	if key != "" && len(key) < thumbnails.MinKeyLength {
+		return "", nil, fmt.Errorf("%w: EMBISTO_IMAGE_KEY needs at least %d bytes; make one with `openssl rand -hex 32`", ErrInvalid, thumbnails.MinKeyLength)
 	}
 	if env["EMBISTO_IMAGE_PRESETS"] == "" {
-		return key, thumbs.DefaultPresets, nil
+		return key, thumbnails.DefaultPresets, nil
 	}
-	presets, err := thumbs.ParsePresets(env["EMBISTO_IMAGE_PRESETS"])
+	presets, err := thumbnails.ParsePresets(env["EMBISTO_IMAGE_PRESETS"])
 	if err != nil {
 		return "", nil, fmt.Errorf("%w: EMBISTO_IMAGE_PRESETS: %w", ErrInvalid, err)
 	}

@@ -1,4 +1,4 @@
-package thumbs_test
+package thumbnails_test
 
 import (
 	"bytes"
@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/pantafive/embisto/thumbs"
+	"github.com/pantafive/embisto/thumbnails"
 )
 
 // heap is the bytes the heap's live and unswept objects take.
@@ -60,17 +60,17 @@ func TestATallPictureStaysWithinItsAdmittedMemory(t *testing.T) {
 	var file bytes.Buffer
 	require.NoError(t, png.Encode(&file, tall))
 	tall = nil //nolint:wastedassign // freed before the heap is measured
-	box := thumbs.Box{Width: 600, Mode: thumbs.Fit}
-	cost, err := thumbs.Cost(file.Bytes(), box, 16_000_000)
+	box := thumbnails.Box{Width: 600, Mode: thumbnails.Fit}
+	cost, err := thumbnails.Cost(file.Bytes(), box, 16_000_000)
 	require.NoError(t, err)
 
-	width, height := thumbs.Scaled(601, 26622, box)
+	width, height := thumbnails.Scaled(601, 26622, box)
 	assert.LessOrEqual(t, height, 3*(width+1), "within the aspect, give or take rounding")
 	assert.Less(t, cost, int64(128<<20))
-	for _, format := range []thumbs.Format{thumbs.Classic, thumbs.WebP} {
+	for _, format := range []thumbnails.Format{thumbnails.Classic, thumbnails.WebP} {
 		var made image.Point
 		peak := peakDuring(func() {
-			result, err := thumbs.Resize(file.Bytes(), box, 16_000_000, format)
+			result, err := thumbnails.Resize(file.Bytes(), box, 16_000_000, format)
 			require.NoError(t, err)
 			made = image.Pt(result.Width, result.Height)
 		})

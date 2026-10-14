@@ -1,4 +1,4 @@
-package thumbs_test
+package thumbnails_test
 
 import (
 	"context"
@@ -9,14 +9,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/pantafive/embisto/card"
-	"github.com/pantafive/embisto/thumbs"
+	"github.com/pantafive/embisto/thumbnails"
 )
 
-var key = []byte(strings.Repeat("k", thumbs.MinKeyLength))
+var key = []byte(strings.Repeat("k", thumbnails.MinKeyLength))
 
-func signer(t *testing.T) *thumbs.Signer {
+func signer(t *testing.T) *thumbnails.Signer {
 	t.Helper()
-	signer, err := thumbs.NewSigner(key, thumbs.DefaultPresets)
+	signer, err := thumbnails.NewSigner(key, thumbnails.DefaultPresets)
 	require.NoError(t, err)
 	return signer
 }
@@ -35,14 +35,14 @@ func TestVerifyReadsWhatTheSignerSigned(t *testing.T) {
 	request, err := signer(t).Verify(signature, size, source)
 
 	require.NoError(t, err)
-	assert.Equal(t, []any{"https://example.com/a.jpg", thumbs.Box{Width: 600, Mode: thumbs.Fit}},
+	assert.Equal(t, []any{"https://example.com/a.jpg", thumbnails.Box{Width: 600, Mode: thumbnails.Fit}},
 		[]any{request.Source.String(), request.Box})
 }
 
 func TestVerifyRefusesATamperedURL(t *testing.T) {
 	signature, size, source := segments(t, signer(t).Path("card", "https://example.com/a.jpg"))
 	_, _, other := segments(t, signer(t).Path("card", "https://example.com/b.jpg"))
-	forged, err := thumbs.NewSigner([]byte(strings.Repeat("x", thumbs.MinKeyLength)), thumbs.DefaultPresets)
+	forged, err := thumbnails.NewSigner([]byte(strings.Repeat("x", thumbnails.MinKeyLength)), thumbnails.DefaultPresets)
 	require.NoError(t, err)
 	forgedSignature, _, _ := segments(t, forged.Path("card", "https://example.com/a.jpg"))
 	tests := []struct {
@@ -57,7 +57,7 @@ func TestVerifyRefusesATamperedURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := signer(t).Verify(tt.signature, tt.size, tt.source)
 
-			require.ErrorIs(t, err, thumbs.ErrSignature)
+			require.ErrorIs(t, err, thumbnails.ErrSignature)
 		})
 	}
 }
@@ -88,13 +88,13 @@ func TestVerifyTakesOnlyAllowedSizes(t *testing.T) {
 }
 
 func TestNewSignerRefusesAShortKey(t *testing.T) {
-	_, err := thumbs.NewSigner([]byte("short"), thumbs.DefaultPresets)
+	_, err := thumbnails.NewSigner([]byte("short"), thumbnails.DefaultPresets)
 
 	require.Error(t, err)
 }
 
 func TestEnricherGivesEachPictureItsVariants(t *testing.T) {
-	enricher := thumbs.Enricher{Signer: signer(t), BaseURL: "https://api.example.com"}
+	enricher := thumbnails.Enricher{Signer: signer(t), BaseURL: "https://api.example.com"}
 	path := func(size, source string) string { return "https://api.example.com" + signer(t).Path(size, source) }
 
 	enriched, err := enricher.Enrich(context.Background(), card.Preview{
@@ -119,7 +119,7 @@ func TestVerifyReadsTheFormatSignedWithTheSize(t *testing.T) {
 	request, err := signer(t).Verify(signature, size, source)
 
 	require.NoError(t, err)
-	assert.Equal(t, thumbs.WebP, request.Format)
+	assert.Equal(t, thumbnails.WebP, request.Format)
 }
 
 func TestVerifyRefusesAFormatChangedAfterSigning(t *testing.T) {
@@ -127,5 +127,5 @@ func TestVerifyRefusesAFormatChangedAfterSigning(t *testing.T) {
 
 	_, err := signer(t).Verify(signature, "card", source)
 
-	require.ErrorIs(t, err, thumbs.ErrSignature)
+	require.ErrorIs(t, err, thumbnails.ErrSignature)
 }

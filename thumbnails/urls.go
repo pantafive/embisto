@@ -1,7 +1,7 @@
-// Package thumbs serves the pictures of a preview through embisto, resized and re-encoded: sources that expire or
+// Package thumbnails serves the pictures of a preview through embisto, resized and re-encoded: sources that expire or
 // refuse hotlinking stay viewable, clients never reveal their address to other sites and download no more pixels than
 // they show. URLs are signed, so /i/ only serves what the server itself handed out.
-package thumbs
+package thumbnails
 
 import (
 	"crypto/hmac"
@@ -69,7 +69,7 @@ var (
 	explicitSize = regexp.MustCompile(`^([0-9]+)x([0-9]+)-(fit|fill)$`)
 )
 
-// Signer makes and checks the URLs of variants: /i/<signature>/<size>/<source>, the signature an HMAC-SHA256 over the
+// Signer makes and checks the URLs of thumbnails: /i/<signature>/<size>/<source>, the signature an HMAC-SHA256 over the
 // size and the source, the source in unpadded base64url. The URL of a picture never changes, so it can be cached for
 // good.
 type Signer struct {

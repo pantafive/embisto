@@ -22,7 +22,7 @@ import (
 
 	"github.com/pantafive/embisto"
 	"github.com/pantafive/embisto/internal/api"
-	"github.com/pantafive/embisto/thumbs"
+	"github.com/pantafive/embisto/thumbnails"
 )
 
 func opaquePNG(t *testing.T, width, height int) []byte {
@@ -39,18 +39,18 @@ func opaquePNG(t *testing.T, width, height int) []byte {
 }
 
 // imageServer serves pictures and the /i/ handler that resizes them, signed with one key.
-func imageServer(t *testing.T, files map[string][]byte) (*httptest.Server, *httptest.Server, *thumbs.Signer) {
+func imageServer(t *testing.T, files map[string][]byte) (*httptest.Server, *httptest.Server, *thumbnails.Signer) {
 	t.Helper()
 	origin := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(files[r.URL.Path])
 	}))
 	t.Cleanup(origin.Close)
-	signer, err := thumbs.NewSigner([]byte(strings.Repeat("k", thumbs.MinKeyLength)), thumbs.DefaultPresets)
+	signer, err := thumbnails.NewSigner([]byte(strings.Repeat("k", thumbnails.MinKeyLength)), thumbnails.DefaultPresets)
 	require.NoError(t, err)
 	fetcher := embisto.NewFetcher(embisto.Options{AllowedNetworks: []netip.Prefix{netip.MustParsePrefix("127.0.0.0/8")}})
 	server := httptest.NewServer(api.NewServer(api.Deps{Renderers: renderers, Images: &api.Images{
 		Signer:    signer,
-		Processor: thumbs.NewBuiltin(fetcher, thumbs.Limits{MaxBytes: 1 << 20, MaxPixels: 1_000_000, MaxMemory: 64 << 20, Concurrency: 2, Wait: time.Second}),
+		Processor: thumbnails.NewBuiltin(fetcher, thumbnails.Limits{MaxBytes: 1 << 20, MaxPixels: 1_000_000, MaxMemory: 64 << 20, Concurrency: 2, Wait: time.Second}),
 	}}))
 	t.Cleanup(server.Close)
 	return origin, server, signer

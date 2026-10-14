@@ -62,7 +62,7 @@ func fallback(otherwise string, value string) string {
 }
 
 // pictureFor is the card's picture for a box minWidth wide: the smallest variant at least that wide, or the largest
-// one, or the original image; as WebP when asked and the variant has it. Without image variants, it is the original.
+// one, or the original image; as WebP when asked and the variant has it. Without thumbnails, it is the original.
 func pictureFor(preview card.Preview, minWidth int, isWebP bool) Picture {
 	image := preview.Image
 	if len(image.Variants) == 0 {

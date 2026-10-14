@@ -1,4 +1,4 @@
-package thumbs_test
+package thumbnails_test
 
 import (
 	"bytes"
@@ -14,7 +14,7 @@ import (
 
 	"github.com/gen2brain/vpx/webp"
 
-	"github.com/pantafive/embisto/thumbs"
+	"github.com/pantafive/embisto/thumbnails"
 )
 
 func pngOf(t *testing.T, width, height int, fill color.Color) []byte {
@@ -45,15 +45,15 @@ func claiming(t *testing.T, file []byte, width, height uint32) []byte {
 func TestResizeRefusesAPictureOverThePixelLimitFromItsHeader(t *testing.T) {
 	file := claiming(t, pngOf(t, 4, 4, color.White), 100000, 100000)
 
-	_, err := thumbs.Resize(file, thumbs.Box{Width: 160, Mode: thumbs.Fit}, 1_000_000, thumbs.Classic)
+	_, err := thumbnails.Resize(file, thumbnails.Box{Width: 160, Mode: thumbnails.Fit}, 1_000_000, thumbnails.Classic)
 
-	require.ErrorIs(t, err, thumbs.ErrTooManyPixels)
+	require.ErrorIs(t, err, thumbnails.ErrTooManyPixels)
 }
 
 func TestResizeKeepsTransparencyInPNG(t *testing.T) {
 	file := pngOf(t, 400, 200, color.NRGBA{R: 255, A: 128})
 
-	result, err := thumbs.Resize(file, thumbs.Box{Width: 160, Mode: thumbs.Fit}, 1_000_000, thumbs.Classic)
+	result, err := thumbnails.Resize(file, thumbnails.Box{Width: 160, Mode: thumbnails.Fit}, 1_000_000, thumbnails.Classic)
 
 	require.NoError(t, err)
 	assert.Equal(t, []any{"image/png", 160, 80}, []any{result.ContentType, result.Width, result.Height})
@@ -62,34 +62,34 @@ func TestResizeKeepsTransparencyInPNG(t *testing.T) {
 func TestResizeWritesAnOpaquePictureAsJPEG(t *testing.T) {
 	file := pngOf(t, 400, 200, color.NRGBA{G: 255, A: 255})
 
-	result, err := thumbs.Resize(file, thumbs.Box{Width: 160, Height: 160, Mode: thumbs.Fill}, 1_000_000, thumbs.Classic)
+	result, err := thumbnails.Resize(file, thumbnails.Box{Width: 160, Height: 160, Mode: thumbnails.Fill}, 1_000_000, thumbnails.Classic)
 
 	require.NoError(t, err)
 	assert.Equal(t, []any{"image/jpeg", 160, 160}, []any{result.ContentType, result.Width, result.Height})
 }
 
 func TestResizeRefusesWhatIsNotARasterPicture(t *testing.T) {
-	_, err := thumbs.Resize([]byte(`<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"/>`), thumbs.Box{Width: 160, Mode: thumbs.Fit}, 1_000_000, thumbs.Classic)
+	_, err := thumbnails.Resize([]byte(`<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"/>`), thumbnails.Box{Width: 160, Mode: thumbnails.Fit}, 1_000_000, thumbnails.Classic)
 
-	require.ErrorIs(t, err, thumbs.ErrUnsupported)
+	require.ErrorIs(t, err, thumbnails.ErrUnsupported)
 }
 
 func TestScaled(t *testing.T) {
 	tests := []struct {
 		name                  string
 		width, height         int
-		box                   thumbs.Box
+		box                   thumbnails.Box
 		wantWidth, wantHeight int
 	}{
-		{"fit by width", 1280, 720, thumbs.Box{Width: 600, Mode: thumbs.Fit}, 600, 338},
-		{"fit inside both", 1280, 720, thumbs.Box{Width: 600, Height: 200, Mode: thumbs.Fit}, 356, 200},
-		{"fit never enlarges", 100, 50, thumbs.Box{Width: 600, Mode: thumbs.Fit}, 100, 50},
-		{"fill takes the box", 1280, 720, thumbs.Box{Width: 160, Height: 160, Mode: thumbs.Fill}, 160, 160},
-		{"fill never enlarges", 100, 50, thumbs.Box{Width: 160, Height: 160, Mode: thumbs.Fill}, 100, 50},
+		{"fit by width", 1280, 720, thumbnails.Box{Width: 600, Mode: thumbnails.Fit}, 600, 338},
+		{"fit inside both", 1280, 720, thumbnails.Box{Width: 600, Height: 200, Mode: thumbnails.Fit}, 356, 200},
+		{"fit never enlarges", 100, 50, thumbnails.Box{Width: 600, Mode: thumbnails.Fit}, 100, 50},
+		{"fill takes the box", 1280, 720, thumbnails.Box{Width: 160, Height: 160, Mode: thumbnails.Fill}, 160, 160},
+		{"fill never enlarges", 100, 50, thumbnails.Box{Width: 160, Height: 160, Mode: thumbnails.Fill}, 100, 50},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			width, height := thumbs.Scaled(tt.width, tt.height, tt.box)
+			width, height := thumbnails.Scaled(tt.width, tt.height, tt.box)
 
 			assert.Equal(t, []int{tt.wantWidth, tt.wantHeight}, []int{width, height})
 		})
@@ -99,7 +99,7 @@ func TestScaled(t *testing.T) {
 func TestResizeWritesWebPKeepingTransparency(t *testing.T) {
 	file := pngOf(t, 400, 200, color.NRGBA{R: 255, A: 128})
 
-	result, err := thumbs.Resize(file, thumbs.Box{Width: 160, Mode: thumbs.Fit}, 1_000_000, thumbs.WebP)
+	result, err := thumbnails.Resize(file, thumbnails.Box{Width: 160, Mode: thumbnails.Fit}, 1_000_000, thumbnails.WebP)
 
 	require.NoError(t, err)
 	decoded, err := webp.Decode(bytes.NewReader(result.Body))

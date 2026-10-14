@@ -15,16 +15,16 @@ import (
 	"github.com/pantafive/embisto/card"
 	"github.com/pantafive/embisto/internal/fixture"
 	"github.com/pantafive/embisto/render"
-	"github.com/pantafive/embisto/thumbs"
+	"github.com/pantafive/embisto/thumbnails"
 )
 
 // examples are the example templates, at the module's root.
 var examples = filepath.Join("..", "..", "examples", "templates")
 
-// exampleCards are real cards, replayed from fixtures with image variants, and one of hostile text.
+// exampleCards are real cards, replayed from fixtures with thumbnails, and one of hostile text.
 func exampleCards(t *testing.T) map[string]card.Preview {
 	t.Helper()
-	signer, err := thumbs.NewSigner([]byte(strings.Repeat("k", thumbs.MinKeyLength)), thumbs.DefaultPresets)
+	signer, err := thumbnails.NewSigner([]byte(strings.Repeat("k", thumbnails.MinKeyLength)), thumbnails.DefaultPresets)
 	require.NoError(t, err)
 	cards := map[string]card.Preview{"hostile": {
 		URL: "https://example.com/x?a=1&b=2", Type: card.TypeLink, SiteName: `Site "$x" <b>`,
@@ -34,7 +34,7 @@ func exampleCards(t *testing.T) map[string]card.Preview {
 		saved, replay, err := fixture.Load(filepath.Join(fixtures, name))
 		require.NoError(t, err)
 		opts := embisto.Defaults()
-		opts.Fetcher, opts.Enrichers = replay, append(opts.Enrichers, thumbs.Enricher{Signer: signer, BaseURL: "https://embisto.example"})
+		opts.Fetcher, opts.Enrichers = replay, append(opts.Enrichers, thumbnails.Enricher{Signer: signer, BaseURL: "https://embisto.example"})
 		result, err := embisto.New(opts).Extract(context.Background(), saved.Request)
 		require.NoError(t, err)
 		cards[name] = result.Preview

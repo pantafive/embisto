@@ -40,7 +40,7 @@ type Decision struct {
 	Reason     string
 }
 
-// Trace collects the steps and decisions of one preview; the enricher of image variants measures from several goroutines,
+// Trace collects the steps and decisions of one preview; the thumbnails' enricher measures from several goroutines,
 // so it is safe for concurrent use.
 type Trace struct {
 	mu        sync.Mutex

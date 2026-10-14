@@ -1,4 +1,4 @@
-# Image variants
+# Thumbnails
 
 Pictures in previews point at other sites. Those URLs cause several problems:
 
@@ -8,11 +8,11 @@ Pictures in previews point at other sites. Those URLs cause several problems:
 - A phone downloads a 1280-pixel original to show an 80-pixel thumbnail.
 - An `http` picture breaks on an `https` page.
 
-So embisto serves image variants: resized, re-encoded copies of a card's pictures, from its own address at `/i/`, with immutable cache headers.
+So embisto serves thumbnails: resized, re-encoded copies of a card's pictures, from its own address at `/i/`, with immutable cache headers.
 
 ## How it works
 
-A variant is served only at a URL the server signed. `/i/<signature>/<size>/<source>` names:
+A thumbnail is served only at a URL the server signed. `/i/<signature>/<size>/<source>` names:
 
 - **source:** the original picture's URL, in unpadded base64url;
 - **size:** a preset's name, or an explicit `WxH-fit` or `WxH-fill`;
@@ -20,7 +20,7 @@ A variant is served only at a URL the server signed. `/i/<signature>/<size>/<sou
 
 The signature is checked before anything else in the URL is read. A URL changed anywhere is refused with 403 `invalid_signature`.
 
-When variants are on and `EMBISTO_PUBLIC_URL` is set, cards carry the signed URLs as `variants` of their `image`, `icon` and `images`. Each variant has its preset and its URL. It also has its size when the original's size is known, so a client can pick the smallest variant that fills its view:
+When thumbnails are on and `EMBISTO_PUBLIC_URL` is set, cards list them, signed, as `variants` of their `image`, `icon` and `images`. Each has its preset and its URL. It also has its size when the original's size is known, so a client can pick the smallest thumbnail that fills its view:
 
 ```json
 "image": {
@@ -33,9 +33,9 @@ When variants are on and `EMBISTO_PUBLIC_URL` is set, cards carry the signed URL
 }
 ```
 
-A preset that comes out the same size as one before it is left out. That happens to every preset after the first for a small icon. SVG and ICO sources get no variants, because `/i/` refuses them.
+A preset that comes out the same size as one before it is left out. That happens to every preset after the first for a small icon. SVG and ICO sources get no thumbnails, because `/i/` refuses them.
 
-`embisto sign <size> <url>` prints a variant's URL, for a client backend that signs its own URLs or for a test.
+`embisto sign <size> <url>` prints a thumbnail's URL, for a client backend that signs its own URLs or for a test.
 
 ## Sizes
 
@@ -47,11 +47,11 @@ A preset that comes out the same size as one before it is left out. That happens
 
 `EMBISTO_IMAGE_PRESETS` replaces the presets, written as `name=WxH-mode` separated by commas, such as `thumb=160x160-fill,card=600x0-fit`. A zero side does not bound.
 
-An explicit size is accepted only when both sides come from 0, 64, 96, 128, 160, 240, 320, 480, 600, 640, 800, 960 and 1200, so that the variants of one picture, and with them the cache, stay few. Pictures are never enlarged.
+An explicit size is accepted only when both sides come from 0, 64, 96, 128, 160, 240, 320, 480, 600, 640, 800, 960 and 1200, so that the thumbnails of one picture, and with them the cache, stay few. Pictures are never enlarged.
 
 ## Processing
 
-Variants are made in pure Go, without cgo. Each step bounds the next:
+Thumbnails are made in pure Go, without cgo. Each step bounds the next:
 
 1. **Slot.** A picture waits for a free processing slot: four at a time, for up to two seconds. While it waits it holds no file in memory. A picture that gets no slot is refused with 503 `busy` and `Retry-After`.
 2. **Fetch.** The source is fetched through the same client as pages, which refuses addresses that are not public. The limits are 10 MiB and 10 seconds; a larger file is refused with 413 `image_too_large`.
@@ -62,7 +62,7 @@ Variants are made in pure Go, without cgo. Each step bounds the next:
 
 ## Formats
 
-Each variant offers two URLs for one size:
+Each thumbnail offers two URLs for one size:
 
 - **`url`** serves JPEG, or PNG for a picture with transparency. Every client decodes these.
 - **`webp_url`** serves lossy WebP at quality 75, about half the bytes.
@@ -83,7 +83,7 @@ Lossy WebP is about 60 ms slower to encode at 600 pixels. Lossless WebP is no sm
 
 At the 16-megapixel limit, a 1200-pixel WebP takes about 0.5 s against 0.44 s for JPEG, with the same peak memory, so the memory figure below holds.
 
-A picture at the pixel limit takes about half a second to resize. The pictures being resized take at most 256 MiB between them, and the source files being read at most four times 10 MiB, so making variants holds about 300 MiB at worst; [configuration](configuration.md#memory) adds the caches to it. A 601×26622 PNG of under 100 KB, which once took 611 MiB, takes some 110 MiB as it resizes, within the 111 MiB it is admitted for. Ordinary preview pictures, such as a 1200×630 JPEG, take about 20 ms and a few megabytes.
+A picture at the pixel limit takes about half a second to resize. The pictures being resized take at most 256 MiB between them, and the source files being read at most four times 10 MiB, so making thumbnails holds about 300 MiB at worst; [configuration](configuration.md#memory) adds the caches to it. A 601×26622 PNG of under 100 KB, which once took 611 MiB, takes some 110 MiB as it resizes, within the 111 MiB it is admitted for. Ordinary preview pictures, such as a 1200×630 JPEG, take about 20 ms and a few megabytes.
 
 ## Caching
 
@@ -93,13 +93,13 @@ Every failure carries `Cache-Control: no-store`, so a passing upstream fault doe
 
 ## Keys
 
-`EMBISTO_IMAGE_KEY` must have at least 32 bytes, for example `openssl rand -hex 32`; a shorter one stops the server at startup. Without a key variants are off: `/i/` is not served and cards carry none.
+`EMBISTO_IMAGE_KEY` must have at least 32 bytes, for example `openssl rand -hex 32`; a shorter one stops the server at startup. Without a key thumbnails are off: `/i/` is not served and cards carry no `variants`.
 
 Rotating the key invalidates every URL signed with the old one. Cards in the preview cache keep the old URLs for as long as they are cached, up to `EMBISTO_CACHE_MAX_TTL`, so those URLs answer 403 until the cards are made afresh or purged.
 
 ## Limits of the approach
 
-embisto fetches a source only when one of its variants is first requested; the response carries immutable cache headers, so caches keep the variant after that. A source that expires before anyone opens a variant of it, such as an Instagram link a card was made from hours earlier, leaves its variants nothing to fetch, so their URLs fail.
+embisto fetches a source only when one of its thumbnails is first requested; the response carries immutable cache headers, so caches keep the thumbnail after that. A source that expires before anyone opens a thumbnail of it, such as an Instagram link a card was made from hours earlier, leaves its thumbnails nothing to fetch, so their URLs fail.
 
 ## Evaluation: WebP and AVIF output
 
