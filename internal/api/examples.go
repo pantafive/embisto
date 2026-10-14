@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/pantafive/embisto/card"
+	"github.com/pantafive/embisto/iframely"
 	"github.com/pantafive/embisto/render"
 )
 
@@ -62,9 +63,9 @@ var examplePreview = card.Preview{
 }
 
 var (
-	exampleIframely = render.IframelyOf(examplePreview)
+	exampleIframely = iframely.Of(examplePreview)
 	exampleOEmbed   = render.OEmbedOf(examplePreview)
 	exampleText     = renderedText(render.Text{}, examplePreview)
 	exampleProblem  = refusal(card.CodeBlockedURL) //nolint:errname // an example body, not an error to return
-	exampleRefusal  = render.IframelyError{Error: render.IframelyErrorBody{Source: "embisto", Code: 404, Message: "Not Found"}}
+	exampleRefusal  = iframely.Error{Error: iframely.ErrorBody{Source: "embisto", Code: 404, Message: "Not Found"}}
 )

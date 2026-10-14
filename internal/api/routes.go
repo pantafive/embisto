@@ -9,17 +9,17 @@ import (
 
 	"github.com/pantafive/embisto"
 	"github.com/pantafive/embisto/card"
+	"github.com/pantafive/embisto/iframely"
 	"github.com/pantafive/embisto/render"
 )
 
 const (
-	formatJSON     = "json"
-	formatText     = "text"
-	formatIframely = "iframely"
-	formatOEmbed   = "oembed"
-	tagPreviews    = "Previews"
-	tagCompatible  = "Iframely-compatible"
-	tagService     = "Service"
+	formatJSON    = "json"
+	formatText    = "text"
+	formatOEmbed  = "oembed"
+	tagPreviews   = "Previews"
+	tagCompatible = "Iframely-compatible"
+	tagService    = "Service"
 )
 
 // responseDefault is OpenAPI's key for the responses not listed by status, the failures here.
@@ -116,9 +116,9 @@ func addCompatibleRoutes(api huma.API, deps Deps) {
 	compatibleErrors := &huma.Response{
 		Description: "The preview failed, in Iframely's shape: `code` is the HTTP status. A page that answered with an error status passes it on; " +
 			"400 is an invalid URL, 403 an address that is not public, 408 a page too slow.",
-		Content: content(api, "application/json", reflect.TypeFor[render.IframelyError](), exampleRefusal),
+		Content: content(api, "application/json", reflect.TypeFor[iframely.Error](), exampleRefusal),
 	}
-	if renderer, ok := deps.formats[formatIframely]; ok {
+	if renderer, ok := deps.formats[iframely.Format]; ok {
 		huma.Register(api, huma.Operation{
 			OperationID: "iframely",
 			Method:      http.MethodGet,
@@ -127,8 +127,8 @@ func addCompatibleRoutes(api huma.API, deps Deps) {
 			Description: "The same preview as `/v1/preview`, shaped as Iframely's API answers with links grouped by rel: `meta`, `links`, and the primary embed's `rel` and `html`. " +
 				"See docs/iframely-compat.md in the repository for where it differs from Iframely.",
 			Tags:      []string{tagCompatible},
-			Responses: map[string]*huma.Response{"200": {Description: "The preview.", Content: content(api, renderer.ContentType(), reflect.TypeFor[render.IframelyResponse](), exampleIframely)}, responseDefault: compatibleErrors},
-		}, deps.compatible(formatIframely))
+			Responses: map[string]*huma.Response{"200": {Description: "The preview.", Content: content(api, renderer.ContentType(), reflect.TypeFor[iframely.Response](), exampleIframely)}, responseDefault: compatibleErrors},
+		}, deps.compatible(iframely.Format))
 	}
 	if renderer, ok := deps.formats[formatOEmbed]; ok {
 		huma.Register(api, huma.Operation{

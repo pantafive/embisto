@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/pantafive/embisto/card"
+	"github.com/pantafive/embisto/iframely"
 )
 
 // ErrTemplate is a template file that cannot serve: a bad name, a parse error, or output that breaks its format.
@@ -28,15 +29,14 @@ const templateSuffix = ".tmpl"
 var templateName = regexp.MustCompile(`^[a-z][a-z0-9_-]*$`)
 
 // builtIn are the formats embisto has of its own, which no template may take.
-var builtIn = []string{formatJSON, formatText, formatHTML, formatIframely, formatOEmbed}
+var builtIn = []string{formatJSON, formatText, formatHTML, iframely.Format, formatOEmbed}
 
 // The names of embisto's own formats.
 const (
-	formatJSON     = "json"
-	formatText     = "text"
-	formatHTML     = "html"
-	formatIframely = "iframely"
-	formatOEmbed   = "oembed"
+	formatJSON   = "json"
+	formatText   = "text"
+	formatHTML   = "html"
+	formatOEmbed = "oembed"
 )
 
 // contentTypeText is plain text's media type.

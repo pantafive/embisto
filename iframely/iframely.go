@@ -1,4 +1,6 @@
-package render
+// Package iframely answers in the formats of Iframely's API, so a client of Iframely can switch to embisto by changing
+// the address: the response with links grouped by rel, and the shape of a failure.
+package iframely
 
 import (
 	"cmp"
@@ -13,21 +15,24 @@ import (
 	"github.com/pantafive/embisto/card"
 )
 
-// Iframely writes the preview the way Iframely's API does, links grouped by rel, so a client of Iframely can switch by
-// changing the address. docs/iframely-compat.md lists where the two differ.
-type Iframely struct{}
+// Format is the name clients ask for the Renderer's format by.
+const Format = "iframely"
 
-// IframelyResponse is Iframely's answer: the page's meta, its links by rel, and the primary embed.
-type IframelyResponse struct {
-	URL   string                    `json:"url,omitempty" doc:"The canonical URL of the page"`
-	Meta  IframelyMeta              `json:"meta"`
-	Links map[string][]IframelyLink `json:"links" doc:"Links by their primary rel: player, app, image, file, thumbnail, icon"`
-	Rel   []string                  `json:"rel" doc:"The rels of the primary embed; empty when the page has none"`
-	HTML  string                    `json:"html,omitempty" doc:"The primary embed's HTML"`
+// Renderer writes the preview the way Iframely's API does, links grouped by rel, so a client of Iframely can switch by
+// changing the address. docs/iframely-compat.md lists where the two differ.
+type Renderer struct{}
+
+// Response is Iframely's answer: the page's meta, its links by rel, and the primary embed.
+type Response struct {
+	URL   string            `json:"url,omitempty" doc:"The canonical URL of the page"`
+	Meta  Meta              `json:"meta"`
+	Links map[string][]Link `json:"links" doc:"Links by their primary rel: player, app, image, file, thumbnail, icon"`
+	Rel   []string          `json:"rel" doc:"The rels of the primary embed; empty when the page has none"`
+	HTML  string            `json:"html,omitempty" doc:"The primary embed's HTML"`
 }
 
-// IframelyMeta is what the page says about itself, in Iframely's names.
-type IframelyMeta struct {
+// Meta is what the page says about itself, in Iframely's names.
+type Meta struct {
 	Title       string `json:"title,omitempty"`
 	Description string `json:"description,omitempty"`
 	Author      string `json:"author,omitempty"`
@@ -39,30 +44,30 @@ type IframelyMeta struct {
 	Medium      string `json:"medium,omitempty" enum:"link,video,image,file"`
 }
 
-// IframelyLink is one resource with its rels, its MIME type, its size and, for a player or an app, its HTML.
-type IframelyLink struct {
-	Href  string        `json:"href,omitempty"`
-	Rel   []string      `json:"rel"`
-	Type  string        `json:"type,omitempty"`
-	Media IframelyMedia `json:"media,omitzero"`
-	HTML  string        `json:"html,omitempty"`
+// Link is one resource with its rels, its MIME type, its size and, for a player or an app, its HTML.
+type Link struct {
+	Href  string   `json:"href,omitempty"`
+	Rel   []string `json:"rel"`
+	Type  string   `json:"type,omitempty"`
+	Media Media    `json:"media,omitzero"`
+	HTML  string   `json:"html,omitempty"`
 }
 
-// IframelyMedia is a link's size, or for a responsive player its proportions.
-type IframelyMedia struct {
+// Media is a link's size, or for a responsive player its proportions.
+type Media struct {
 	Width       int     `json:"width,omitempty"`
 	Height      int     `json:"height,omitempty"`
 	AspectRatio float64 `json:"aspect-ratio,omitempty"` //nolint:tagliatelle // Iframely's own name
 	MaxWidth    int     `json:"max-width,omitempty"`    //nolint:tagliatelle // Iframely's own name
 }
 
-// IframelyError is Iframely's shape of a failure.
-type IframelyError struct {
-	Error IframelyErrorBody `json:"error"`
+// Error is Iframely's shape of a failure.
+type Error struct {
+	Error ErrorBody `json:"error"`
 }
 
-// IframelyErrorBody names the failure by its HTTP status, in the catalogue's words.
-type IframelyErrorBody struct {
+// ErrorBody names the failure by its HTTP status, in the catalogue's words.
+type ErrorBody struct {
 	Source  string `json:"source"`
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -79,29 +84,29 @@ const (
 	contentTypeJSON = "application/json"
 )
 
-func (Iframely) Name() string {
-	return formatIframely
+func (Renderer) Name() string {
+	return Format
 }
 
-func (Iframely) ContentType() string {
+func (Renderer) ContentType() string {
 	return contentTypeJSON
 }
 
-func (Iframely) Render(w io.Writer, preview card.Preview) error {
-	return encode(w, IframelyOf(preview))
+func (Renderer) Render(w io.Writer, preview card.Preview) error {
+	return encode(w, Of(preview))
 }
 
-func (Iframely) RenderError(w io.Writer, failed *card.Error) (int, error) {
+func (Renderer) RenderError(w io.Writer, failed *card.Error) (int, error) {
 	status := statusOf(failed)
-	return status, encode(w, IframelyError{Error: IframelyErrorBody{Source: "embisto", Code: status, Message: failed.Error()}})
+	return status, encode(w, Error{Error: ErrorBody{Source: "embisto", Code: status, Message: failed.Error()}})
 }
 
-// IframelyOf is the preview in Iframely's shape.
-func IframelyOf(preview card.Preview) IframelyResponse {
-	response := IframelyResponse{
+// Of is the preview in Iframely's shape.
+func Of(preview card.Preview) Response {
+	response := Response{
 		URL:   preview.CanonicalURL,
 		Meta:  metaOf(preview),
-		Links: map[string][]IframelyLink{},
+		Links: map[string][]Link{},
 		Rel:   []string{},
 	}
 	for _, link := range preview.Links {
@@ -128,8 +133,8 @@ func picture(href string) string {
 	return `<img src="` + html.EscapeString(href) + `">`
 }
 
-func metaOf(preview card.Preview) IframelyMeta {
-	meta := IframelyMeta{
+func metaOf(preview card.Preview) Meta {
+	meta := Meta{
 		Title: preview.Title, Description: preview.Description, Author: preview.Author, AuthorURL: preview.AuthorURL,
 		Site: preview.SiteName, Canonical: preview.CanonicalURL, Keywords: preview.Keywords, Medium: mediumOf(preview),
 	}
@@ -155,13 +160,13 @@ func mediumOf(preview card.Preview) string {
 	return "link"
 }
 
-func linkOf(link card.Link) IframelyLink {
-	converted := IframelyLink{Href: link.Href, Type: link.Type, Rel: relsOf(link)}
+func linkOf(link card.Link) Link {
+	converted := Link{Href: link.Href, Type: link.Type, Rel: relsOf(link)}
 	isPlayer := slices.Contains(link.Rel, card.RelPlayer)
 	switch {
 	case isPlayer && link.Type == "text/html":
 		converted.Rel = append(converted.Rel, "html5")
-		converted.Media = IframelyMedia{AspectRatio: link.Media.AspectRatio}
+		converted.Media = Media{AspectRatio: link.Media.AspectRatio}
 		// The frame takes its proportions from the exact size; the media keeps the rounded ratio.
 		if link.Media.AspectRatio == 0 {
 			converted.Media.Height = link.Media.Height
@@ -174,9 +179,9 @@ func linkOf(link card.Link) IframelyLink {
 		converted.Href = ""
 		converted.Rel = append(converted.Rel, "html5")
 		converted.HTML = link.HTML
-		converted.Media = IframelyMedia{MaxWidth: link.Media.Width}
+		converted.Media = Media{MaxWidth: link.Media.Width}
 	default:
-		converted.Media = IframelyMedia{Width: link.Media.Width, Height: link.Media.Height}
+		converted.Media = Media{Width: link.Media.Width, Height: link.Media.Height}
 		if converted.Type == "" && !isPlayer {
 			converted.Type = "image"
 		}
@@ -200,9 +205,9 @@ func relsOf(link card.Link) []string {
 	return rels
 }
 
-// iframelyStatuses are the failures Iframely's clients know by another status than the catalogue's: a page too slow
+// statuses are the failures Iframely's clients know by another status than the catalogue's: a page too slow
 // is 408, and one that cannot be fetched is one Iframely cannot find.
-var iframelyStatuses = map[card.Code]int{
+var statuses = map[card.Code]int{
 	card.CodeTimeout:     http.StatusRequestTimeout,
 	card.CodeTooLarge:    http.StatusRequestEntityTooLarge,
 	card.CodeFetchFailed: http.StatusNotFound,
@@ -214,7 +219,7 @@ func statusOf(failed *card.Error) int {
 	if failed.Status >= http.StatusBadRequest {
 		return failed.Status
 	}
-	if status, ok := iframelyStatuses[failed.Code]; ok {
+	if status, ok := statuses[failed.Code]; ok {
 		return status
 	}
 	return failed.HTTPStatus()

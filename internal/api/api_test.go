@@ -20,6 +20,7 @@ import (
 	"github.com/pantafive/embisto"
 	"github.com/pantafive/embisto/cache"
 	"github.com/pantafive/embisto/card"
+	"github.com/pantafive/embisto/iframely"
 	"github.com/pantafive/embisto/internal/api"
 	"github.com/pantafive/embisto/render"
 )
@@ -171,11 +172,11 @@ func TestCompatiblePathsAnswerInIframelysFormats(t *testing.T) {
 	server := newServer(t, netip.MustParsePrefix("127.0.0.0/8"))
 	target := url.QueryEscape(site.URL + "/post")
 
-	iframely := get(t, server.URL+"/iframely?url="+target)
+	compatible := get(t, server.URL+"/iframely?url="+target)
 	oembed := get(t, server.URL+"/oembed?url="+target)
 
-	var gotIframely render.IframelyResponse
-	require.NoError(t, json.NewDecoder(iframely.Body).Decode(&gotIframely))
+	var gotIframely iframely.Response
+	require.NoError(t, json.NewDecoder(compatible.Body).Decode(&gotIframely))
 	var gotOEmbed render.OEmbedResponse
 	require.NoError(t, json.NewDecoder(oembed.Body).Decode(&gotOEmbed))
 	assert.Equal(t, []any{"Hello", []string{"thumbnail", "og"}, "link", "Hello"},
@@ -189,9 +190,9 @@ func TestCompatiblePathsFailInIframelysShape(t *testing.T) {
 
 	resp := get(t, server.URL+"/iframely?url="+url.QueryEscape(missing.URL+"/gone"))
 
-	var got render.IframelyError
+	var got iframely.Error
 	require.NoError(t, json.NewDecoder(resp.Body).Decode(&got))
-	assert.Equal(t, []any{http.StatusNotFound, render.IframelyError{Error: render.IframelyErrorBody{Source: "embisto", Code: 404, Message: "the page or the item does not exist, or was removed"}}},
+	assert.Equal(t, []any{http.StatusNotFound, iframely.Error{Error: iframely.ErrorBody{Source: "embisto", Code: 404, Message: "the page or the item does not exist, or was removed"}}},
 		[]any{resp.StatusCode, got})
 }
 
