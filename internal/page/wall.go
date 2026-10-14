@@ -1,4 +1,4 @@
-package meta
+package page
 
 import (
 	"net/url"

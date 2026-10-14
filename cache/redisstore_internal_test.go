@@ -1,4 +1,4 @@
-package rediscache
+package cache
 
 import (
 	"context"
@@ -18,9 +18,9 @@ import (
 func TestAVariantWrittenDuringAPurgeKeepsItsIndex(t *testing.T) {
 	ctx := context.Background()
 	url := valkeytest.Start(t).URL
-	purger, err := New(url)
+	purger, err := newRedisStore(url)
 	require.NoError(t, err)
-	writer, err := New(url)
+	writer, err := newRedisStore(url)
 	require.NoError(t, err)
 	orphans := 0
 	for round := range 300 {

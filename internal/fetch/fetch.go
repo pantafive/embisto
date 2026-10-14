@@ -24,7 +24,6 @@ import (
 	"golang.org/x/net/html/charset"
 
 	"github.com/pantafive/embisto/card"
-	"github.com/pantafive/embisto/internal/freshness"
 )
 
 var (
@@ -196,7 +195,7 @@ func (c *Client) get(ctx context.Context, target *url.URL, header http.Header, r
 	if err != nil {
 		mediaType = "application/octet-stream"
 	}
-	got := card.Response{URL: resp.Request.URL, MediaType: mediaType, Freshness: freshness.Of(resp.Header)}
+	got := card.Response{URL: resp.Request.URL, MediaType: mediaType, Freshness: freshnessOf(resp.Header)}
 	if err := read(ctx, resp.Body, contentType, &got); err != nil {
 		return card.Response{}, err
 	}

@@ -8,8 +8,8 @@ import (
 	"github.com/pantafive/embisto/cache"
 	"github.com/pantafive/embisto/card"
 	"github.com/pantafive/embisto/internal/imagesize"
-	"github.com/pantafive/embisto/internal/meta"
 	"github.com/pantafive/embisto/internal/oembed"
+	"github.com/pantafive/embisto/internal/sources"
 	"github.com/pantafive/embisto/sites"
 )
 
@@ -68,10 +68,10 @@ func Defaults() Options {
 		DefaultAcceptLanguage: "en",
 		Sources: []card.Source{
 			oembed.Discovery{Providers: oembed.Known()},
-			meta.OpenGraph{},
-			meta.JSONLD{},
-			meta.Twitter{},
-			meta.HTML{},
+			sources.OpenGraph{},
+			sources.JSONLD{},
+			sources.Twitter{},
+			sources.HTML{},
 		},
 		HomePages: cache.NewMemory(defaultHomePages, nil),
 		Providers: []card.Provider{sites.YouTube{}, sites.X{}, sites.Reddit{}, sites.TikTok{}, sites.Walled{}},

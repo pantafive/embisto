@@ -15,7 +15,7 @@ import (
 
 	"github.com/pantafive/embisto/cache"
 	"github.com/pantafive/embisto/card"
-	"github.com/pantafive/embisto/internal/meta"
+	"github.com/pantafive/embisto/internal/page"
 )
 
 // SourceName names the source in fetch metrics; it never names a field, since it finds none.
@@ -131,7 +131,7 @@ func (s *Source) read(ctx context.Context, fetcher card.Fetcher, home *url.URL) 
 	if err != nil || resp.MediaType != "text/html" {
 		return said{}, true
 	}
-	parsed := meta.Parse(resp)
+	parsed := page.Parse(resp)
 	found := said{Root: resp.URL.String()}
 	for _, key := range []string{"og:description", "description", "twitter:description"} {
 		if text := parsed.Value(key); text != "" {

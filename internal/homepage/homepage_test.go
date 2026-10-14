@@ -20,7 +20,7 @@ import (
 	"github.com/pantafive/embisto/cache"
 	"github.com/pantafive/embisto/card"
 	"github.com/pantafive/embisto/internal/homepage"
-	"github.com/pantafive/embisto/internal/meta"
+	"github.com/pantafive/embisto/internal/page"
 )
 
 const home = `<meta name="description" content="Everything about everything."><meta property="og:image" content="/logo.png">`
@@ -45,10 +45,10 @@ func source() *homepage.Source {
 
 func input(t *testing.T, raw string) card.Input {
 	t.Helper()
-	page, err := url.Parse(raw)
+	target, err := url.Parse(raw)
 	require.NoError(t, err)
 	fetcher := embisto.NewFetcher(embisto.Options{AllowedNetworks: []netip.Prefix{netip.MustParsePrefix("127.0.0.0/8")}})
-	return card.Input{URL: page, Page: meta.Parse(card.Response{URL: page, MediaType: "text/html", Body: []byte(home)}), Fetcher: fetcher}
+	return card.Input{URL: target, Page: page.Parse(card.Response{URL: target, MediaType: "text/html", Body: []byte(home)}), Fetcher: fetcher}
 }
 
 func TestSourceOffersWhatTheHomePageSaysAsBoilerplate(t *testing.T) {

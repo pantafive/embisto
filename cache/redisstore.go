@@ -1,6 +1,4 @@
-// Package rediscache keeps previews in Redis or anything that speaks its protocol (Valkey, KeyDB, Dragonfly), shared
-// by every instance, with the lock that lets them make one preview between them.
-package rediscache
+package cache
 
 import (
 	"context"
@@ -48,14 +46,15 @@ if redis.call('GET', KEYS[1]) == ARGV[1] then
 end
 return 0`)
 
-// Cache is a Redis-compatible cache.
-type Cache struct {
+// redisStore is the store in Redis or anything that speaks its protocol (Valkey, KeyDB, Dragonfly), shared by every
+// instance, with the lock that lets them make one preview between them; Redis wraps it with a fallback.
+type redisStore struct {
 	client redis.UniversalClient
 }
 
-// New connects to a redis:// or rediss:// URL; it does not dial until first used, so a Redis that is down does not
+// newRedisStore connects to a redis:// or rediss:// URL; it does not dial until first used, so a Redis that is down does not
 // stop the caller from starting.
-func New(rawURL string) (*Cache, error) {
+func newRedisStore(rawURL string) (*redisStore, error) {
 	opts, err := redis.ParseURL(rawURL)
 	if err != nil {
 		// The URL may hold a password: the error names the scheme's rule, never the URL.
@@ -65,10 +64,10 @@ func New(rawURL string) (*Cache, error) {
 	// No command retries: a retried SET NX whose first reply was only late finds the instance's own lock and reads it
 	// as another's. -1 is none; zero would mean go-redis's three. One quick dial retry.
 	opts.MaxRetries, opts.DialerRetries, opts.DialerRetryTimeout = -1, 1, dialRetry
-	return &Cache{client: redis.NewClient(opts)}, nil
+	return &redisStore{client: redis.NewClient(opts)}, nil
 }
 
-func (c *Cache) Get(ctx context.Context, key string) ([]byte, bool, error) {
+func (c *redisStore) Get(ctx context.Context, key string) ([]byte, bool, error) {
 	value, err := c.client.Get(ctx, key).Bytes()
 	switch {
 	case errors.Is(err, redis.Nil):
@@ -80,14 +79,14 @@ func (c *Cache) Get(ctx context.Context, key string) ([]byte, bool, error) {
 	}
 }
 
-func (c *Cache) Set(ctx context.Context, group, key string, value []byte, ttl time.Duration) error {
+func (c *redisStore) Set(ctx context.Context, group, key string, value []byte, ttl time.Duration) error {
 	if err := keep.Run(ctx, c.client, []string{key, group + indexSuffix}, value, ttl.Milliseconds()).Err(); err != nil {
 		return fmt.Errorf("redis set: %w", err)
 	}
 	return nil
 }
 
-func (c *Cache) Delete(ctx context.Context, key string) (int, error) {
+func (c *redisStore) Delete(ctx context.Context, key string) (int, error) {
 	n, err := c.client.Del(ctx, key).Result()
 	if err != nil {
 		return 0, fmt.Errorf("redis delete: %w", err)
@@ -96,7 +95,7 @@ func (c *Cache) Delete(ctx context.Context, key string) (int, error) {
 }
 
 // DeleteGroup drops the keys the group's index names, then the index; the count is of keys that were still there.
-func (c *Cache) DeleteGroup(ctx context.Context, group string) (int, error) {
+func (c *redisStore) DeleteGroup(ctx context.Context, group string) (int, error) {
 	dropped, err := purge.Run(ctx, c.client, []string{group + indexSuffix}).Int()
 	if err != nil {
 		return 0, fmt.Errorf("redis purge: %w", err)
@@ -105,7 +104,7 @@ func (c *Cache) DeleteGroup(ctx context.Context, group string) (int, error) {
 }
 
 // Lock takes the key's lock with a random token; release frees it only while the token is still there.
-func (c *Cache) Lock(ctx context.Context, key string, ttl time.Duration) (func(context.Context) error, bool, error) {
+func (c *redisStore) Lock(ctx context.Context, key string, ttl time.Duration) (func(context.Context) error, bool, error) {
 	token := make([]byte, 16)
 	if _, err := rand.Read(token); err != nil {
 		return nil, false, fmt.Errorf("lock token: %w", err)
