@@ -99,7 +99,7 @@ Rotating the key invalidates every URL signed with the old one. Cards in the pre
 
 ## Limits of the approach
 
-embisto fetches a source only when one of its variants is first requested; the response carries immutable cache headers, so caches keep the variant after that. A source that expires before anyone opens a variant of it, such as an Instagram link a card was made from hours earlier, has no variants either.
+embisto fetches a source only when one of its variants is first requested; the response carries immutable cache headers, so caches keep the variant after that. A source that expires before anyone opens a variant of it, such as an Instagram link a card was made from hours earlier, leaves its variants nothing to fetch, so their URLs fail.
 
 ## Evaluation: WebP and AVIF output
 
