@@ -25,11 +25,49 @@ The server answers on `EMBISTO_ADDR` (`:8080`); its OpenAPI spec is at `/openapi
 }
 ```
 
-Empty fields are left out. `type` is `link`, `video`, `photo` or `rich`. `sources` lists the sources the fields came from.
+Empty fields are left out. `icon`, `image` and each of `images` are pictures with the fields listed under `image`.
 
-`links` lists every resource the sources found, each URL once. Its `rel` says what the resource is (`icon`, `thumbnail`, `image`, `player`, `app`, `file`) and names every source that found it. Picture sizes the page did not state are measured from the first bytes of the file: PNG, JPEG, GIF, WebP, SVG and ICO.
-
-The OpenAPI spec is served at `/openapi.json`. `/docs` is the API reference, rendered by [Scalar](https://github.com/scalar/scalar) at a pinned version loaded from jsDelivr.
+| Field | Type | Meaning |
+|---|---|---|
+| `url` | string | The URL asked about. |
+| `canonical_url` | string | The page's own address for itself, from its canonical link or Open Graph; else the URL that served it after redirects. |
+| `type` | string | What the card shows: `link`, `video`, `photo` or `rich`. |
+| `title` | string | The item's title. |
+| `description` | string | The item's summary. |
+| `site_name` | string | The site's name, such as YouTube. |
+| `author` | string | Who made the item. |
+| `author_url` | string | The author's page. |
+| `keywords` | string | The page's keywords, separated by commas. |
+| `published_at` | string | When the item was published, as RFC 3339. |
+| `icon` | picture | The site's icon. |
+| `image` | picture | The card's picture: the first of `images`. |
+| `images` | array of pictures | Every picture of the item the sources found, by their priority. |
+| `image.url` | string | The picture's URL on its site. |
+| `image.width`, `image.height` | integer | Its size in pixels, as the page states it or measured from the file's first bytes (PNG, JPEG, GIF, WebP, SVG, ICO). |
+| `image.variants` | array | The picture's thumbnails, when the server has them on; see [thumbnails](thumbnails.md). |
+| `image.variants[].preset` | string | The preset's name, such as `thumb`, `card` or `large`. |
+| `image.variants[].url` | string | The thumbnail as JPEG, or PNG when it has transparency. |
+| `image.variants[].webp_url` | string | The thumbnail as WebP, about half the bytes. |
+| `image.variants[].width`, `image.variants[].height` | integer | The thumbnail's size, when the original's is known. |
+| `video` | object | What the item plays. |
+| `video.url` | string | A video file, or a player page. |
+| `video.type` | string | Its media type; `text/html` for a player page. |
+| `video.width`, `video.height` | integer | Its size in pixels. |
+| `embed` | object | The provider's own way of showing the item inline. |
+| `embed.html` | string | The HTML to insert. |
+| `embed.width`, `embed.height` | integer | The size the HTML asks for. |
+| `embed.provider` | string | Who offers it. |
+| `duration` | integer | How long the video or audio lasts, in seconds. |
+| `limited` | string | Why the card has little more than its URL: `login_wall`, `consent_wall` or `blocked`. Such a card carries the site's name and icon, never the wall's text. |
+| `links` | array | Every resource the sources found, each URL once. |
+| `links[].href` | string | The resource's URL. |
+| `links[].rel` | array of strings | What the resource is (`icon`, `thumbnail`, `image`, `player`, `app`, `file`) and every source that found it. |
+| `links[].type` | string | Its media type. |
+| `links[].media` | object | Its size, when known. |
+| `links[].media.width`, `links[].media.height` | integer | The size in pixels. |
+| `links[].media.aspect_ratio` | number | Width over height, to four places. |
+| `links[].html` | string | The HTML that embeds a player or an app. |
+| `sources` | array of strings | The sources the fields came from, highest priority first. |
 
 ## Routes
 
