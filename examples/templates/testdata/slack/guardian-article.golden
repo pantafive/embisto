@@ -1,0 +1,14 @@
+{
+  "text": "I’m a pediatrician. Loss of human connection is the biggest threat to kids, not AI | Megan Moreno",
+  "blocks": [
+    {
+      "type": "section",
+      "text": {"type": "mrkdwn", "text": "*\u003chttps://www.theguardian.com/technology/2026/oct/13/human-connection-threat-children-ai-technology|I’m a pediatrician. Loss of human connection is the biggest threat to kids, not AI | Megan Moreno\u003e*\nAmid worries about children’s relationship to tech, the solution is often spending more time talking openly with each other"},
+      "accessory": {"type": "image", "image_url": "https://embisto.example/i/Il_eEnMqYz61JRxaeSMb9KkoXeBUmT1HguEL4n6-zWE/thumb/aHR0cHM6Ly9pLmd1aW0uY28udWsvaW1nL21lZGlhL2U0Y2FjMTNlOWQyYTU4YjExOGYxN2I2OGY0N2Q5ZDU4ZjI5ZDY0MTgvMzk3XzBfNDY4MF8zNzQ0L21hc3Rlci80NjgwLmpwZz93aWR0aD0xMjAwJmhlaWdodD02MzAmcXVhbGl0eT04NSZhdXRvPWZvcm1hdCZmaXQ9Y3JvcCZwcmVjcm9wPTQwOjIxLG9mZnNldC14NTAsb2Zmc2V0LXkwJm92ZXJsYXktYWxpZ249Ym90dG9tJTJDbGVmdCZvdmVybGF5LXdpZHRoPTEwMHAmb3ZlcmxheS1iYXNlNjQ9TDJsdFp5OXpkR0YwYVdNdmIzWmxjbXhoZVhNdmRHY3RiM0JwYm1sdmJuTXVjRzVuJmVuYWJsZT11cHNjYWxlJnM9NjNjZDQxM2I1MzRmNDkzNjQ1M2EyNzhlMGIxZjg0MDk", "alt_text": "I’m a pediatrician. Loss of human connection is the biggest threat to kids, not AI | Megan Moreno"}
+    },
+    {
+      "type": "context",
+      "elements": [{"type": "mrkdwn", "text": "the Guardian"}]
+    }
+  ]
+}

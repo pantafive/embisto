@@ -1,0 +1,23 @@
+{
+  "url": "https://example.com/post",
+  "meta": {
+    "title": "A post, by oEmbed",
+    "author": "Someone",
+    "site": "Example",
+    "canonical": "https://example.com/post",
+    "medium": "link"
+  },
+  "links": {
+    "icon": [
+      {
+        "href": "https://example.com/favicon.ico",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/x-icon"
+      }
+    ]
+  },
+  "rel": []
+}

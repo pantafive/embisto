@@ -1,0 +1,149 @@
+{
+  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "meta": {
+    "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+    "description": "The official video for “Never Gonna Give You Up” by Rick Astley. Never: The Autobiography 📚 OUT NOW! Follow this link to get your copy and listen to Rick’s ...",
+    "author": "Rick Astley",
+    "author_url": "https://www.youtube.com/@RickAstleyYT",
+    "site": "YouTube",
+    "canonical": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "date": "2009-10-25T06:57:33.000Z",
+    "keywords": "rick astley, Never Gonna Give You Up, nggyu, never gonna give you up lyrics, rick rolled, Rick Roll, rick astley official, rickrolled, Fortnite song, Fortnite event, Fortnite dance, fortnite never gonna give you up, rick roll, rickrolling, rick rolling, never gonna give you up, 80s music, rick astley new, animated video, rickroll, meme songs, never gonna give u up lyrics, Rick Astley 2022, never gonna let you down, animated, rick rolls 2022, never gonna give you up karaoke",
+    "medium": "video"
+  },
+  "links": {
+    "icon": [
+      {
+        "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_144x144.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 144,
+          "height": 144
+        }
+      },
+      {
+        "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_96x96.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 96,
+          "height": 96
+        }
+      },
+      {
+        "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_48x48.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 48,
+          "height": 48
+        }
+      },
+      {
+        "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_32x32.png",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/png",
+        "media": {
+          "width": 32,
+          "height": 32
+        }
+      },
+      {
+        "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon.ico",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/x-icon",
+        "media": {
+          "width": 48,
+          "height": 48
+        }
+      }
+    ],
+    "player": [
+      {
+        "href": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "rel": [
+          "player",
+          "og",
+          "twitter",
+          "ssl",
+          "html5",
+          "responsive"
+        ],
+        "type": "text/html",
+        "media": {
+          "aspect-ratio": 1.7778
+        },
+        "html": "<div style=\"left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;\"><iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" style=\"border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;\" allowfullscreen=\"\" scrolling=\"no\" allow=\"encrypted-media; accelerometer; clipboard-write; gyroscope; picture-in-picture; web-share; fullscreen\"></iframe></div>"
+      },
+      {
+        "href": "https://www.youtube.com/embed/dQw4w9WgXcQ?feature=oembed",
+        "rel": [
+          "player",
+          "oembed",
+          "ssl",
+          "html5",
+          "responsive"
+        ],
+        "type": "text/html",
+        "media": {
+          "aspect-ratio": 1.7699
+        },
+        "html": "<div style=\"left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.5%;\"><iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ?feature=oembed\" style=\"border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;\" allowfullscreen=\"\" scrolling=\"no\" allow=\"encrypted-media; accelerometer; clipboard-write; gyroscope; picture-in-picture; web-share; fullscreen\"></iframe></div>"
+      }
+    ],
+    "thumbnail": [
+      {
+        "href": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+        "rel": [
+          "thumbnail",
+          "oembed",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 480,
+          "height": 360
+        }
+      },
+      {
+        "href": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+        "rel": [
+          "thumbnail",
+          "og",
+          "twitter",
+          "ssl"
+        ],
+        "type": "image/jpeg",
+        "media": {
+          "width": 1280,
+          "height": 720
+        }
+      }
+    ]
+  },
+  "rel": [
+    "player",
+    "og",
+    "twitter",
+    "ssl",
+    "html5",
+    "responsive"
+  ],
+  "html": "<div style=\"left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;\"><iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" style=\"border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;\" allowfullscreen=\"\" scrolling=\"no\" allow=\"encrypted-media; accelerometer; clipboard-write; gyroscope; picture-in-picture; web-share; fullscreen\"></iframe></div>"
+}

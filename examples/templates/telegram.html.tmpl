@@ -1,0 +1,6 @@
+{{- /* A Telegram message for sendMessage with parse_mode HTML: only tags Telegram accepts (b, a), the text escaped
+by html/template, and well under the 4096-character limit. */ -}}
+{{- $url := default .URL .CanonicalURL -}}
+<b>{{truncate 200 (default (default $url .SiteName) .Title)}}</b>
+{{with .Description}}{{truncate 600 .}}
+{{end}}<a href="{{$url}}">{{default $url .SiteName}}</a>

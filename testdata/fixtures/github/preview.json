@@ -1,0 +1,72 @@
+{
+  "url": "https://github.com",
+  "canonical_url": "https://github.com",
+  "type": "link",
+  "title": "GitHub · Change is constant. GitHub keeps you ahead. · GitHub",
+  "description": "Join the world's most widely adopted, AI-powered developer platform where millions of developers, businesses, and the largest open source community build software that advances humanity.",
+  "site_name": "GitHub",
+  "icon": {
+    "url": "https://github.githubassets.com/favicons/favicon.png",
+    "width": 32,
+    "height": 32
+  },
+  "image": {
+    "url": "https://images.ctfassets.net/8aevphvgewt8/4pe4eOtUJ0ARpZRE4fNekf/f52b1f9c52f059a33170229883731ed0/GH-Homepage-Universe-img.png",
+    "width": 1200,
+    "height": 630
+  },
+  "images": [
+    {
+      "url": "https://images.ctfassets.net/8aevphvgewt8/4pe4eOtUJ0ARpZRE4fNekf/f52b1f9c52f059a33170229883731ed0/GH-Homepage-Universe-img.png",
+      "width": 1200,
+      "height": 630
+    }
+  ],
+  "links": [
+    {
+      "href": "https://images.ctfassets.net/8aevphvgewt8/4pe4eOtUJ0ARpZRE4fNekf/f52b1f9c52f059a33170229883731ed0/GH-Homepage-Universe-img.png",
+      "rel": [
+        "thumbnail",
+        "opengraph",
+        "twitter"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 1200,
+        "height": 630,
+        "aspect_ratio": 1.9048
+      }
+    },
+    {
+      "href": "https://github.githubassets.com/favicons/favicon.png",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 32,
+        "height": 32,
+        "aspect_ratio": 1
+      }
+    },
+    {
+      "href": "https://github.githubassets.com/favicons/favicon.svg",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/svg+xml",
+      "media": {
+        "width": 32,
+        "height": 32,
+        "aspect_ratio": 1
+      }
+    }
+  ],
+  "sources": [
+    "opengraph",
+    "twitter",
+    "html"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "request": {
+    "url": "https://github.com"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://github.com",
+      "media_type": "text/html",
+      "file": "1.html"
+    },
+    {
+      "method": "peek",
+      "url": "https://images.ctfassets.net/8aevphvgewt8/4pe4eOtUJ0ARpZRE4fNekf/f52b1f9c52f059a33170229883731ed0/GH-Homepage-Universe-img.png",
+      "media_type": "image/png",
+      "file": "2.bin"
+    },
+    {
+      "method": "peek",
+      "url": "https://github.githubassets.com/favicons/favicon.svg",
+      "media_type": "image/svg+xml",
+      "file": "3.bin"
+    },
+    {
+      "method": "peek",
+      "url": "https://github.githubassets.com/favicons/favicon.png",
+      "media_type": "image/png",
+      "file": "4.bin"
+    }
+  ]
+}

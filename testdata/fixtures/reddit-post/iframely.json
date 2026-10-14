@@ -1,0 +1,28 @@
+{
+  "url": "https://www.reddit.com/r/golang/comments/1wym3v0/hooking_into_the_go_toolchain/",
+  "meta": {
+    "title": "Hooking into the Go toolchain",
+    "author": "u/SnooWords9033",
+    "site": "Reddit",
+    "canonical": "https://www.reddit.com/r/golang/comments/1wym3v0/hooking_into_the_go_toolchain/"
+  },
+  "links": {
+    "app": [
+      {
+        "rel": [
+          "app",
+          "ssl",
+          "html5"
+        ],
+        "type": "text/html",
+        "html": "<blockquote class=\"reddit-embed-bq\" style=\"height:500px\" >\n<a href=\"https://www.reddit.com/r/golang/comments/1wym3v0/hooking_into_the_go_toolchain/\">Hooking into the Go toolchain</a><br> by\n<a href=\"https://www.reddit.com/user/SnooWords9033/\">u/SnooWords9033</a> in\n<a href=\"https://www.reddit.com/r/golang/\">golang</a>\n</blockquote>\n<script async src=\"https://embed.reddit.com/widgets.js\" charset=\"UTF-8\"></script>"
+      }
+    ]
+  },
+  "rel": [
+    "app",
+    "ssl",
+    "html5"
+  ],
+  "html": "<blockquote class=\"reddit-embed-bq\" style=\"height:500px\" >\n<a href=\"https://www.reddit.com/r/golang/comments/1wym3v0/hooking_into_the_go_toolchain/\">Hooking into the Go toolchain</a><br> by\n<a href=\"https://www.reddit.com/user/SnooWords9033/\">u/SnooWords9033</a> in\n<a href=\"https://www.reddit.com/r/golang/\">golang</a>\n</blockquote>\n<script async src=\"https://embed.reddit.com/widgets.js\" charset=\"UTF-8\"></script>"
+}

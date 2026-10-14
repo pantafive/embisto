@@ -1,0 +1,14 @@
+{
+  "text": "GitHub · Change is constant. GitHub keeps you ahead. · GitHub",
+  "blocks": [
+    {
+      "type": "section",
+      "text": {"type": "mrkdwn", "text": "*\u003chttps://github.com|GitHub · Change is constant. GitHub keeps you ahead. · GitHub\u003e*\nJoin the world's most widely adopted, AI-powered developer platform where millions of developers, businesses, and the largest open source community build software that advances humanity."},
+      "accessory": {"type": "image", "image_url": "https://embisto.example/i/Et2zx6VeuMOOovl2HyIC0yv05VcPRUW5M86Rhlxq2jA/thumb/aHR0cHM6Ly9pbWFnZXMuY3RmYXNzZXRzLm5ldC84YWV2cGh2Z2V3dDgvNHBlNGVPdFVKMEFScFpSRTRmTmVrZi9mNTJiMWY5YzUyZjA1OWEzMzE3MDIyOTg4MzczMWVkMC9HSC1Ib21lcGFnZS1Vbml2ZXJzZS1pbWcucG5n", "alt_text": "GitHub · Change is constant. GitHub keeps you ahead. · GitHub"}
+    },
+    {
+      "type": "context",
+      "elements": [{"type": "mrkdwn", "text": "GitHub"}]
+    }
+  ]
+}

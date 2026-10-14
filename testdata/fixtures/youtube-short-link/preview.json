@@ -1,0 +1,179 @@
+{
+  "url": "https://youtu.be/dQw4w9WgXcQ?t=42",
+  "canonical_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "type": "video",
+  "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+  "description": "The official video for “Never Gonna Give You Up” by Rick Astley. Never: The Autobiography 📚 OUT NOW! Follow this link to get your copy and listen to Rick’s ...",
+  "site_name": "YouTube",
+  "author": "Rick Astley",
+  "author_url": "https://www.youtube.com/@RickAstleyYT",
+  "keywords": "rick astley, Never Gonna Give You Up, nggyu, never gonna give you up lyrics, rick rolled, Rick Roll, rick astley official, rickrolled, Fortnite song, Fortnite event, Fortnite dance, fortnite never gonna give you up, rick roll, rickrolling, rick rolling, never gonna give you up, 80s music, rick astley new, animated video, rickroll, meme songs, never gonna give u up lyrics, Rick Astley 2022, never gonna let you down, animated, rick rolls 2022, never gonna give you up karaoke",
+  "published_at": "2009-10-25T06:57:33Z",
+  "icon": {
+    "url": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_144x144.png",
+    "width": 144,
+    "height": 144
+  },
+  "image": {
+    "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    "width": 1280,
+    "height": 720
+  },
+  "images": [
+    {
+      "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+    }
+  ],
+  "video": {
+    "url": "https://www.youtube.com/embed/dQw4w9WgXcQ?start=42",
+    "type": "text/html",
+    "width": 560,
+    "height": 315
+  },
+  "embed": {
+    "html": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/dQw4w9WgXcQ?start=42\" title=\"Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>",
+    "width": 560,
+    "height": 315,
+    "provider": "YouTube"
+  },
+  "links": [
+    {
+      "href": "https://www.youtube.com/embed/dQw4w9WgXcQ?start=42",
+      "rel": [
+        "player",
+        "youtube",
+        "opengraph",
+        "twitter"
+      ],
+      "type": "text/html",
+      "media": {
+        "width": 560,
+        "height": 315,
+        "aspect_ratio": 1.7778
+      },
+      "html": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/dQw4w9WgXcQ?start=42\" title=\"Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>"
+    },
+    {
+      "href": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "rel": [
+        "thumbnail",
+        "oembed"
+      ],
+      "type": "image/jpeg",
+      "media": {
+        "width": 480,
+        "height": 360,
+        "aspect_ratio": 1.3333
+      }
+    },
+    {
+      "href": "https://www.youtube.com/embed/dQw4w9WgXcQ?feature=oembed",
+      "rel": [
+        "player",
+        "oembed"
+      ],
+      "type": "text/html",
+      "media": {
+        "width": 200,
+        "height": 113,
+        "aspect_ratio": 1.7699
+      },
+      "html": "<iframe width=\"200\" height=\"113\" src=\"https://www.youtube.com/embed/dQw4w9WgXcQ?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen title=\"Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)\"></iframe>"
+    },
+    {
+      "href": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+      "rel": [
+        "thumbnail",
+        "opengraph",
+        "jsonld",
+        "twitter"
+      ],
+      "type": "image/jpeg",
+      "media": {
+        "width": 1280,
+        "height": 720,
+        "aspect_ratio": 1.7778
+      }
+    },
+    {
+      "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_144x144.png",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 144,
+        "height": 144,
+        "aspect_ratio": 1
+      }
+    },
+    {
+      "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_96x96.png",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 96,
+        "height": 96,
+        "aspect_ratio": 1
+      }
+    },
+    {
+      "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_48x48.png",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 48,
+        "height": 48,
+        "aspect_ratio": 1
+      }
+    },
+    {
+      "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_32x32.png",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/png",
+      "media": {
+        "width": 32,
+        "height": 32,
+        "aspect_ratio": 1
+      }
+    },
+    {
+      "href": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon.ico",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/x-icon",
+      "media": {
+        "width": 48,
+        "height": 48,
+        "aspect_ratio": 1
+      }
+    }
+  ],
+  "sources": [
+    "youtube",
+    "oembed",
+    "opengraph",
+    "jsonld",
+    "twitter",
+    "html"
+  ]
+}

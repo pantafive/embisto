@@ -1,0 +1,22 @@
+{
+  "url": "https://example.com/bare",
+  "canonical_url": "https://example.com/bare",
+  "type": "link",
+  "title": "Only a title",
+  "icon": {
+    "url": "https://example.com/favicon.ico"
+  },
+  "links": [
+    {
+      "href": "https://example.com/favicon.ico",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/x-icon"
+    }
+  ],
+  "sources": [
+    "html"
+  ]
+}

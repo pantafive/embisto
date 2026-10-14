@@ -1,0 +1,70 @@
+# HTTP API
+
+The server answers on `EMBISTO_ADDR` (`:8080`); its OpenAPI spec is at `/openapi.json`, and `/docs` renders it with [Scalar](https://github.com/scalar/scalar), at a pinned version loaded from jsDelivr.
+
+## The card
+
+`GET /v1/preview?url=https://www.youtube.com/watch?v=dQw4w9WgXcQ` answers:
+
+```json
+{
+  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "canonical_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "type": "video",
+  "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+  "site_name": "YouTube",
+  "author": "Rick Astley",
+  "image": {"url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", "width": 1280, "height": 720},
+  "embed": {"html": "<iframe …></iframe>", "width": 200, "height": 113, "provider": "YouTube"},
+  "links": [
+    {"href": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", "rel": ["thumbnail", "opengraph", "twitter"],
+     "type": "image/jpeg", "media": {"width": 1280, "height": 720, "aspect_ratio": 1.7778}},
+    {"href": "https://www.youtube.com/embed/dQw4w9WgXcQ", "rel": ["player", "opengraph", "twitter"], "type": "text/html", "…": "…"}
+  ],
+  "sources": ["oembed", "opengraph", "jsonld", "twitter", "html"]
+}
+```
+
+Empty fields are left out. `type` is `link`, `video`, `photo` or `rich`. `sources` lists the sources the fields came from.
+
+`links` lists every resource the sources found, each URL once. Its `rel` says what the resource is (`icon`, `thumbnail`, `image`, `player`, `app`, `file`) and names every source that found it. Picture sizes the page did not state are measured from the first bytes of the file: PNG, JPEG, GIF, WebP, SVG and ICO.
+
+The OpenAPI spec is served at `/openapi.json`. `/docs` is the API reference, rendered by [Scalar](https://github.com/scalar/scalar) at a pinned version loaded from jsDelivr.
+
+## Routes
+
+| Route | |
+|---|---|
+| `GET /v1/preview?url=` | The preview card. A URL without a scheme is taken as https. `format=text` gives plain lines instead: the title with its site, the description trimmed, and the URL. `format=html` gives a self-contained HTML card for an iframe or an email: inline CSS following light and dark, no JavaScript, and none of the provider's embed HTML. Templates add more formats; see [templates](templates.md). |
+| `DELETE /v1/preview?url=` | Drops the URL's cached previews; see [caching](caching.md). |
+| `GET /iframely?url=` | The same preview in the format of Iframely's API, with links grouped by rel. |
+| `GET /oembed?url=` | The same preview as an oEmbed answer, with the fields Iframely adds. |
+| `GET /healthz` | The process is up. |
+| `GET /readyz` | The server takes new requests. It returns 503 while the server shuts down. |
+| `GET /i/<signature>/<size>/<source>` | A picture of a card, resized by the image proxy. The URLs come signed in the card's `variants`; see [images](images.md). |
+| `GET :9090/metrics` | Prometheus metrics, on a separate listener. |
+| `GET :9090/debug?url=` | With `EMBISTO_DEBUG=true`: how a preview is made, on the internal listener only. |
+
+embisto has no API keys and no request limits of its own: whatever serves it to clients decides who may call it and how often. It protects itself from the pages it fetches; see [hardening](hardening.md).
+
+`/iframely` and `/oembed` let a client of Iframely switch by changing the address. They fail in Iframely's shape rather than as problem+json. [Iframely compatibility](iframely-compat.md) lists where they differ from a local Iframely on a fixed set of URLs.
+
+## Errors
+
+A failed request returns a non-2xx status with an [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) `application/problem+json` body. Its `code` field tells the failures apart:
+
+| `code` | Status | Meaning |
+|---|---|---|
+| `invalid_request` | 400 | A parameter is malformed or out of range, such as a negative size or a malformed language. |
+| `invalid_url` | 400 | The URL is missing, malformed, or not http/https. |
+| `blocked_url` | 403 | The URL resolves to a loopback, private, link-local or otherwise non-public address. |
+| `fetch_failed` | 502 | The page could not be fetched: the connection was refused, the status was an error, or there were too many redirects. |
+| `timeout` | 504 | The page did not answer in time. |
+| `too_large` | 502 | The page is larger than the body limit. |
+| `not_found` | 404 or 410 | The item does not exist or was removed: the page answered 404 or 410, or a provider says the video or post is gone. |
+| `unknown_format` | 400 | The server has no such `format`. |
+| `not_cached` | 404 | A purge found nothing of the URL cached. |
+| `cache_unavailable` | 503 | A purge the shared cache did not answer. |
+| `internal` | 500 | embisto itself failed; the cause is logged, never answered. |
+
+The image proxy's own codes are in [images](images.md). `card.Catalogue()` lists every code with its status and the words a client is shown; the `code` enum in `/openapi.json` is generated from it. A `card.Error`'s text is always the catalogue's words or a detail written for clients: what went wrong underneath, which may name a resolved address or quote a page, is only logged.

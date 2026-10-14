@@ -1,0 +1,65 @@
+{
+  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "canonical_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "type": "video",
+  "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+  "site_name": "YouTube",
+  "author": "Rick Astley",
+  "author_url": "https://www.youtube.com/@RickAstleyYT",
+  "image": {
+    "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+    "width": 480,
+    "height": 360
+  },
+  "images": [
+    {
+      "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+    }
+  ],
+  "video": {
+    "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "type": "text/html",
+    "width": 560,
+    "height": 315
+  },
+  "embed": {
+    "html": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" title=\"Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>",
+    "width": 560,
+    "height": 315,
+    "provider": "YouTube"
+  },
+  "links": [
+    {
+      "href": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "rel": [
+        "thumbnail",
+        "youtube"
+      ],
+      "type": "image/jpeg",
+      "media": {
+        "width": 480,
+        "height": 360,
+        "aspect_ratio": 1.3333
+      }
+    },
+    {
+      "href": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "rel": [
+        "player",
+        "youtube"
+      ],
+      "type": "text/html",
+      "media": {
+        "width": 560,
+        "height": 315,
+        "aspect_ratio": 1.7778
+      },
+      "html": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" title=\"Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>"
+    }
+  ],
+  "sources": [
+    "youtube"
+  ]
+}

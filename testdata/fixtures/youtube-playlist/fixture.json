@@ -1,0 +1,26 @@
+{
+  "request": {
+    "url": "https://www.youtube.com/playlist?list=PLlrxD0HtieHhS8VzuMCfQD4uJ9yne1mE6"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://www.youtube.com/playlist?list=PLlrxD0HtieHhS8VzuMCfQD4uJ9yne1mE6",
+      "final_url": "https://www.youtube.com/playlist?list=PLlrxD0HtieHhS8VzuMCfQD4uJ9yne1mE6\u0026cbrd=1\u0026ucbcb=1",
+      "media_type": "text/html",
+      "file": "1.html"
+    },
+    {
+      "method": "fetch",
+      "url": "https://www.youtube.com/oembed?format=json\u0026url=https%3A%2F%2Fwww.youtube.com%2Fplaylist%3Flist%3DPLlrxD0HtieHhS8VzuMCfQD4uJ9yne1mE6",
+      "media_type": "application/json",
+      "file": "2.json"
+    },
+    {
+      "method": "peek",
+      "url": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon.ico",
+      "media_type": "image/x-icon",
+      "file": "3.bin"
+    }
+  ]
+}

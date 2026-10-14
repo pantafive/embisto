@@ -1,0 +1,23 @@
+import core.widgets;
+
+widget root = GestureDetector(
+  onTap: event "open" { url: "https://example.com/x?a=1\u0026b=2" },
+  child: Column(
+    crossAxisAlignment: "start",
+    mainAxisSize: "min",
+    children: [
+      Padding(
+        padding: [12.0, 10.0, 12.0, 12.0],
+        child: Column(
+          crossAxisAlignment: "start",
+          mainAxisSize: "min",
+          children: [
+            Text(text: "Site \"$x\" \u003cb\u003e", maxLines: 1, overflow: "ellipsis", style: { fontSize: 12.0 }),
+            Text(text: "Say \"hi\" \\ and\nthen \u003c/script\u003e \u003c!channel\u003e \u003chttps://x.test|y\u003e ${env} it's done 🚀", maxLines: 2, overflow: "ellipsis", style: { fontSize: 16.0, fontWeight: "w600" }),
+            Text(text: "*bold* [link](x) next", maxLines: 3, overflow: "ellipsis", style: { fontSize: 14.0 }),
+          ],
+        ),
+      ),
+    ],
+  ),
+);

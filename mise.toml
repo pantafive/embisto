@@ -1,0 +1,15 @@
+[tools]
+go = "1.27"
+golangci-lint = "2.14"
+
+[tasks.test]
+description = "go test; the shared-cache tests start Valkey in Docker"
+run = "go test ./..."
+
+[tasks.serve]
+description = "run the server on :8080"
+run = "go run ./cmd/embisto"
+
+[tasks.lint]
+description = "golangci-lint with autofix"
+run = "golangci-lint run --fix"

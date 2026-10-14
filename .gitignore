@@ -1,0 +1,9 @@
+/embisto
+*.test
+*.out
+.env
+.DS_Store
+.idea/
+.vscode/
+iframely-compare-out/
+dist/

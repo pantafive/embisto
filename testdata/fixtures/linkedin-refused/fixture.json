@@ -1,0 +1,13 @@
+{
+  "request": {
+    "url": "https://www.linkedin.com/company/google"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://www.linkedin.com/company/google",
+      "code": "fetch_failed",
+      "status": 999
+    }
+  ]
+}

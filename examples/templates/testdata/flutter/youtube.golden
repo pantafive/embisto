@@ -1,0 +1,27 @@
+import core.widgets;
+
+widget root = GestureDetector(
+  onTap: event "open" { url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+  child: Column(
+    crossAxisAlignment: "start",
+    mainAxisSize: "min",
+    children: [
+      AspectRatio(
+        aspectRatio: 1.7751,
+        child: Image(source: "https://embisto.example/i/pYNzC3ayCnEphFpU7AmNLq51tJ336YeCK_0sD-AfuT8/card/aHR0cHM6Ly9pLnl0aW1nLmNvbS92aS9kUXc0dzlXZ1hjUS9tYXhyZXNkZWZhdWx0LmpwZw", fit: "cover"),
+      ),
+      Padding(
+        padding: [12.0, 10.0, 12.0, 12.0],
+        child: Column(
+          crossAxisAlignment: "start",
+          mainAxisSize: "min",
+          children: [
+            Text(text: "YouTube", maxLines: 1, overflow: "ellipsis", style: { fontSize: 12.0 }),
+            Text(text: "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)", maxLines: 2, overflow: "ellipsis", style: { fontSize: 16.0, fontWeight: "w600" }),
+            Text(text: "The official video for “Never Gonna Give You Up” by Rick Astley. Never: The Autobiography 📚 OUT NOW! Follow this link to get your copy and listen to Rick’s ...", maxLines: 3, overflow: "ellipsis", style: { fontSize: 14.0 }),
+          ],
+        ),
+      ),
+    ],
+  ),
+);

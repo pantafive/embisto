@@ -1,0 +1,19 @@
+{
+  "request": {
+    "url": "https://example.com/post"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://example.com/post",
+      "media_type": "text/html",
+      "file": "1.html"
+    },
+    {
+      "method": "fetch",
+      "url": "https://example.com/oembed?url=https%3A%2F%2Fexample.com%2Fpost",
+      "media_type": "application/json",
+      "file": "2.json"
+    }
+  ]
+}

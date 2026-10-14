@@ -1,0 +1,14 @@
+{
+  "text": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+  "blocks": [
+    {
+      "type": "section",
+      "text": {"type": "mrkdwn", "text": "*\u003chttps://www.youtube.com/watch?v=dQw4w9WgXcQ|Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)\u003e*\nThe official video for “Never Gonna Give You Up” by Rick Astley. Never: The Autobiography 📚 OUT NOW! Follow this link to get your copy and listen to Rick’s ..."},
+      "accessory": {"type": "image", "image_url": "https://embisto.example/i/AIAicduJ2IER7OOEwRl64iXUDqsbGzM6C0e67GEWWG0/thumb/aHR0cHM6Ly9pLnl0aW1nLmNvbS92aS9kUXc0dzlXZ1hjUS9tYXhyZXNkZWZhdWx0LmpwZw", "alt_text": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)"}
+    },
+    {
+      "type": "context",
+      "elements": [{"type": "mrkdwn", "text": "YouTube"}]
+    }
+  ]
+}

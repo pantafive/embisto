@@ -1,0 +1,15 @@
+{{- /* A CommonMark snippet: the title as a link, the description, the site, and the picture when there is one. */ -}}
+{{- $url := default .URL .CanonicalURL -}}
+**[{{md (truncate 200 (default (default $url .SiteName) .Title))}}]({{md $url}})**
+{{- with .Description}}
+
+{{md (truncate 300 .)}}
+{{- end}}
+{{- with .SiteName}}
+
+_{{md .}}_
+{{- end}}
+{{- with picture . 600 false}}{{if .URL}}
+
+![]({{md .URL}})
+{{- end}}{{end}}

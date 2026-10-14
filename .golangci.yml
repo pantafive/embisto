@@ -1,0 +1,56 @@
+version: "2"
+
+run:
+  relative-path-mode: cfg
+
+# Everything on, then a short disable list; each entry says why it is off.
+linters:
+  default: all
+  disable:
+    - depguard # needs an allowlist we do not have yet; deps are reviewed by hand
+    - exhaustruct # every struct literal would have to name every field
+    - varnamelen # `id`, `ok` are idiomatic Go
+    - ireturn # ports return interfaces by design
+    - nonamedreturns # named returns document multi-value results
+    - wsl # whitespace religion
+    - wsl_v5
+    - nlreturn # same
+    - godox # TODO comments are allowed to exist
+    - lll # gofmt already decides line shape
+    - gochecknoglobals # //go:embed, sentinel errors and compiled regexps are package-level vars
+    - noinlineerr # `if err := f(); err != nil` is the house style
+    - mnd # every threshold would need a named constant
+    - gomodguard # deprecated in favour of gomodguard_v2, which stays on
+    - tagalign # aligning huma's struct tags is noise
+    - exhaustruct_v5 # same as exhaustruct
+    - paralleltest # the suite runs in about a second; t.Parallel everywhere buys nothing
+  exclusions:
+    rules:
+      # A method that implements a card interface is documented by the interface.
+      - linters: [revive]
+        text: "exported: exported method .* should have comment or be unexported"
+      - path: _test\.go
+        # A failed type assertion in a test is a failure, and test fixtures repeat literals by nature.
+        linters: [bodyclose, gosec, errcheck, forcetypeassert, err113, wrapcheck, goconst, funlen, maintidx]
+  settings:
+    errcheck:
+      check-type-assertions: true
+    sloglint:
+      # log.Info instead of log.InfoContext compiles and drops the ids the context carries.
+      context: all
+      no-global: all
+      key-naming-case: snake
+    tagliatelle:
+      case:
+        rules:
+          json: snake
+
+formatters:
+  enable:
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/pantafive/embisto

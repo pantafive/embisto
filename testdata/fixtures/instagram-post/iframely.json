@@ -1,0 +1,25 @@
+{
+  "url": "https://www.instagram.com/p/C0Q8vYvR5u6/",
+  "meta": {
+    "site": "Instagram",
+    "canonical": "https://www.instagram.com/p/C0Q8vYvR5u6/",
+    "medium": "link"
+  },
+  "links": {
+    "icon": [
+      {
+        "href": "https://www.instagram.com/favicon.ico",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/x-icon",
+        "media": {
+          "width": 32,
+          "height": 32
+        }
+      }
+    ]
+  },
+  "rel": []
+}

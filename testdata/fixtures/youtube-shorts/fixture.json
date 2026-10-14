@@ -1,0 +1,26 @@
+{
+  "request": {
+    "url": "https://www.youtube.com/shorts/tPEE9ZwTmy0"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://www.youtube.com/shorts/tPEE9ZwTmy0",
+      "final_url": "https://www.youtube.com/watch?v=tPEE9ZwTmy0",
+      "media_type": "text/html",
+      "file": "1.html"
+    },
+    {
+      "method": "fetch",
+      "url": "https://www.youtube.com/oembed?format=json\u0026url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DtPEE9ZwTmy0",
+      "media_type": "application/json",
+      "file": "2.json"
+    },
+    {
+      "method": "peek",
+      "url": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon.ico",
+      "media_type": "image/x-icon",
+      "file": "3.bin"
+    }
+  ]
+}

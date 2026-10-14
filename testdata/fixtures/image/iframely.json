@@ -1,0 +1,37 @@
+{
+  "url": "https://example.com/cat.png",
+  "meta": {
+    "canonical": "https://example.com/cat.png",
+    "medium": "image"
+  },
+  "links": {
+    "file": [
+      {
+        "href": "https://example.com/cat.png",
+        "rel": [
+          "image",
+          "file",
+          "ssl"
+        ],
+        "type": "image/png"
+      }
+    ],
+    "image": [
+      {
+        "href": "https://example.com/cat.png",
+        "rel": [
+          "image",
+          "file",
+          "ssl"
+        ],
+        "type": "image/png"
+      }
+    ]
+  },
+  "rel": [
+    "image",
+    "file",
+    "ssl"
+  ],
+  "html": "<img src=\"https://example.com/cat.png\">"
+}

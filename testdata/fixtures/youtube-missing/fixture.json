@@ -1,0 +1,20 @@
+{
+  "request": {
+    "url": "https://www.youtube.com/watch?v=AAAAAAAAAAA"
+  },
+  "failure": "not_found",
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://www.youtube.com/watch?v=AAAAAAAAAAA",
+      "media_type": "text/html",
+      "file": "1.html"
+    },
+    {
+      "method": "fetch",
+      "url": "https://www.youtube.com/oembed?format=json\u0026url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DAAAAAAAAAAA",
+      "code": "fetch_failed",
+      "status": 404
+    }
+  ]
+}

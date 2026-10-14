@@ -1,0 +1,19 @@
+{
+  "request": {
+    "url": "https://www.youtube.com/watch?v=rFejpH_tAHM"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://www.youtube.com/watch?v=rFejpH_tAHM",
+      "media_type": "text/html",
+      "file": "1.html"
+    },
+    {
+      "method": "fetch",
+      "url": "https://www.youtube.com/oembed?format=json&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DrFejpH_tAHM",
+      "media_type": "application/json",
+      "file": "2.json"
+    }
+  ]
+}
