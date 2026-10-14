@@ -26,7 +26,7 @@ func spec(publicURL string) huma.Config {
 	config.Tags = []*huma.Tag{
 		{Name: tagPreviews, Description: "embisto's own card."},
 		{Name: tagCompatible, Description: "The formats of Iframely's API, for clients moving from it."},
-		{Name: tagImages, Description: "The pictures of previews, resized by the image proxy when the server runs one."},
+		{Name: tagImages, Description: "Image variants: the pictures of previews, resized and served by embisto when the server has them on."},
 		{Name: tagService, Description: "Probes for an orchestrator."},
 	}
 	config.Info.License = &huma.License{Name: "MIT", URL: "https://github.com/pantafive/embisto/blob/main/LICENSE"}

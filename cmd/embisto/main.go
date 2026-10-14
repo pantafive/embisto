@@ -79,13 +79,13 @@ func runServer(ctx context.Context, environ func() []string) error {
 		return err
 	}
 	renderers := append(render.Defaults(), templates...)
-	proxy, proxied, err := images(ctx, loaded, log, measured)
+	variants, enricher, err := images(ctx, loaded, log, measured)
 	if err != nil {
 		return err
 	}
-	if proxied != nil {
+	if enricher != nil {
 		// After the sizes are measured, so the variants know theirs.
-		opts.Enrichers = append(opts.Enrichers, proxied)
+		opts.Enrichers = append(opts.Enrichers, enricher)
 	}
 	shared, err := sharedStore(loaded, log, measured)
 	if err != nil {
@@ -98,13 +98,13 @@ func runServer(ctx context.Context, environ func() []string) error {
 	previews := layered(embisto.New(opts), shared, loaded, log, measured)
 	var draining atomic.Bool
 	deps := api.Deps{
-		Log: log, Previews: previews, Renderers: renderers, PublicURL: loaded.PublicURL, Requests: measured, Images: proxy,
+		Log: log, Previews: previews, Renderers: renderers, PublicURL: loaded.PublicURL, Requests: measured, Images: variants,
 		Draining: draining.Load,
 	}
 	metricsMux := http.NewServeMux()
 	metricsMux.Handle("GET /metrics", measured.Handler())
 	if loaded.Debug {
-		metricsMux.Handle("GET /debug", debugPage(ctx, opts, proxy, log))
+		metricsMux.Handle("GET /debug", debugPage(ctx, opts, variants, log))
 	}
 
 	return serve(ctx, &draining, log,

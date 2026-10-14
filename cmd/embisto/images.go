@@ -23,8 +23,8 @@ import (
 	"github.com/pantafive/embisto/thumbs"
 )
 
-// The image proxy's limits. Pictures being resized share imageMaxMemory, each admitted by what its header says
-// decoding and scaling it will take; with the source files read, the proxy holds at most imageMaxMemory +
+// The limits of image variants. Pictures being resized share imageMaxMemory, each admitted by what its header says
+// decoding and scaling it will take; with the source files read, variants hold at most imageMaxMemory +
 // imageConcurrency × imageMaxBytes: some 300 MB. A picture at the pixel limit takes about half a second to resize.
 const (
 	imageMaxBytes    = 10 << 20
@@ -52,14 +52,14 @@ func providers(loaded settings.Settings) []card.Provider {
 // debugHomePages is how many bytes of home pages the debug page remembers.
 const debugHomePages = 4 << 20
 
-func debugPage(ctx context.Context, opts embisto.Options, proxy *api.Images, log *slog.Logger) http.Handler {
+func debugPage(ctx context.Context, opts embisto.Options, variants *api.Images, log *slog.Logger) http.Handler {
 	log.WarnContext(ctx, "the debug page is on, on the internal listener", slog.String("path", "/debug"))
 	opts.Observer = nil
 	// Its own memory of home pages: what it learns must not change what the API serves.
 	opts.HomePages = cache.NewMemory(debugHomePages, nil)
 	page := debug.Page{Core: embisto.New(opts), Log: log}
-	if proxy != nil {
-		page.Images = proxy.Processor
+	if variants != nil {
+		page.Images = variants.Processor
 	}
 	return page
 }
@@ -77,34 +77,34 @@ func templateFormats(ctx context.Context, loaded settings.Settings, log *slog.Lo
 	return templates, nil
 }
 
-var errNoImageKey = errors.New("EMBISTO_IMAGE_KEY is not set: the image proxy is off")
+var errNoImageKey = errors.New("EMBISTO_IMAGE_KEY is not set: image variants are off")
 
-// images are the image proxy's parts, and the enricher that hands out its URLs when clients have an address to reach
-// them at; nil and nil when the proxy is off.
+// images are the parts that serve image variants, and the enricher that hands out their URLs when clients have an
+// address to reach them at; nil and nil when variants are off.
 func images(ctx context.Context, loaded settings.Settings, log *slog.Logger, measured *metrics.Metrics) (*api.Images, card.Enricher, error) {
 	if loaded.ImageKey == "" {
-		log.InfoContext(ctx, "the image proxy is off: cards link pictures on their sites; set EMBISTO_IMAGE_KEY to turn it on")
+		log.InfoContext(ctx, "image variants are off: cards link pictures on their sites; set EMBISTO_IMAGE_KEY to turn them on")
 		return nil, nil, nil
 	}
 	signer, err := thumbs.NewSigner([]byte(loaded.ImageKey), loaded.ImagePresets)
 	if err != nil {
-		return nil, nil, fmt.Errorf("the image proxy: %w", err)
+		return nil, nil, fmt.Errorf("image variants: %w", err)
 	}
 	fetcher := embisto.NewFetcher(embisto.Options{Timeout: imageTimeout, UserAgent: embisto.Defaults().UserAgent})
-	proxy := &api.Images{
+	served := &api.Images{
 		Signer: signer, Observer: measured,
 		Processor: thumbs.NewBuiltin(fetcher, thumbs.Limits{
 			MaxBytes: imageMaxBytes, MaxPixels: imageMaxPixels, MaxMemory: imageMaxMemory, Concurrency: imageConcurrency, Wait: imageWait,
 		}),
 	}
 	if loaded.PublicURL == "" {
-		log.WarnContext(ctx, "the image proxy serves signed URLs, but cards carry none without EMBISTO_PUBLIC_URL")
-		return proxy, nil, nil
+		log.WarnContext(ctx, "image variants are served at /i/, but cards carry no URLs of them without EMBISTO_PUBLIC_URL")
+		return served, nil, nil
 	}
-	return proxy, thumbs.Enricher{Signer: signer, BaseURL: loaded.PublicURL}, nil
+	return served, thumbs.Enricher{Signer: signer, BaseURL: loaded.PublicURL}, nil
 }
 
-// runSign prints the proxy URL of a picture in a size, for a client backend to see how URLs are made, or to test one.
+// runSign prints the URL of a picture's variant in a size, for a client backend to see how URLs are made, or to test one.
 func runSign(args []string, environ func() []string, out io.Writer) error {
 	if len(args) != 2 {
 		return fmt.Errorf("%w: usage: embisto sign <preset|WxH-fit|WxH-fill> <url>", settings.ErrInvalid)
@@ -118,7 +118,7 @@ func runSign(args []string, environ func() []string, out io.Writer) error {
 	}
 	signer, err := thumbs.NewSigner([]byte(loaded.ImageKey), loaded.ImagePresets)
 	if err != nil {
-		return fmt.Errorf("the image proxy: %w", err)
+		return fmt.Errorf("image variants: %w", err)
 	}
 	_, err = fmt.Fprintln(out, loaded.PublicURL+signer.Path(args[0], args[1]))
 	return err //nolint:wrapcheck // a failed print to the terminal

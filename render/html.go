@@ -34,8 +34,8 @@ var limitNotes = map[card.Limit]string{
 }
 
 // HTML writes the preview as a self-contained HTML card, for an iframe or an email: inline CSS that follows the
-// reader's light or dark preference, no JavaScript, the picture's box sized before it loads, and the image proxy's
-// WebP and JPEG variants when the server runs one. It links to the page in a new tab, without a referrer.
+// reader's light or dark preference, no JavaScript, the picture's box sized before it loads, and the WebP and
+// JPEG image variants when the server has them on. It links to the page in a new tab, without a referrer.
 type HTML struct{}
 
 func (HTML) Name() string {

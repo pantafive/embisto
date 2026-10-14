@@ -21,7 +21,7 @@ func signer(t *testing.T) *thumbs.Signer {
 	return signer
 }
 
-// segments are the signature, the size and the source of a proxy path.
+// segments are the signature, the size and the source of a variant's path.
 func segments(t *testing.T, path string) (string, string, string) {
 	t.Helper()
 	parts := strings.Split(strings.TrimPrefix(path, "/i/"), "/")

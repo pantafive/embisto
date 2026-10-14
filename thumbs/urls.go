@@ -1,6 +1,6 @@
 // Package thumbs serves the pictures of a preview through embisto, resized and re-encoded: sources that expire or
 // refuse hotlinking stay viewable, clients never reveal their address to other sites and download no more pixels than
-// they show. URLs are signed, so the proxy only serves what the server itself handed out.
+// they show. URLs are signed, so /i/ only serves what the server itself handed out.
 package thumbs
 
 import (
@@ -69,7 +69,7 @@ var (
 	explicitSize = regexp.MustCompile(`^([0-9]+)x([0-9]+)-(fit|fill)$`)
 )
 
-// Signer makes and checks the proxy's URLs: /i/<signature>/<size>/<source>, the signature an HMAC-SHA256 over the
+// Signer makes and checks the URLs of variants: /i/<signature>/<size>/<source>, the signature an HMAC-SHA256 over the
 // size and the source, the source in unpadded base64url. The URL of a picture never changes, so it can be cached for
 // good.
 type Signer struct {
@@ -95,7 +95,7 @@ func (s *Signer) Presets() []Preset {
 	return s.presets
 }
 
-// Path is the proxy path of a source in a size: a preset's name or an explicit WxH-mode, followed by .webp for WebP.
+// Path is the path of a source's variant in a size: a preset's name or an explicit WxH-mode, followed by .webp for WebP.
 func (s *Signer) Path(size, source string) string {
 	encoded := base64.RawURLEncoding.EncodeToString([]byte(source))
 	return "/i/" + s.signature(size, encoded) + "/" + size + "/" + encoded

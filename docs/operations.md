@@ -8,7 +8,7 @@
 - outgoing fetches by stage and outcome;
 - provider matches;
 - cache lookups (hit, miss, or stale: found past its expiry), requests coalesced in the instance or across instances, shared locks (acquired, waited, timeout, error), where each TTL came from (origin, min, max, default, failure), and whether the shared cache answers;
-- the image proxy's pictures by outcome;
+- image variants served, by outcome;
 - every card made afresh, by class and by the provider that shaped it (or `generic`).
 
 No label carries a URL. A card's class is one of:
@@ -30,6 +30,6 @@ With `EMBISTO_DEBUG=true`, the internal listener (`:9090`, beside `/metrics`) se
 - the card it makes afresh, without the cache and outside the metrics;
 - every fetch, source, provider and enricher, with what each found, its outcome and its time;
 - each field's candidates in the order they were asked, the source that won, and why; boilerplate dropped from a field is listed too;
-- the image proxy's `card` preset in both formats, with bytes and time.
+- when image variants are on, the card's image in the `card` preset in both formats, with bytes and time.
 
 Everything a page says is shown escaped, never run. The page is for operators: the API's own listener never serves it.

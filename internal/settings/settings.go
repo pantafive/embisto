@@ -44,7 +44,7 @@ type Settings struct {
 	PublicURL string
 	// DefaultAcceptLanguage is the language pages are asked in, unless a request names its own.
 	DefaultAcceptLanguage string
-	// ImageKey signs the image proxy's URLs; empty turns the proxy off.
+	// ImageKey signs the URLs of image variants; empty turns variants off.
 	ImageKey string
 	// YouTubeNoCookie embeds YouTube's player from youtube-nocookie.com.
 	YouTubeNoCookie bool
@@ -52,7 +52,7 @@ type Settings struct {
 	Debug bool
 	// TemplatesDir holds template files, each an output format; empty adds none.
 	TemplatesDir string
-	// ImagePresets are the sizes the image proxy's URLs name.
+	// ImagePresets are the sizes the URLs of image variants name.
 	ImagePresets []thumbs.Preset
 	// CacheURL names a cache shared by every instance; empty keeps previews in each instance's memory.
 	CacheURL string
@@ -105,7 +105,7 @@ func Load(environ func() []string) (Settings, error) {
 	return loaded, nil
 }
 
-// images are the image proxy's key and presets; a key too short to resist guessing is refused.
+// images are the key and presets of image variants; a key too short to resist guessing is refused.
 func images(env map[string]string) (string, []thumbs.Preset, error) {
 	key := env["EMBISTO_IMAGE_KEY"]
 	if key != "" && len(key) < thumbs.MinKeyLength {
