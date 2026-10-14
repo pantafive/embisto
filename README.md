@@ -71,4 +71,4 @@ fmt.Println(result.Preview.Title)
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © [Mikhail Solomenik](https://github.com/pantafive)
