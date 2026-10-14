@@ -4,6 +4,7 @@ package valkeytest
 
 import (
 	"context"
+	"net"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -38,9 +39,14 @@ func Start(t *testing.T) *Container {
 	})
 	host, err := container.Host(ctx)
 	require.NoError(t, err)
+	if host == "localhost" {
+		// Every new connection would resolve localhost and try [::1] first, which Colima does not forward; a burst of
+		// them then outlasts the cache's 200 ms dial timeout.
+		host = "127.0.0.1"
+	}
 	port, err := container.MappedPort(ctx, "6379/tcp")
 	require.NoError(t, err)
-	return &Container{container: container, URL: "redis://" + host + ":" + port.Port()}
+	return &Container{container: container, URL: "redis://" + net.JoinHostPort(host, port.Port())}
 }
 
 // Stop stops Valkey, as an outage would.
