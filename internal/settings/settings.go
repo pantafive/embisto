@@ -42,8 +42,8 @@ type Settings struct {
 	MetricsAddr string
 	// PublicURL is where clients reach the API, for the OpenAPI document; empty names no server.
 	PublicURL string
-	// AcceptLanguage is the language pages are asked in, unless a request names its own.
-	AcceptLanguage string
+	// DefaultAcceptLanguage is the language pages are asked in, unless a request names its own.
+	DefaultAcceptLanguage string
 	// ImageKey signs the image proxy's URLs; empty turns the proxy off.
 	ImageKey string
 	// YouTubeNoCookie embeds YouTube's player from youtube-nocookie.com.
@@ -80,16 +80,16 @@ func Load(environ func() []string) (Settings, error) {
 		PublicURL:    strings.TrimRight(env["EMBISTO_PUBLIC_URL"], "/"),
 		TemplatesDir: env["EMBISTO_TEMPLATES_DIR"],
 		// Sites answer in the language of wherever the server runs, unless asked otherwise.
-		AcceptLanguage: cmp.Or(env["EMBISTO_ACCEPT_LANGUAGE"], defaultLanguage),
-		CacheTTL:       cacheTTL,
-		FailureTTL:     failureTTL,
+		DefaultAcceptLanguage: cmp.Or(env["EMBISTO_DEFAULT_ACCEPT_LANGUAGE"], defaultLanguage),
+		CacheTTL:              cacheTTL,
+		FailureTTL:            failureTTL,
 	}
 	if err := loaded.readCache(env); err != nil {
 		return Settings{}, err
 	}
 	var err error
-	if _, _, err := language.ParseAcceptLanguage(loaded.AcceptLanguage); err != nil {
-		return Settings{}, fmt.Errorf("%w: EMBISTO_ACCEPT_LANGUAGE=%q is not an Accept-Language value", ErrInvalid, loaded.AcceptLanguage)
+	if _, _, err := language.ParseAcceptLanguage(loaded.DefaultAcceptLanguage); err != nil {
+		return Settings{}, fmt.Errorf("%w: EMBISTO_DEFAULT_ACCEPT_LANGUAGE=%q is not an Accept-Language value", ErrInvalid, loaded.DefaultAcceptLanguage)
 	}
 	if err := loaded.readFlags(env); err != nil {
 		return Settings{}, err

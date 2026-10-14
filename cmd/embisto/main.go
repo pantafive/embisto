@@ -72,7 +72,7 @@ func runServer(ctx context.Context, environ func() []string) error {
 	log := logging.New(os.Stdout, loaded.LogLevel)
 	measured := metrics.New()
 	opts := embisto.Defaults()
-	opts.Log, opts.Observer, opts.AcceptLanguage = log, measured, loaded.AcceptLanguage
+	opts.Log, opts.Observer, opts.DefaultAcceptLanguage = log, measured, loaded.DefaultAcceptLanguage
 	opts.Providers = providers(loaded)
 	templates, err := templateFormats(ctx, loaded, log)
 	if err != nil {

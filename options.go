@@ -22,9 +22,9 @@ type Options struct {
 	MaxBodySize  int64
 	MaxRedirects int
 	UserAgent    string
-	// AcceptLanguage is the Accept-Language a page is asked in, unless a request names its own language; sites
+	// DefaultAcceptLanguage is the Accept-Language a page is asked in, unless a request names its own language; sites
 	// otherwise answer in the language of wherever the server runs.
-	AcceptLanguage string
+	DefaultAcceptLanguage string
 	// AllowedNetworks are reachable although not public, for a deployment that previews its own intranet.
 	AllowedNetworks []netip.Prefix
 	// Fetcher replaces the client the fields above configure, and with it the guard against non-public addresses.
@@ -61,11 +61,11 @@ type Observer interface {
 // Defaults are the options embisto ships with; the home pages are kept in this process's memory.
 func Defaults() Options {
 	return Options{
-		Timeout:        5 * time.Second,
-		MaxBodySize:    5 << 20,
-		MaxRedirects:   5,
-		UserAgent:      "embisto/" + Version + " (+https://github.com/pantafive/embisto)",
-		AcceptLanguage: "en",
+		Timeout:               5 * time.Second,
+		MaxBodySize:           5 << 20,
+		MaxRedirects:          5,
+		UserAgent:             "embisto/" + Version + " (+https://github.com/pantafive/embisto)",
+		DefaultAcceptLanguage: "en",
 		Sources: []card.Source{
 			oembed.Discovery{Providers: oembed.Known()},
 			meta.OpenGraph{},

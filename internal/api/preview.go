@@ -19,7 +19,7 @@ type previewInput struct {
 	URL       string `query:"url" doc:"The page to preview, URL-encoded. Required. Without a scheme it is taken as https." example:"https://www.youtube.com/watch?v=dQw4w9WgXcQ"`
 	MaxWidth  int    `query:"max_width" minimum:"0" doc:"The widest embed the client can show, in pixels; passed on to oEmbed providers."`
 	MaxHeight int    `query:"max_height" minimum:"0" doc:"The tallest embed the client can show, in pixels; passed on to oEmbed providers."`
-	Language  string `query:"lang" pattern:"^[A-Za-z]{2,3}(-[A-Za-z0-9]{1,8})*$" doc:"The language to ask the page in, as a BCP 47 tag such as de or pt-BR; by default the server's EMBISTO_ACCEPT_LANGUAGE. Previews in different languages are cached apart." example:"de"`
+	Language  string `query:"lang" pattern:"^[A-Za-z]{2,3}(-[A-Za-z0-9]{1,8})*$" doc:"The language to ask the page in, as a BCP 47 tag such as de or pt-BR; by default the server's EMBISTO_DEFAULT_ACCEPT_LANGUAGE. Previews in different languages are cached apart." example:"de"`
 }
 
 // compatibleInput takes every parameter as text, checked by the handler: a malformed one is then refused in
@@ -28,7 +28,7 @@ type compatibleInput struct {
 	URL       string `query:"url" doc:"The page to preview, URL-encoded. Required." example:"https://www.youtube.com/watch?v=dQw4w9WgXcQ"`
 	MaxWidth  string `query:"maxwidth" doc:"The widest embed the client can show, in pixels; passed on to oEmbed providers."`
 	MaxHeight string `query:"maxheight" doc:"The tallest embed the client can show, in pixels; passed on to oEmbed providers."`
-	Language  string `query:"lang" doc:"The language to ask the page in, as a BCP 47 tag such as de or pt-BR; by default the server's EMBISTO_ACCEPT_LANGUAGE. Previews in different languages are cached apart." example:"de"`
+	Language  string `query:"lang" doc:"The language to ask the page in, as a BCP 47 tag such as de or pt-BR; by default the server's EMBISTO_DEFAULT_ACCEPT_LANGUAGE. Previews in different languages are cached apart." example:"de"`
 }
 
 // language is a BCP 47 tag as the paths take it.

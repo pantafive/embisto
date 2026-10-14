@@ -49,7 +49,7 @@ func New(opts Options) *Core {
 	}
 	return &Core{pipeline: pipeline.New(pipeline.Options{
 		Timeout:   opts.Timeout,
-		Language:  cmp.Or(opts.AcceptLanguage, defaults.AcceptLanguage),
+		Language:  cmp.Or(opts.DefaultAcceptLanguage, defaults.DefaultAcceptLanguage),
 		Fetcher:   opts.Fetcher,
 		Sources:   orDefault(opts.Sources, defaults.Sources),
 		HomePages: homePages,

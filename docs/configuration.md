@@ -12,7 +12,7 @@ The server reads its settings from the environment.
 | `EMBISTO_DEBUG` | `false` | Serve `/debug` on the internal listener, never on the API's. |
 | `EMBISTO_TEMPLATES_DIR` | | A directory of `<name>.<ext>.tmpl` files, each the format `<name>`; see [templates](templates.md). A template that fails its checks stops startup. |
 | `EMBISTO_YOUTUBE_NOCOOKIE` | `false` | Embed YouTube's player from youtube-nocookie.com, which sets no cookies until the video plays. |
-| `EMBISTO_ACCEPT_LANGUAGE` | `en` | The `Accept-Language` pages are asked in. Without it, sites answer in the language of wherever the server runs. A request can name its own with `?lang=`. |
+| `EMBISTO_DEFAULT_ACCEPT_LANGUAGE` | `en` | The `Accept-Language` pages are asked in. Without it, sites answer in the language of wherever the server runs. A request can name its own with `?lang=`. |
 | `EMBISTO_CACHE_MEMORY` | `128MiB` | How much memory the previews kept in the process may take, such as `512MiB`; the least recently used go first. `0` turns the cache off. |
 | `EMBISTO_CACHE_MIN_TTL` | `5m` | The shortest time a preview is kept, even when its page forbids caching. |
 | `EMBISTO_CACHE_MAX_TTL` | `24h` | The longest time a preview is kept, whatever its page allows. |
