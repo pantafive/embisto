@@ -5,9 +5,11 @@ package fixture
 import (
 	"bytes"
 	"context"
+	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -16,6 +18,7 @@ import (
 	"sync"
 
 	"github.com/pantafive/embisto/card"
+	"github.com/pantafive/embisto/internal/imagesize"
 	"github.com/pantafive/embisto/render"
 )
 
@@ -42,12 +45,15 @@ type Fixture struct {
 }
 
 // Exchange is one request and its answer: a response, with its body in a file next to the fixture, or a failure.
+// A peek keeps no body, only the size its picture measures, so no fixture holds a picture.
 type Exchange struct {
 	Method    string    `json:"method"`
 	URL       string    `json:"url"`
 	FinalURL  string    `json:"final_url,omitempty"`
 	MediaType string    `json:"media_type,omitempty"`
 	File      string    `json:"file,omitempty"`
+	Width     int       `json:"width,omitempty"`
+	Height    int       `json:"height,omitempty"`
 	Code      card.Code `json:"code,omitempty"`
 	Status    int       `json:"status,omitempty"`
 }
@@ -103,6 +109,9 @@ func (r *Replay) answer(asked Exchange) (card.Response, error) {
 		final, _ = url.Parse(exchange.URL)
 	}
 	resp := card.Response{URL: final, MediaType: exchange.MediaType}
+	if exchange.Width > 0 {
+		resp.Body = pngHeader(exchange.Width, exchange.Height)
+	}
 	if exchange.File != "" {
 		if resp.Body, err = os.ReadFile(filepath.Join(r.dir, exchange.File)); err != nil {
 			return card.Response{}, &card.Error{Code: card.CodeFetchFailed, Err: err}
@@ -142,7 +151,7 @@ func (r *Recorder) Peek(ctx context.Context, target *url.URL, limit int64) (card
 }
 
 // Save writes the request and what was recorded for it into a directory; saved HTML keeps only what the pipeline
-// reads.
+// reads, and a peek only the size of its picture.
 func (r *Recorder) Save(dir string, req card.Request, failure card.Code) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -152,7 +161,12 @@ func (r *Recorder) Save(dir string, req card.Request, failure card.Code) error {
 	fixture := Fixture{Request: req, Failure: failure}
 	for i, rec := range r.recorded {
 		exchange := rec.exchange
-		if len(rec.body) > 0 {
+		if exchange.Method == methodPeek {
+			// An unmeasured picture keeps no size, and replays as an empty body, which measures to nothing either.
+			if width, height, ok := imagesize.Size(rec.body); ok {
+				exchange.Width, exchange.Height = width, height
+			}
+		} else if len(rec.body) > 0 {
 			body := rec.body
 			if exchange.MediaType == mediaHTML {
 				body = Trim(body)
@@ -192,6 +206,7 @@ func (r *Recorder) keep(exchange Exchange, resp card.Response, err error) {
 	r.recorded = append(r.recorded, recorded{exchange: exchange, body: resp.Body})
 }
 
+// extension names a fetched body's file; the fetcher keeps the body of text alone.
 func extension(mediaType string) string {
 	switch mediaType {
 	case "text/html":
@@ -199,8 +214,24 @@ func extension(mediaType string) string {
 	case "application/json", "application/json+oembed":
 		return ".json"
 	default:
-		return ".bin"
+		return ".txt"
 	}
+}
+
+// pngHeader is the start of a PNG file of a size, which is all that measuring a picture reads.
+func pngHeader(width, height int) []byte {
+	const (
+		depth = 8
+		rgba  = 6
+		// ihdrLength is the IHDR chunk's data: width, height and five one-byte fields.
+		ihdrLength = 13
+	)
+	chunk := binary.BigEndian.AppendUint32([]byte("IHDR"), uint32(width)) //nolint:gosec // a size the fixture states
+	chunk = binary.BigEndian.AppendUint32(chunk, uint32(height))          //nolint:gosec // a size the fixture states
+	chunk = append(chunk, depth, rgba, 0, 0, 0)
+	head := binary.BigEndian.AppendUint32([]byte("\x89PNG\r\n\x1a\n"), ihdrLength)
+	head = append(head, chunk...)
+	return binary.BigEndian.AppendUint32(head, crc32.ChecksumIEEE(chunk))
 }
 
 // WritePreview saves the golden answers of a fixture in every format, indented for review.

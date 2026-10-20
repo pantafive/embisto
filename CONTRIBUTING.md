@@ -57,7 +57,7 @@ The golden test replays saved previews through the whole pipeline. To add one fr
 go run ./cmd/embisto pin https://example.com/some/page
 ```
 
-It saves every response the preview fetched under `testdata/fixtures/<name>`, with each page trimmed to what the sources read: no scripts, no comments, no tracking markers, and JSON-LD reduced to the keys the sources use. It refuses to save when the trimmed responses make a different preview. When the trimmer learns to drop more, `go run ./cmd/embisto pin -retrim` trims every saved page again. A test fails if a saved page still holds a visitor's or a commenter's data.
+It saves every response the preview fetched under `testdata/fixtures/<name>`, with each page trimmed to what the sources read: no scripts, no comments, no tracking markers, and JSON-LD reduced to the keys the sources use. A picture the preview measured is saved as its width and height in `fixture.json`, not as its bytes, and replays as the header of a picture of that size. It refuses to save when the trimmed responses make a different preview. When the trimmer learns to drop more, `go run ./cmd/embisto pin -retrim` trims every saved page again. A test fails if a saved page still holds a visitor's or a commenter's data.
 
 After a deliberate change to the output, rewrite the golden files and review the diff:
 

@@ -20,7 +20,8 @@
       "method": "peek",
       "url": "https://www.youtube.com/s/desktop/eae06bf0/img/favicon.ico",
       "media_type": "image/x-icon",
-      "file": "3.bin"
+      "width": 48,
+      "height": 48
     }
   ]
 }

@@ -30,9 +30,9 @@ const (
 
 var icoMagic = []byte{0, 0, 1, 0}
 
-// size reads a picture's width and height as it is shown from the first bytes of its file, so a JPEG its EXIF
+// Size reads a picture's width and height as it is shown from the first bytes of its file, so a JPEG its EXIF
 // orientation turns a quarter has them swapped; false when they say nothing readable.
-func size(head []byte) (int, int, bool) {
+func Size(head []byte) (int, int, bool) {
 	switch {
 	case bytes.HasPrefix(head, icoMagic):
 		return icoSize(head)

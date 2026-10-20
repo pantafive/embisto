@@ -87,7 +87,7 @@ func (e Enricher) measure(ctx context.Context, fetcher card.Fetcher, href string
 	if err != nil {
 		return dimensions{}, false
 	}
-	width, height, ok := size(resp.Body)
+	width, height, ok := Size(resp.Body)
 	return dimensions{width, height}, ok
 }
 

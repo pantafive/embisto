@@ -13,7 +13,8 @@
       "method": "peek",
       "url": "https://www.instagram.com/favicon.ico",
       "media_type": "image/png",
-      "file": "2.bin"
+      "width": 32,
+      "height": 32
     }
   ]
 }

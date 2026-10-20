@@ -13,25 +13,29 @@
       "method": "peek",
       "url": "https://go.dev/images/favicon-gopher.png",
       "media_type": "image/png",
-      "file": "2.bin"
+      "width": 288,
+      "height": 288
     },
     {
       "method": "peek",
       "url": "https://go.dev/images/favicon-gopher.svg",
       "media_type": "image/svg+xml",
-      "file": "3.bin"
+      "width": 32,
+      "height": 32
     },
     {
       "method": "peek",
       "url": "https://go.dev/doc/gopher/runningsquare.jpg",
       "media_type": "image/jpeg",
-      "file": "4.bin"
+      "width": 299,
+      "height": 281
     },
     {
       "method": "peek",
       "url": "https://go.dev/doc/gopher/gopher5logo.jpg",
       "media_type": "image/jpeg",
-      "file": "5.bin"
+      "width": 1262,
+      "height": 733
     }
   ]
 }
