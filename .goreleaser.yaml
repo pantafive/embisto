@@ -3,6 +3,10 @@ version: 2
 
 project_name: embisto
 
+before:
+  hooks:
+    - go run ./scripts/notices -o THIRD_PARTY_NOTICES
+
 builds:
   - id: embisto
     main: ./cmd/embisto
@@ -22,7 +26,7 @@ archives:
       - goos: windows
         formats: [zip]
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-    files: [LICENSE, README.md, CHANGELOG.md]
+    files: [LICENSE, THIRD_PARTY_NOTICES, README.md, CHANGELOG.md]
 
 checksum:
   name_template: checksums.txt

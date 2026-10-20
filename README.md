@@ -72,3 +72,5 @@ fmt.Println(result.Preview.Title)
 ## License
 
 [MIT](LICENSE) © [Mikhail Solomenik](https://github.com/pantafive)
+
+The binary also holds Go's standard library, the modules embisto imports and the oembed.com provider list. Their notices are in `THIRD_PARTY_NOTICES`, next to the binary in a release archive and in `/usr/share/doc/embisto/` in the image; `go run ./scripts/notices` writes them for a checkout.

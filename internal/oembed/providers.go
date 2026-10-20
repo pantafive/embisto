@@ -10,7 +10,7 @@ import (
 	"sync"
 )
 
-// providersJSON is https://oembed.com/providers.json (MIT, github.com/iamcal/oembed).
+// providersJSON is https://oembed.com/providers.json, under the MIT notice in NOTICE.
 //
 //go:embed providers.json
 var providersJSON []byte
