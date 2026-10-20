@@ -12,7 +12,7 @@ linters:
     - varnamelen # `id`, `ok` are idiomatic Go
     - ireturn # ports return interfaces by design
     - nonamedreturns # named returns document multi-value results
-    - wsl # whitespace religion
+    - wsl # where blank lines go is the author's call
     - wsl_v5
     - nlreturn # same
     - godox # TODO comments are allowed to exist
@@ -35,6 +35,10 @@ linters:
   settings:
     errcheck:
       check-type-assertions: true
+    wrapcheck:
+      # huma's errors are responses: huma reads their status, so a wrap would add nothing a client sees.
+      extra-ignore-sigs:
+        - github.com/danielgtaylor/huma/v2.Error
     sloglint:
       # log.Info instead of log.InfoContext compiles and drops the ids the context carries.
       context: all
