@@ -1,6 +1,7 @@
 package api_test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -165,6 +166,33 @@ func TestServerReportsRequestsByRouteNotByURL(t *testing.T) {
 	get(t, server.URL+"/nowhere")
 
 	assert.Equal(t, recordedRequests{"/v1/preview 200", "unmatched 404"}, observed)
+}
+
+// leftBehind makes previews for a client that has gone: every one fails with the client's cancellation.
+type leftBehind struct{}
+
+func (leftBehind) Extract(context.Context, card.Request) (card.Result, error) {
+	return card.Result{}, context.Canceled
+}
+
+func (leftBehind) Purge(context.Context, card.Request) (int, error) {
+	return 0, nil
+}
+
+// TestAPreviewItsClientLeftIsCanceledNotInternal: a client that disconnected was answered and counted as a 500.
+func TestAPreviewItsClientLeftIsCanceledNotInternal(t *testing.T) {
+	var observed recordedRequests
+	server := httptest.NewServer(api.NewServer(api.Deps{Previews: leftBehind{}, Renderers: renderers, Requests: &observed}))
+	t.Cleanup(server.Close)
+
+	resp := get(t, server.URL+"/v1/preview?url="+url.QueryEscape("https://example.com/post"))
+
+	var problem struct {
+		Code string `json:"code"`
+	}
+	require.NoError(t, json.NewDecoder(resp.Body).Decode(&problem))
+	assert.Equal(t, []any{http.StatusServiceUnavailable, "canceled"}, []any{resp.StatusCode, problem.Code})
+	assert.Equal(t, recordedRequests{"/v1/preview 503"}, observed)
 }
 
 func TestCompatiblePathsAnswerInIframelysFormats(t *testing.T) {

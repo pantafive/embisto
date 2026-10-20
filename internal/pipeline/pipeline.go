@@ -124,7 +124,11 @@ func (p *Pipeline) Extract(ctx context.Context, req card.Request) (result card.R
 	deadline, _ := ctx.Deadline()
 	r := &run{stages: map[string]card.Freshness{}, optional: deadline.Add(-time.Duration(float64(p.opts.Timeout) * lastShare))}
 	preview, provider, err := p.make(ctx, r, card.Input{URL: parsed, Options: req.Options})
-	if err == nil && ctx.Err() != nil {
+	switch {
+	case errors.Is(ctx.Err(), context.Canceled):
+		// The caller gave up, which is why any stage failed; that is no timeout.
+		err = ctx.Err()
+	case err == nil && ctx.Err() != nil:
 		// A card finished past the deadline is no answer: the caller has stopped waiting for it.
 		err = &card.Error{Code: card.CodeTimeout, Err: ctx.Err()}
 	}

@@ -103,6 +103,7 @@ A failed request returns a non-2xx status with an [RFC 9457](https://www.rfc-edi
 | `unknown_format` | 400 | The server has no such `format`. |
 | `not_cached` | 404 | A purge found nothing of the URL cached. |
 | `cache_unavailable` | 503 | A purge the shared cache did not answer. |
+| `canceled` | 503 | The client closed the request before the preview was ready. |
 | `internal` | 500 | embisto itself failed; the cause is logged, never answered. |
 
 The codes of `/i/` are in [thumbnails](thumbnails.md). `card.Catalogue()` lists every code with its status and the words a client is shown; the `code` enum in `/openapi.json` is generated from it. A `card.Error`'s text is always the catalogue's words or a detail written for clients: what went wrong underneath, which may name a resolved address or quote a page, is only logged.

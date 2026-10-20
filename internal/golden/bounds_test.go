@@ -78,6 +78,39 @@ func TestNoCardIsMadePastTheDeadline(t *testing.T) {
 	assert.Equal(t, card.CodeTimeout, card.CodeOf(err))
 }
 
+// leaving serves a page, and gives up on the preview, as a client that disconnects, once its oEmbed is asked.
+type leaving struct {
+	cancel context.CancelFunc
+}
+
+func (l leaving) Fetch(ctx context.Context, target *url.URL, _ string) (card.Response, error) {
+	if target.Path == "/oembed" {
+		l.cancel()
+		<-ctx.Done()
+		return card.Response{}, ctx.Err()
+	}
+	page := `<title>A post</title><link rel="alternate" type="application/json+oembed" href="/oembed">`
+	return card.Response{URL: target, MediaType: "text/html", Body: []byte(page)}, nil
+}
+
+func (leaving) Peek(ctx context.Context, _ *url.URL, _ int64) (card.Response, error) {
+	return card.Response{}, ctx.Err()
+}
+
+// TestACallerThatGivesUpGetsItsCancellationNotATimeout: the caller's cancellation was answered as timeout.
+func TestACallerThatGivesUpGetsItsCancellationNotATimeout(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	opts := embisto.Defaults()
+	opts.Fetcher, opts.HomePages = leaving{cancel: cancel}, nil
+
+	_, err := embisto.New(opts).Extract(ctx, card.Request{URL: "https://example.com/post"})
+
+	require.ErrorIs(t, err, context.Canceled)
+	_, isCoded := errors.AsType[*card.Error](err)
+	assert.False(t, isCoded)
+}
+
 // local lets the defaults fetch from a test server.
 var local = []netip.Prefix{netip.MustParsePrefix("127.0.0.0/8")}
 

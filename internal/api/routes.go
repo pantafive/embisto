@@ -81,7 +81,7 @@ func addPreviewRoute(api huma.API, deps Deps) {
 				responseDefault: {
 					Description: "The preview failed; `code` says why: invalid_request, invalid_url or unknown_format (400), blocked_url (403), " +
 						"not_found (404, or 410 when the site says the item was removed: a deleted video or post, a page answering 404), " +
-						"fetch_failed or too_large (502), timeout (504), internal (500).",
+						"fetch_failed or too_large (502), timeout (504), canceled (503) when the client closed the request, internal (500).",
 					Content: content(api, "application/problem+json", reflect.TypeFor[problem](), exampleProblem),
 				},
 			},

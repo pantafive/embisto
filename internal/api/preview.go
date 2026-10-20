@@ -163,11 +163,16 @@ func (deps Deps) refusedAs(renderer card.Renderer, failed *card.Error, expires t
 
 // failed logs a preview that failed and gives its card error; an error without a code fails the request.
 func (deps Deps) failed(ctx context.Context, target string, err error) (*card.Error, error) {
+	if errors.Is(err, context.Canceled) {
+		// The client left: no failure of embisto's, and nobody reads the answer.
+		deps.Log.DebugContext(ctx, "the client gave up on the preview", slog.String("url", target))
+		return &card.Error{Code: card.CodeCanceled, Err: err}, nil
+	}
 	var failed *card.Error
 	if !errors.As(err, &failed) {
 		// Not a refusal the contract names, such as a module that panicked: its text is for the log, not the client.
 		level := slog.LevelError
-		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		if errors.Is(err, context.DeadlineExceeded) {
 			level = slog.LevelDebug // the client left
 		}
 		deps.Log.Log(ctx, level, "the preview failed", slog.String("url", target), slog.Any("error", err))
