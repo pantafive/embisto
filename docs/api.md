@@ -15,13 +15,13 @@ The server answers on `EMBISTO_ADDR` (`:8080`); its OpenAPI spec is at `/openapi
   "site_name": "YouTube",
   "author": "Rick Astley",
   "image": {"url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", "width": 1280, "height": 720},
-  "embed": {"html": "<iframe …></iframe>", "width": 200, "height": 113, "provider": "YouTube"},
+  "embed": {"html": "<iframe width=\"560\" height=\"315\" …></iframe>", "width": 560, "height": 315, "provider": "YouTube"},
   "links": [
-    {"href": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", "rel": ["thumbnail", "opengraph", "twitter"],
-     "type": "image/jpeg", "media": {"width": 1280, "height": 720, "aspect_ratio": 1.7778}},
-    {"href": "https://www.youtube.com/embed/dQw4w9WgXcQ", "rel": ["player", "opengraph", "twitter"], "type": "text/html", "…": "…"}
+    {"href": "https://www.youtube.com/embed/dQw4w9WgXcQ", "rel": ["player", "youtube", "opengraph", "twitter"], "type": "text/html", "…": "…"},
+    {"href": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", "rel": ["thumbnail", "opengraph", "jsonld", "twitter"],
+     "type": "image/jpeg", "media": {"width": 1280, "height": 720, "aspect_ratio": 1.7778}}
   ],
-  "sources": ["oembed", "opengraph", "jsonld", "twitter", "html"]
+  "sources": ["youtube", "oembed", "opengraph", "jsonld", "twitter", "html"]
 }
 ```
 

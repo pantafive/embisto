@@ -10,10 +10,14 @@ import (
 )
 
 const (
+	exampleTitle  = "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)"
 	exampleImage  = "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"
-	examplePlayer = "https://www.youtube.com/embed/dQw4w9WgXcQ?feature=oembed"
-	exampleEmbed  = `<iframe width="200" height="113" src="` + examplePlayer + `" allowfullscreen></iframe>`
-	exampleIcon   = "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_144x144.png"
+	examplePlayer = "https://www.youtube.com/embed/dQw4w9WgXcQ"
+	exampleEmbed  = `<iframe width="560" height="315" src="` + examplePlayer + `" title="` + exampleTitle + `" frameborder="0" ` +
+		`allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ` +
+		`referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
+	exampleIcon     = "https://www.youtube.com/s/desktop/eae06bf0/img/favicon_144x144.png"
+	exampleProvider = "youtube" // sites.YouTube's name
 )
 
 // renderedText is the example in a text format.
@@ -25,33 +29,38 @@ func renderedText(renderer card.Renderer, preview card.Preview) string {
 	return text.String()
 }
 
-// examplePreview is the card the reference shows, as /v1/preview made it for a YouTube video.
+// examplePreview is the card the reference shows, as /v1/preview makes it for a YouTube video (the youtube fixture),
+// without its keywords and with three of its links.
 var examplePreview = card.Preview{
 	URL:          "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
 	CanonicalURL: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
 	Type:         card.TypeVideo,
-	Title:        "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
-	Description:  "The official video for “Never Gonna Give You Up” by Rick Astley.",
-	SiteName:     "YouTube",
-	Author:       "Rick Astley",
-	AuthorURL:    "https://www.youtube.com/@RickAstleyYT",
-	PublishedAt:  time.Date(2009, 10, 25, 6, 57, 33, 0, time.UTC),
-	Icon:         card.Image{URL: exampleIcon, Width: 144, Height: 144},
-	Image:        card.Image{URL: exampleImage, Width: 1280, Height: 720},
-	Images:       []card.Image{{URL: exampleImage, Width: 1280, Height: 720}},
-	Video:        card.Video{URL: "https://www.youtube.com/embed/dQw4w9WgXcQ", Type: "text/html", Width: 1280, Height: 720},
+	Title:        exampleTitle,
+	Description: "The official video for “Never Gonna Give You Up” by Rick Astley. Never: The Autobiography 📚 OUT NOW! " +
+		"Follow this link to get your copy and listen to Rick’s ...",
+	SiteName:    "YouTube",
+	Author:      "Rick Astley",
+	AuthorURL:   "https://www.youtube.com/@RickAstleyYT",
+	PublishedAt: time.Date(2009, 10, 25, 6, 57, 33, 0, time.UTC),
+	Icon:        card.Image{URL: exampleIcon, Width: 144, Height: 144},
+	Image:       card.Image{URL: exampleImage, Width: 1280, Height: 720},
+	Images: []card.Image{
+		{URL: exampleImage, Width: 1280, Height: 720},
+		{URL: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg", Width: 480, Height: 360},
+	},
+	Video: card.Video{URL: examplePlayer, Type: "text/html", Width: 560, Height: 315},
 	Embed: card.Embed{
 		HTML:  exampleEmbed,
-		Width: 200, Height: 113, Provider: "YouTube",
+		Width: 560, Height: 315, Provider: "YouTube",
 	},
 	Links: []card.Link{
 		{
-			Href: examplePlayer, Rel: []string{card.RelPlayer, card.SourceOEmbed},
-			Type: "text/html", Media: card.MediaOf(200, 113),
+			Href: examplePlayer, Rel: []string{card.RelPlayer, exampleProvider, card.SourceOpenGraph, card.SourceTwitter},
+			Type: "text/html", Media: card.MediaOf(560, 315),
 			HTML: exampleEmbed,
 		},
 		{
-			Href: exampleImage, Rel: []string{card.RelThumbnail, card.SourceOpenGraph},
+			Href: exampleImage, Rel: []string{card.RelThumbnail, card.SourceOpenGraph, card.SourceJSONLD, card.SourceTwitter},
 			Type: "image/jpeg", Media: card.MediaOf(1280, 720),
 		},
 		{
@@ -59,7 +68,7 @@ var examplePreview = card.Preview{
 			Type: "image/png", Media: card.MediaOf(144, 144),
 		},
 	},
-	Sources: []string{card.SourceOEmbed, card.SourceOpenGraph, card.SourceHTML},
+	Sources: []string{exampleProvider, card.SourceOEmbed, card.SourceOpenGraph, card.SourceJSONLD, card.SourceTwitter, card.SourceHTML},
 }
 
 var (
