@@ -84,7 +84,7 @@ func run(ctx context.Context, args []string, environ func() []string, out io.Wri
 	}
 }
 
-// runServer serves the API and, on the internal listener, the metrics, until the context ends.
+// runServer serves the API and, on the internal listener, the metrics and the purge, until the context ends.
 func runServer(ctx context.Context, environ func() []string) error {
 	loaded, err := settings.Load(environ)
 	if err != nil {
@@ -124,6 +124,7 @@ func runServer(ctx context.Context, environ func() []string) error {
 	}
 	metricsMux := http.NewServeMux()
 	metricsMux.Handle("GET /metrics", measured.Handler())
+	metricsMux.Handle("DELETE /v1/preview", api.NewPurger(deps))
 	if loaded.Debug {
 		metricsMux.Handle("GET /debug", debugPage(ctx, opts, served, log))
 	}

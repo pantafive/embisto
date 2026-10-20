@@ -12,6 +12,7 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humago"
 
+	"github.com/pantafive/embisto"
 	"github.com/pantafive/embisto/card"
 	"github.com/pantafive/embisto/internal/logging"
 )
@@ -54,6 +55,20 @@ func NewServer(deps Deps) http.Handler {
 		return identified(recovered(mux, deps.Log))
 	}
 	return identified(recovered(observed(mux, deps.Requests), deps.Log))
+}
+
+// NewPurger serves DELETE /v1/preview, which drops previews from the cache, for the internal listener: anyone who
+// reaches it can empty the cache. It serves no spec.
+func NewPurger(deps Deps) http.Handler {
+	if deps.Log == nil {
+		deps.Log = slog.New(slog.DiscardHandler)
+	}
+	huma.NewError = newProblem
+	config := huma.DefaultConfig("embisto", embisto.Version)
+	config.CreateHooks, config.OpenAPIPath, config.DocsPath, config.SchemasPath = nil, "", "", ""
+	mux := http.NewServeMux()
+	addPurgeRoute(humago.New(mux, config), deps)
+	return identified(recovered(mux, deps.Log))
 }
 
 // recovered answers a request whose handler panicked with a bare 500 problem; net/http would only drop the

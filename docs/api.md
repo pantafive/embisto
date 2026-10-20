@@ -74,7 +74,6 @@ Empty fields are left out. `icon`, `image` and each of `images` are pictures wit
 | Route | |
 |---|---|
 | `GET /v1/preview?url=` | The preview card. A URL without a scheme is taken as https. `format=text` gives plain lines instead: the title with its site, the description trimmed, and the URL. `format=html` gives a self-contained HTML card for an iframe or an email: inline CSS following light and dark, no JavaScript, and none of the provider's embed HTML. Templates add more formats; see [templates](templates.md). |
-| `DELETE /v1/preview?url=` | Drops the URL's cached previews; see [caching](caching.md). |
 | `GET /iframely?url=` | The same preview in the format of Iframely's API, with links grouped by rel. |
 | `GET /oembed?url=` | The same preview as an oEmbed answer, with the fields Iframely adds. |
 | `GET /healthz` | The process is up. Its `version` is the release the server was built from; an image of `main` reports the commit as `git describe` names it, such as `0.1.0-10-g3562582`, and a build that knows neither reports `devel`. |
@@ -82,6 +81,7 @@ Empty fields are left out. `icon`, `image` and each of `images` are pictures wit
 | `GET /i/<signature>/<size>/<source>` | A thumbnail of a card's picture. The URLs come signed in the card's `variants`; see [thumbnails](thumbnails.md). |
 | `GET :9090/metrics` | Prometheus metrics, on a separate listener. |
 | `GET :9090/debug?url=` | With `EMBISTO_DEBUG=true`: how a preview is made, on the internal listener only. |
+| `DELETE :9090/v1/preview?url=` | Drops the URL's cached previews, on the internal listener only; see [caching](caching.md). |
 
 embisto has no API keys and no request limits of its own: whatever serves it to clients decides who may call it and how often. It protects itself from the pages it fetches; see [hardening](hardening.md).
 

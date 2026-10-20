@@ -87,29 +87,18 @@ func addPreviewRoute(api huma.API, deps Deps) {
 			},
 		}, deps.preview)
 		listFormats(api, deps)
-
-		huma.Register(api, huma.Operation{
-			OperationID: "purge-preview",
-			Method:      http.MethodDelete,
-			Path:        "/v1/preview",
-			Summary:     "Drop a URL's cached preview",
-			Description: "Drops from the cache what GET with the same parameters would serve. With only `url`, every cached variant of the URL goes: " +
-				"every language and size, and with them what `/iframely` and `/oembed` serve, since every format renders the same cached preview " +
-				"(`format` names no variant and is ignored). With more parameters, only the variant GET with them would serve. " +
-				"The next GET makes the preview afresh. A preview being made while the purge runs may still be written after it. " +
-				"Without a shared cache, the purge reaches only the instance that answers it.",
-			Tags:          []string{tagPreviews},
-			DefaultStatus: http.StatusNoContent,
-			Responses: map[string]*huma.Response{
-				"204": {Description: "Something was dropped."},
-				responseDefault: {
-					Description: "Nothing was dropped; `code` says why: not_cached (404) when nothing of the URL was cached, invalid_url (400), " +
-						"invalid_request (400), cache_unavailable (503) when the shared cache did not answer.",
-					Content: content(api, "application/problem+json", reflect.TypeFor[problem](), refusal(card.CodeNotCached)),
-				},
-			},
-		}, deps.purge)
 	}
+}
+
+// addPurgeRoute serves the purge, which empties the cache for whoever asks; it belongs on the internal listener, never
+// the API's.
+func addPurgeRoute(api huma.API, deps Deps) {
+	huma.Register(api, huma.Operation{
+		OperationID:   "purge-preview",
+		Method:        http.MethodDelete,
+		Path:          "/v1/preview",
+		DefaultStatus: http.StatusNoContent,
+	}, deps.purge)
 }
 
 func addCompatibleRoutes(api huma.API, deps Deps) {

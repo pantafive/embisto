@@ -12,7 +12,7 @@ Identical requests that arrive at once make one fetch. In one instance this alwa
 
 Use a shared cache when there are several instances: they then share one cache, make one preview between them for identical requests, and purge together. While it does not answer, each instance serves from its own memory, logs a warning when that starts and ends, and counts the failures. Requests are then coalesced per instance, and a purge answers 503, since what it would drop comes back with the cache. When it answers again, each instance empties its own memory, so that nothing kept during the outage outlives a purge made since. A request whose client gave up never counts as the shared cache failing.
 
-`DELETE /v1/preview` takes the same parameters as GET and drops what GET would serve from the cache:
+`DELETE /v1/preview`, on the internal listener (`EMBISTO_METRICS_ADDR`, `:9090`) and never on the API's, takes the same parameters as GET and drops what GET would serve from the cache:
 
 - With only `url`, it drops every variant of the URL: every language and size, and with them what `/iframely` and `/oembed` serve, since every format renders the same cached preview. `format` names no variant and is ignored.
 - With more parameters, it drops the one variant GET with them would serve.

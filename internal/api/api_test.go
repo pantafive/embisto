@@ -279,7 +279,8 @@ func TestPreviewAnswersInTextWhenAsked(t *testing.T) {
 		[]any{resp.Header.Get("Content-Type"), string(body)})
 }
 
-func cachedServer(t *testing.T) (*httptest.Server, *httptest.Server) {
+// cachedServer is a site, the API previewing it through a cache, and the purge of that cache.
+func cachedServer(t *testing.T) (*httptest.Server, *httptest.Server, *httptest.Server) {
 	t.Helper()
 	site := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
@@ -296,11 +297,13 @@ func cachedServer(t *testing.T) (*httptest.Server, *httptest.Server) {
 	previews := cache.New(embisto.New(opts), cache.NewMemory(1<<20, nil), cache.Options{TTL: time.Hour, MinTTL: time.Minute, MaxTTL: 24 * time.Hour, FailureTTL: time.Minute})
 	server := httptest.NewServer(api.NewServer(api.Deps{Previews: previews, Renderers: renderers}))
 	t.Cleanup(server.Close)
-	return site, server
+	purger := httptest.NewServer(api.NewPurger(api.Deps{Previews: previews}))
+	t.Cleanup(purger.Close)
+	return site, server, purger
 }
 
 func TestPreviewSaysHowLongItMayBeKept(t *testing.T) {
-	site, server := cachedServer(t)
+	site, server, _ := cachedServer(t)
 
 	resp := get(t, server.URL+"/v1/preview?url="+url.QueryEscape(site.URL+"/post"))
 
@@ -308,7 +311,7 @@ func TestPreviewSaysHowLongItMayBeKept(t *testing.T) {
 }
 
 func TestARefusalServedFromTheCacheSaysHowLongItMayBeKept(t *testing.T) {
-	site, server := cachedServer(t)
+	site, server, _ := cachedServer(t)
 	target := server.URL + "/v1/preview?url=" + url.QueryEscape(site.URL+"/gone")
 	get(t, target)
 
@@ -318,22 +321,39 @@ func TestARefusalServedFromTheCacheSaysHowLongItMayBeKept(t *testing.T) {
 	assert.Regexp(t, `^public, max-age=(59|60)$`, resp.Header.Get("Cache-Control"))
 }
 
-func TestPurgeDropsWhatWasCached(t *testing.T) {
-	site, server := cachedServer(t)
-	target := server.URL + "/v1/preview?url=" + url.QueryEscape(site.URL+"/post")
-	get(t, target)
-	purge := func() int {
-		req, err := http.NewRequestWithContext(t.Context(), http.MethodDelete, target, nil)
-		require.NoError(t, err)
-		resp, err := http.DefaultClient.Do(req)
-		require.NoError(t, err)
-		defer resp.Body.Close()
-		return resp.StatusCode
-	}
+func deleteStatus(t *testing.T, target string) int {
+	t.Helper()
+	req, err := http.NewRequestWithContext(t.Context(), http.MethodDelete, target, nil)
+	require.NoError(t, err)
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	return resp.StatusCode
+}
 
-	first, second := purge(), purge()
+func TestPurgeDropsWhatWasCached(t *testing.T) {
+	site, server, purger := cachedServer(t)
+	query := "/v1/preview?url=" + url.QueryEscape(site.URL+"/post")
+	get(t, server.URL+query)
+
+	first, second := deleteStatus(t, purger.URL+query), deleteStatus(t, purger.URL+query)
 
 	assert.Equal(t, []int{http.StatusNoContent, http.StatusNotFound}, []int{first, second})
+}
+
+// TestTheAPIServesNoPurge: anyone who reaches the API could empty the cache and make every preview afresh.
+func TestTheAPIServesNoPurge(t *testing.T) {
+	site, server, _ := cachedServer(t)
+
+	purged := deleteStatus(t, server.URL+"/v1/preview?url="+url.QueryEscape(site.URL+"/post"))
+	spec := get(t, server.URL+"/openapi.json")
+
+	var document struct {
+		Paths map[string]map[string]json.RawMessage `json:"paths"`
+	}
+	require.NoError(t, json.NewDecoder(spec.Body).Decode(&document))
+	_, listed := document.Paths["/v1/preview"]["delete"]
+	assert.Equal(t, []any{http.StatusMethodNotAllowed, false}, []any{purged, listed})
 }
 
 func TestPreviewAnswersInATemplatesFormatAndListsIt(t *testing.T) {

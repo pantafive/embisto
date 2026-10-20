@@ -23,6 +23,10 @@ No label carries a URL. A card's class is one of:
 
 Each card below partial is logged as `poor card` with its host, class, provider or `generic`, and failure code. Ranking hosts by those lines shows which sites a provider would help most.
 
+## Purging
+
+The internal listener also serves `DELETE /v1/preview?url=`, which drops a URL's cached previews; see [caching](caching.md). The API's listener answers it with 405: whoever could call it could empty the cache and make every preview afresh.
+
 ## Debugging a card
 
 With `EMBISTO_DEBUG=true`, the internal listener (`:9090`, beside `/metrics`) serves `/debug?url=`. Paste a URL to see:
