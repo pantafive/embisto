@@ -15,6 +15,7 @@ import (
 	"runtime/debug"
 	"slices"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/pantafive/embisto/card"
@@ -67,6 +68,8 @@ func New(opts Options) *Pipeline {
 
 // run is one preview being made: which stage made the card, and how long each stage's responses may be kept.
 type run struct {
+	// mu guards stages: a module may fetch from several goroutines at once, as the picture measurer does.
+	mu      sync.Mutex
 	stages  map[string]card.Freshness
 	decider string
 }
@@ -76,9 +79,18 @@ func (r *run) note(stage string, said card.Freshness) {
 	if !said.Known {
 		return
 	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	if known, ok := r.stages[stage]; !ok || said.MaxAge < known.MaxAge {
 		r.stages[stage] = said
 	}
+}
+
+// freshness is how long the responses of the stage that made the card may be kept.
+func (r *run) freshness() card.Freshness {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.stages[r.decider]
 }
 
 // Extract makes the preview of the request's URL. It fails with a *card.Error, or with the context's error when the
@@ -107,7 +119,7 @@ func (p *Pipeline) Extract(ctx context.Context, req card.Request) (result card.R
 	if err != nil {
 		return card.Result{}, err
 	}
-	return card.Result{Preview: preview, Freshness: r.stages[r.decider], Provider: provider}, nil
+	return card.Result{Preview: preview, Freshness: r.freshness(), Provider: provider}, nil
 }
 
 // Purge forgets what the home-page source remembers of the URL's site.
