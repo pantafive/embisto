@@ -56,7 +56,8 @@ type Settings struct {
 	ImagePresets []thumbnails.Preset
 	// CacheURL names a cache shared by every instance; empty keeps previews in each instance's memory.
 	CacheURL string
-	// CacheMemory is how many bytes of previews the in-memory cache holds; zero turns the cache off.
+	// CacheMemory is how many bytes of previews the in-memory cache holds; zero turns it off, but not a shared cache,
+	// whose stand-in while it does not answer holds at least a MiB.
 	CacheMemory int64
 	CacheTTL    time.Duration
 	// CacheMinTTL and CacheMaxTTL bound the TTL an origin asks for.
