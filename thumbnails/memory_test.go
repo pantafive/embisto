@@ -52,7 +52,7 @@ func peakDuring(run func()) uint64 {
 	return peak.Load()
 }
 
-// TestATallPictureStaysWithinItsAdmittedMemory is the review's picture: a 601×26622 PNG of under a hundred
+// TestATallPictureStaysWithinItsAdmittedMemory resizes a 601×26622 PNG of under a hundred
 // kilobytes, which once grew the heap by 611 MiB in the card preset, as CatmullRom kept 600 × 26622 float64 pixels.
 func TestATallPictureStaysWithinItsAdmittedMemory(t *testing.T) {
 	tall := image.NewNRGBA(image.Rect(0, 0, 601, 26622))

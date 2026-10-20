@@ -145,7 +145,7 @@ func TestAnInstanceServesFromMemoryWhileTheSharedStoreIsDown(t *testing.T) {
 		[]any{first.Preview.Title, second.Preview.Title, hits.Load(), time.Since(started) < 2*time.Second})
 }
 
-// TestALockWhoseReplyCameLateIsStillTheTakersOwn is the review's latency skew: instance A reaches Valkey through a
+// TestALockWhoseReplyCameLateIsStillTheTakersOwn covers a latency skew: instance A reaches Valkey through a
 // link that holds back the reply to its SET NX past the client's timeout, so the lock is taken while A hears
 // nothing; instance B asks for the same URL just after. A once retried, found its own lock, and waited for nobody.
 func TestALockWhoseReplyCameLateIsStillTheTakersOwn(t *testing.T) {

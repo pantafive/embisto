@@ -39,7 +39,7 @@ func (hostile) Peek(context.Context, *url.URL, int64) (card.Response, error) {
 	return card.Response{}, &card.Error{Code: card.CodeFetchFailed, Err: errors.New("no picture")}
 }
 
-// TestAPageCannotMakeTheCardAsLargeAsItLikes is the review's page: 120,000 pictures and a description of megabytes,
+// TestAPageCannotMakeTheCardAsLargeAsItLikes feeds a page of 120,000 pictures and a description of megabytes,
 // under the body limit, which once took a minute of CPU and made a card of megabytes.
 func TestAPageCannotMakeTheCardAsLargeAsItLikes(t *testing.T) {
 	var page strings.Builder
