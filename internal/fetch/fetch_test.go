@@ -108,6 +108,30 @@ func TestGetSkipsTheBodyOfMediaThatIsNotText(t *testing.T) {
 	assert.Equal(t, card.Response{URL: mustParse(t, server.URL), MediaType: "image/png"}, page)
 }
 
+// TestGetDropsTheByteOrderMark: JSON with one failed to decode, and its oEmbed was lost.
+func TestGetDropsTheByteOrderMark(t *testing.T) {
+	tests := []struct {
+		name, contentType, body string
+	}{
+		{"UTF-8", "application/json", "\xef\xbb\xbf{\"title\":\"Café\"}"},
+		{"UTF-8 the header names", "application/json; charset=utf-8", "\xef\xbb\xbf{\"title\":\"Café\"}"},
+		{"UTF-16", "application/json", "\xff\xfe{\x00\"\x00t\x00i\x00t\x00l\x00e\x00\"\x00:\x00\"\x00C\x00a\x00f\x00\xe9\x00\"\x00}\x00"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := serve(t, func(w http.ResponseWriter, _ *http.Request) {
+				w.Header().Set("Content-Type", tt.contentType)
+				_, _ = w.Write([]byte(tt.body))
+			})
+
+			page, err := get(t, newClient(loopback), server.URL)
+
+			require.NoError(t, err)
+			assert.JSONEq(t, `{"title":"Café"}`, string(page.Body))
+		})
+	}
+}
+
 // TestGetTellsTheMediaTypeOfAHeaderGoCannotRead: an unreadable Content-Type once made every page a bare file, with no
 // title.
 func TestGetTellsTheMediaTypeOfAHeaderGoCannotRead(t *testing.T) {

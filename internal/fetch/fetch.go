@@ -272,9 +272,12 @@ var lateMeta = regexp.MustCompile(`(?i)<meta[^>]+charset\s*=\s*["']?\s*([a-z0-9_
 // lateMetaWithin is how far into a body a late <meta charset> is looked for.
 const lateMetaWithin = 64 << 10
 
-// decode turns a body into UTF-8. A byte-order mark or the header's charset decides; else JSON is UTF-8, as its
-// standard says; else a body that is valid UTF-8 throughout is taken as UTF-8, though its first kilobyte is ASCII
-// alone; else a <meta charset>, early or late; else windows-1252, as browsers default to.
+// byteOrderMark is the mark a body may start with, as UTF-8 and as each decoder gives it; JSON does not allow it.
+const byteOrderMark = "\ufeff"
+
+// decode turns a body into UTF-8, without a byte-order mark. The mark or the header's charset decides; else JSON is
+// UTF-8, as its standard says; else a body that is valid UTF-8 throughout is taken as UTF-8, though its first kilobyte
+// is ASCII alone; else a <meta charset>, early or late; else windows-1252, as browsers default to.
 func decode(raw []byte, mediaType, contentType string) ([]byte, error) {
 	encoding, name, isCertain := charset.DetermineEncoding(raw[:min(len(raw), charsetSniff)], contentType)
 	if !isCertain {
@@ -288,13 +291,13 @@ func decode(raw []byte, mediaType, contentType string) ([]byte, error) {
 		}
 	}
 	if name == "utf-8" {
-		return raw, nil
+		return bytes.TrimPrefix(raw, []byte(byteOrderMark)), nil
 	}
 	decoded, err := io.ReadAll(encoding.NewDecoder().Reader(bytes.NewReader(raw)))
 	if err != nil {
 		return nil, fmt.Errorf("decoding %s: %w", name, err)
 	}
-	return decoded, nil
+	return bytes.TrimPrefix(decoded, []byte(byteOrderMark)), nil
 }
 
 // classify translates a transport error into the package's own; a caller that gave up gets its context's error.
