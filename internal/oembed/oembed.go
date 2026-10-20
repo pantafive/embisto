@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/pantafive/embisto/card"
 )
@@ -19,6 +20,8 @@ const MediaType = "application/json+oembed"
 // not name gives its facts without its HTML, since a page can name any endpoint and the HTML would run in clients.
 type Discovery struct {
 	Providers *Providers
+	// Timeout bounds asking the endpoint, within the caller's own deadline; zero leaves only the caller's.
+	Timeout time.Duration
 }
 
 func (Discovery) Name() string {
@@ -33,6 +36,11 @@ func (d Discovery) Read(ctx context.Context, in card.Input) (card.Facts, error) 
 	endpoint, err := url.Parse(href)
 	if err != nil {
 		return card.Facts{}, fmt.Errorf("parsing the oEmbed link: %w", err)
+	}
+	if d.Timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, d.Timeout)
+		defer cancel()
 	}
 	return Get(ctx, in.Fetcher, withSize(endpoint, in.Options), d.Providers.Endpoints()...)
 }

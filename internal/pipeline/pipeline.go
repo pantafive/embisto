@@ -33,6 +33,11 @@ const acceptHTML = "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8"
 // that did not answer.
 const pageShare = 0.6
 
+// lastShare is the end of a preview's time that no optional stage may take, such as a source, the provider of the
+// page served or an enricher: one that has not answered by then is left out, and the card of what the others found is
+// made before the deadline.
+const lastShare = 0.1
+
 // Observer hears what the pipeline does, for metrics. It is told names and codes, never URLs.
 type Observer interface {
 	Fetched(stage, outcome string, took time.Duration)
@@ -66,12 +71,19 @@ func New(opts Options) *Pipeline {
 	return &Pipeline{opts: opts}
 }
 
-// run is one preview being made: which stage made the card, and how long each stage's responses may be kept.
+// run is one preview being made: which stage made the card, how long each stage's responses may be kept, and when
+// the optional stages must have answered.
 type run struct {
 	// mu guards stages: a module may fetch from several goroutines at once, as the picture measurer does.
-	mu      sync.Mutex
-	stages  map[string]card.Freshness
-	decider string
+	mu       sync.Mutex
+	stages   map[string]card.Freshness
+	decider  string
+	optional time.Time
+}
+
+// optionalStage is the context an optional stage runs in: the preview's, ending before it.
+func (r *run) optionalStage(ctx context.Context) (context.Context, context.CancelFunc) {
+	return context.WithDeadline(ctx, r.optional)
 }
 
 // note keeps the shortest freshness a stage's responses allowed.
@@ -109,7 +121,8 @@ func (p *Pipeline) Extract(ctx context.Context, req card.Request) (result card.R
 	language := cmp.Or(target.Language(req.Options.Language), p.opts.Language)
 	ctx, cancel := context.WithTimeout(card.WithLanguage(ctx, language), p.opts.Timeout)
 	defer cancel()
-	r := &run{stages: map[string]card.Freshness{}}
+	deadline, _ := ctx.Deadline()
+	r := &run{stages: map[string]card.Freshness{}, optional: deadline.Add(-time.Duration(float64(p.opts.Timeout) * lastShare))}
 	preview, provider, err := p.make(ctx, r, card.Input{URL: parsed, Options: req.Options})
 	if err == nil && ctx.Err() != nil {
 		// A card finished past the deadline is no answer: the caller has stopped waiting for it.
@@ -173,14 +186,17 @@ func (p *Pipeline) fromPage(ctx context.Context, r *run, provider card.Provider,
 	if ctx.Err() != nil {
 		return card.Preview{}, "", &card.Error{Code: card.CodeTimeout, Err: ctx.Err()}
 	}
+	// The page is here: whatever else is asked only adds to its card.
+	optional, cancel := r.optionalStage(ctx)
+	defer cancel()
 	if wall := page.Wall(in.URL, in.Page); wall != "" {
 		trace.From(ctx).Step(trace.Step{Kind: trace.KindWall, Name: string(wall), Detail: "the page is a wall: " + in.Page.URL.String()})
-		return p.standIn(ctx, r, provider, in, walled(ctx, requested, in.Facts, wall), nil)
+		return p.standIn(optional, r, provider, in, walled(ctx, requested, in.Facts, wall), nil)
 	}
 	var provided []card.Facts
 	source := ""
 	if found, asked, ok := p.servedProvider(in); ok {
-		facts, err := p.ask(ctx, r, found, asked)
+		facts, err := p.ask(optional, r, found, asked)
 		if isDefinitive(err) {
 			return card.Preview{}, found.Name(), err
 		}
@@ -326,6 +342,10 @@ func (p *Pipeline) extract(ctx context.Context, r *run, in card.Input) []card.Fa
 	if p.opts.HomePages != nil {
 		sources = append(slices.Clip(sources), p.opts.HomePages)
 	}
+	// A source that reads only the page still runs once the optional stages' time is up; one that asks the network
+	// fails at once.
+	optional, cancel := r.optionalStage(ctx)
+	defer cancel()
 	var found []card.Facts
 	for _, source := range sources {
 		if ctx.Err() != nil {
@@ -333,7 +353,7 @@ func (p *Pipeline) extract(ctx context.Context, r *run, in card.Input) []card.Fa
 		}
 		in.Fetcher = p.fetcherFor(r, stageOf(source, "source"))
 		started := time.Now()
-		facts, err := source.Read(ctx, in)
+		facts, err := source.Read(optional, in)
 		trace.From(ctx).Step(trace.Step{Kind: trace.KindSource, Name: sourceName(source, facts), Detail: summary(facts), Outcome: outcomeOf(err), Took: time.Since(started)})
 		if err != nil {
 			p.opts.Log.WarnContext(ctx, "a source failed; the preview goes on without it", slog.String("source", fmt.Sprintf("%T", source)), slog.String("url", in.URL.String()), slog.Any("error", err))
@@ -359,6 +379,8 @@ func (p *Pipeline) ask(ctx context.Context, r *run, provider card.Provider, in c
 }
 
 func (p *Pipeline) enrich(ctx context.Context, r *run, preview card.Preview) card.Preview {
+	ctx, cancel := r.optionalStage(ctx)
+	defer cancel()
 	for _, enricher := range p.opts.Enrichers {
 		started := time.Now()
 		enriched, err := enricher.Enrich(ctx, preview, p.fetcherFor(r, stageOf(enricher, "enricher")))

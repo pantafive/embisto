@@ -4,6 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"net/netip"
 	"net/url"
 	"strconv"
 	"strings"
@@ -70,6 +74,50 @@ func TestNoCardIsMadePastTheDeadline(t *testing.T) {
 	opts.Sources = append(opts.Sources, slow{})
 
 	_, err := embisto.New(opts).Extract(context.Background(), card.Request{URL: "https://example.com/post"})
+
+	assert.Equal(t, card.CodeTimeout, card.CodeOf(err))
+}
+
+// local lets the defaults fetch from a test server.
+var local = []netip.Prefix{netip.MustParsePrefix("127.0.0.0/8")}
+
+// hanging serves a page whose oEmbed endpoint, home page and picture never answer, and nothing else either.
+func hanging(t *testing.T) *httptest.Server {
+	t.Helper()
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/post" {
+			<-r.Context().Done()
+			return
+		}
+		w.Header().Set("Content-Type", "text/html")
+		_, _ = io.WriteString(w, `<meta property="og:title" content="A post"><meta property="og:image" content="/picture.png">`+
+			`<link rel="alternate" type="application/json+oembed" href="/oembed">`)
+	}))
+	t.Cleanup(server.Close)
+	return server
+}
+
+// TestStagesThatDoNotAnswerLeaveTheCardOfThePage: an oEmbed endpoint, a home page or a picture that hung took the
+// preview to its deadline, and the card of a page already read failed with timeout.
+func TestStagesThatDoNotAnswerLeaveTheCardOfThePage(t *testing.T) {
+	server := hanging(t)
+	opts := embisto.Defaults()
+	opts.AllowedNetworks, opts.Timeout = local, time.Second
+
+	started := time.Now()
+	result, err := embisto.New(opts).Extract(context.Background(), card.Request{URL: server.URL + "/post"})
+
+	require.NoError(t, err)
+	assert.Equal(t, "A post", result.Preview.Title)
+	assert.Less(t, time.Since(started), opts.Timeout)
+}
+
+func TestAPageThatDoesNotAnswerTimesOut(t *testing.T) {
+	server := hanging(t)
+	opts := embisto.Defaults()
+	opts.AllowedNetworks, opts.Timeout = local, 200*time.Millisecond
+
+	_, err := embisto.New(opts).Extract(context.Background(), card.Request{URL: server.URL + "/never"})
 
 	assert.Equal(t, card.CodeTimeout, card.CodeOf(err))
 }

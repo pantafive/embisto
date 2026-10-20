@@ -67,7 +67,7 @@ func Defaults() Options {
 		UserAgent:             "embisto/" + Version + " (+https://github.com/pantafive/embisto)",
 		DefaultAcceptLanguage: "en",
 		Sources: []card.Source{
-			oembed.Discovery{Providers: oembed.Known()},
+			oembed.Discovery{Providers: oembed.Known(), Timeout: time.Second},
 			sources.OpenGraph{},
 			sources.JSONLD{},
 			sources.Twitter{},
