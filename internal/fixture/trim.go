@@ -13,8 +13,9 @@ import (
 
 // Trim drops what no source reads from a page, so a saved page is small, and holds nothing of the people who visited
 // or commented on it: scripts other than JSON-LD, styles and comments everywhere, in the body everything but its
-// metadata, every <meta> and <link> no source reads, such as a visitor's payload or a request's id, and in JSON-LD
-// every key no source reads, such as the comments under a video.
+// metadata, every <meta> and <link> no source reads, such as a visitor's payload or a request's id, every attribute
+// of <html>, <head>, <body> and <base> but the base's href, and in JSON-LD every key no source reads, such as the
+// comments under a video.
 func Trim(page []byte) []byte {
 	t := trimmer{tokens: html.NewTokenizer(bytes.NewReader(page))}
 	for {
@@ -79,6 +80,11 @@ func (t *trimmer) start(kind html.TokenType, raw []byte) {
 	case token.DataAtom == atom.Script:
 		// Written bare: a script's other attributes, such as a nonce, are no source's business.
 		t.out.WriteString(`<script type="application/ld+json">`)
+	case token.DataAtom == atom.Base:
+		t.out.WriteString(`<base href="` + html.EscapeString(attr(token, "href")) + `">`)
+	case token.DataAtom == atom.Html, token.DataAtom == atom.Head, token.DataAtom == atom.Body:
+		// Written bare too: no source reads their attributes, which may name an experiment or a visitor's theme.
+		t.out.WriteString("<" + token.Data + ">")
 	default:
 		t.out.Write(raw)
 	}

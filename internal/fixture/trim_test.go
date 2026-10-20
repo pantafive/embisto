@@ -22,6 +22,15 @@ func TestTrimKeepsOnlyWhatTheSourcesRead(t *testing.T) {
 		string(trimmed))
 }
 
+func TestTrimKeepsOnlyTheBasesHrefOfTheDocumentsTags(t *testing.T) {
+	page := `<html lang="en" data-color-mode="dark" class="exp-42"><head data-session="s1"><base href="/a?b=1&amp;c=2" target="_top"/>` +
+		`</head><body class="logged-in" data-user="u7"></body></html>`
+
+	trimmed := fixture.Trim([]byte(page))
+
+	assert.Equal(t, `<html><head><base href="/a?b=1&amp;c=2"></head><body></body></html>`, string(trimmed))
+}
+
 // TestTrimKeepsNothingOfVisitorsOrCommenters: saved pages once kept a visitor's payload and the handles, names and
 // text of the people who commented on a video.
 func TestTrimKeepsNothingOfVisitorsOrCommenters(t *testing.T) {
