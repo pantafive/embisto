@@ -14,7 +14,7 @@ mise run serve   # the server on :8080
 
 `pre-commit install` runs the linters on every commit.
 
-Tests never touch the internet: fetches go to local `httptest` servers or replay saved fixtures. A pull request needs `go test ./...` and `golangci-lint run` to pass.
+Tests never touch the internet: fetches go to local `httptest` servers or replay saved fixtures. CI runs `go vet ./...`, `golangci-lint run` and `go test -race ./...` on every pull request, and all three must pass.
 
 ## Adding a site provider
 

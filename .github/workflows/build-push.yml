@@ -1,11 +1,13 @@
 name: Build and push image
 
-# Push to main triggers a build. Two tags land on ghcr:
+# A push to main whose CI passed builds the image. Two tags land on ghcr:
 #   :main       — moving tag
 #   :sha-XXXX   — immutable anchor for rollbacks
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -13,35 +15,28 @@ permissions:
   contents: read
   packages: write
 
+# A newer push supersedes the image of an older one; its tests have finished in CI either way.
 concurrency:
-  group: build-embisto-${{ github.ref }}
+  group: build-embisto
   cancel-in-progress: true
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-go@v5
-      with:
-        go-version-file: go.mod
-        cache: true
-    - run: go vet ./...
-    - run: go test ./...
-
   build:
-    needs: [test]
+    # CI of a pull request from a fork's branch named main also completes on main; only a push to main builds.
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
       with:
+        ref: ${{ github.event.workflow_run.head_sha || github.sha }}
         # git describe needs the tags.
         fetch-depth: 0
 
     - name: Compute sha tag and version
       id: tag
       run: |
-        echo "sha=$(echo ${{ github.sha }} | cut -c1-7)" >> "$GITHUB_OUTPUT"
+        echo "sha=$(git rev-parse --short=7 HEAD)" >> "$GITHUB_OUTPUT"
+        echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
         echo "version=$(git describe --tags --always)" >> "$GITHUB_OUTPUT"
 
     - uses: docker/setup-buildx-action@v3
@@ -63,7 +58,7 @@ jobs:
           ghcr.io/pantafive/embisto:sha-${{ steps.tag.outputs.sha }}
         labels: |
           org.opencontainers.image.source=https://github.com/pantafive/embisto
-          org.opencontainers.image.revision=${{ github.sha }}
+          org.opencontainers.image.revision=${{ steps.tag.outputs.revision }}
           org.opencontainers.image.licenses=MIT
         # A separate cache tag with mode=max keeps the Go build stage too; an inline cache holds only the final one.
         cache-from: type=registry,ref=ghcr.io/pantafive/embisto:buildcache
