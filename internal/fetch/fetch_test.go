@@ -108,6 +108,42 @@ func TestGetSkipsTheBodyOfMediaThatIsNotText(t *testing.T) {
 	assert.Equal(t, card.Response{URL: mustParse(t, server.URL), MediaType: "image/png"}, page)
 }
 
+// TestGetTellsTheMediaTypeOfAHeaderGoCannotRead: an unreadable Content-Type once made every page a bare file, with no
+// title.
+func TestGetTellsTheMediaTypeOfAHeaderGoCannotRead(t *testing.T) {
+	const page = "<!doctype html><title>A page</title>"
+	png := "\x89PNG\r\n\x1a\n" + strings.Repeat("\x00", 16)
+	tests := []struct {
+		name          string
+		contentType   []string
+		body          string
+		wantMediaType string
+		wantBody      string
+	}{
+		{"a parameter without a value", []string{"text/html;charset="}, page, "text/html", page},
+		{"a parameter without an equals sign", []string{"text/html; charset:utf-8"}, page, "text/html", page},
+		{"conflicting parameters", []string{"text/html; charset=utf-8; charset=latin1"}, page, "text/html", page},
+		{"no Content-Type on a page", nil, page, "text/html", page},
+		{"no Content-Type on a picture", nil, png, "image/png", ""},
+		{"the oEmbed media type", []string{"application/json+oembed"}, `{"title":"A post"}`, "application/json+oembed", `{"title":"A post"}`},
+		{"the oEmbed media type in XML", []string{"text/xml+oembed"}, "<oembed/>", "text/xml+oembed", "<oembed/>"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := serve(t, func(w http.ResponseWriter, _ *http.Request) {
+				// A nil value keeps the server from sniffing one of its own.
+				w.Header()["Content-Type"] = tt.contentType
+				_, _ = w.Write([]byte(tt.body))
+			})
+
+			page, err := get(t, newClient(loopback), server.URL)
+
+			require.NoError(t, err)
+			assert.Equal(t, []string{tt.wantMediaType, tt.wantBody}, []string{page.MediaType, string(page.Body)})
+		})
+	}
+}
+
 func TestGetRefusesAddressesThatAreNotPublic(t *testing.T) {
 	server := serve(t, func(w http.ResponseWriter, _ *http.Request) { _, _ = w.Write([]byte("secret")) })
 	port := mustParse(t, server.URL).Port()

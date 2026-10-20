@@ -4,6 +4,7 @@
 package fetch
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"errors"
@@ -40,6 +41,9 @@ var (
 
 // charsetSniff is how many leading bytes the HTML standard looks through for a <meta charset>.
 const charsetSniff = 1024
+
+// sniffLen is how many leading bytes tell the media type of a body whose header names none.
+const sniffLen = 512
 
 // Options shape the client; every field is required except Allowed.
 type Options struct {
@@ -191,15 +195,30 @@ func (c *Client) get(ctx context.Context, target *url.URL, header http.Header, r
 		return card.Response{}, StatusError{Status: resp.StatusCode}
 	}
 	contentType := resp.Header.Get("Content-Type")
-	mediaType, _, err := mime.ParseMediaType(contentType)
+	body := bufio.NewReaderSize(resp.Body, sniffLen)
+	mediaType, err := mediaTypeOf(contentType, body)
 	if err != nil {
-		mediaType = "application/octet-stream"
+		return card.Response{}, classify(ctx, err)
 	}
 	got := card.Response{URL: resp.Request.URL, MediaType: mediaType, Freshness: freshnessOf(resp.Header)}
-	if err := read(ctx, resp.Body, contentType, &got); err != nil {
+	if err := read(ctx, body, contentType, &got); err != nil {
 		return card.Response{}, err
 	}
 	return got, nil
+}
+
+// mediaTypeOf is the type a Content-Type names, though Go cannot read a parameter of it. When it names none, the
+// body's first bytes tell, as browsers sniff them.
+func mediaTypeOf(contentType string, body *bufio.Reader) (string, error) {
+	if mediaType, _, _ := mime.ParseMediaType(contentType); mediaType != "" {
+		return mediaType, nil
+	}
+	head, err := body.Peek(sniffLen)
+	if err != nil && !errors.Is(err, io.EOF) {
+		return "", err //nolint:wrapcheck // classified by the caller
+	}
+	mediaType, _, _ := mime.ParseMediaType(http.DetectContentType(head))
+	return mediaType, nil
 }
 
 // readText reads a text body within the size limit, decoded to UTF-8; other media come without one.
@@ -227,9 +246,24 @@ func (c *Client) read(ctx context.Context, body io.Reader, mediaType, contentTyp
 	return decoded, nil
 }
 
+// isText includes a structured type by any part of its subtype, such as application/json+oembed: the end of a part
+// says JSON or XML, as in x-json.
 func isText(mediaType string) bool {
-	return strings.HasPrefix(mediaType, "text/") || strings.HasSuffix(mediaType, "json") ||
-		strings.HasSuffix(mediaType, "xml")
+	return strings.HasPrefix(mediaType, "text/") || isJSON(mediaType) || hasPart(mediaType, "xml")
+}
+
+func isJSON(mediaType string) bool {
+	return hasPart(mediaType, "json")
+}
+
+func hasPart(mediaType, suffix string) bool {
+	_, subtype, _ := strings.Cut(mediaType, "/")
+	for part := range strings.SplitSeq(subtype, "+") {
+		if strings.HasSuffix(part, suffix) {
+			return true
+		}
+	}
+	return false
 }
 
 // lateMeta finds a <meta> that names a charset, for one past the first 1024 bytes the HTML standard looks through.
@@ -245,7 +279,7 @@ func decode(raw []byte, mediaType, contentType string) ([]byte, error) {
 	encoding, name, isCertain := charset.DetermineEncoding(raw[:min(len(raw), charsetSniff)], contentType)
 	if !isCertain {
 		switch {
-		case strings.HasSuffix(mediaType, "json"), utf8.Valid(raw):
+		case isJSON(mediaType), utf8.Valid(raw):
 			return raw, nil
 		case lateMeta.Match(raw[:min(len(raw), lateMetaWithin)]):
 			if late, lateName := charset.Lookup(string(lateMeta.FindSubmatch(raw[:min(len(raw), lateMetaWithin)])[1])); late != nil {
