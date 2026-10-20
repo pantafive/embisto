@@ -61,7 +61,15 @@ curl 'localhost:8080/v1/preview?format=slack&url=github.com'
 //go:embed templates
 var templates embed.FS
 
-sub, err := fs.Sub(templates, "templates")
-formats, err := render.LoadTemplates(sub)
-renderers := append(render.Defaults(), formats...)
+func renderers() ([]card.Renderer, error) {
+	sub, err := fs.Sub(templates, "templates")
+	if err != nil {
+		return nil, err
+	}
+	formats, err := render.LoadTemplates(sub)
+	if err != nil {
+		return nil, err
+	}
+	return append(render.Defaults(), formats...), nil
+}
 ```

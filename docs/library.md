@@ -2,22 +2,30 @@
 
 ```go
 import (
+	"context"
+	"fmt"
+	"time"
+
 	"github.com/pantafive/embisto"
 	"github.com/pantafive/embisto/cache"
 	"github.com/pantafive/embisto/card"
 )
 
-core := embisto.New(embisto.Defaults())
-previews := cache.New(core, cache.NewMemory(64<<20, nil), cache.Options{
-	TTL:        time.Hour,
-	FailureTTL: time.Minute,
-})
+func preview(ctx context.Context) error {
+	core := embisto.New(embisto.Defaults())
+	previews := cache.New(core, cache.NewMemory(64<<20, nil), cache.Options{
+		TTL:        time.Hour,
+		FailureTTL: time.Minute,
+	})
 
-result, err := previews.Extract(ctx, card.Request{URL: "https://github.com"})
-if err != nil {
-	code := card.CodeOf(err) // invalid_url, blocked_url, fetch_failed, timeout, too_large, not_found
+	result, err := previews.Extract(ctx, card.Request{URL: "https://github.com"})
+	if err != nil {
+		code := card.CodeOf(err) // invalid_url, blocked_url, fetch_failed, timeout, too_large, not_found
+		return fmt.Errorf("no preview: %s", code)
+	}
+	fmt.Println(result.Preview.Title, "is cached until", result.Expires)
+	return nil
 }
-preview, expires := result.Preview, result.Expires
 ```
 
 The core and every layer around it are a `card.Extractor`: `Extract` gives a `card.Result`, the preview with how long its origin lets it be kept, when the cache that served it lets it go, and the provider that shaped it; `Purge` forgets a URL in every layer it passes through. Layers therefore stack in any order, a cache over a cache included. Instances that share a store, such as `cache.NewRedis`, make one preview between them when it is also passed as `cache.Options.Locker`.
