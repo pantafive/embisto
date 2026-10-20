@@ -137,7 +137,7 @@ func addCompatibleRoutes(api huma.API, deps Deps) {
 type healthOutput struct {
 	Body struct {
 		Status  string `json:"status" example:"ok"`
-		Version string `json:"version" example:"0.1.0"`
+		Version string `json:"version" example:"0.2.0"`
 	}
 }
 

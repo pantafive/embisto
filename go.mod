@@ -2,6 +2,9 @@ module github.com/pantafive/embisto
 
 go 1.27.0
 
+// v0.1.0 held third-party pictures in its test data.
+retract v0.1.0
+
 require (
 	github.com/danielgtaylor/huma/v2 v2.39.1
 	github.com/gen2brain/vpx v0.2.1

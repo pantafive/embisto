@@ -56,9 +56,9 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - JSON-LD blocks over 512 KiB, or past 1 MiB on one page, are skipped before parsing, so a hostile page can no longer cost over 100 MiB of memory per preview.
 - moby/go-archive 0.3.3 and moby/sys/user 0.4.1, test-only dependencies, so govulncheck reports nothing the code calls.
 
-## [0.1.0] - 2026-10-14
+## [0.1.0] - 2026-10-14 [YANKED]
 
-The first release.
+The first release, retracted: its test data held third-party pictures.
 
 ### Added
 
@@ -71,5 +71,4 @@ The first release.
 - Prometheus metrics, an OpenAPI spec with a reference page, and a debug page showing how a card was made.
 - The Go library behind the server: `embisto.New`, the `cache` layers, and the `card`, `sites`, `render` and `thumbs` packages.
 
-[Unreleased]: https://github.com/pantafive/embisto/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/pantafive/embisto/releases/tag/v0.1.0
+[Unreleased]: https://github.com/pantafive/embisto/commits/main
