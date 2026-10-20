@@ -6,7 +6,7 @@ The server reads its settings from the environment; `embisto help` lists its com
 |---|---|---|
 | `EMBISTO_ADDR` | `:8080` | Listen address of the API. |
 | `EMBISTO_METRICS_ADDR` | `:9090` | Listen address of `/metrics`. |
-| `EMBISTO_PUBLIC_URL` | | The address clients reach the API at, listed as the server in `/openapi.json` and `/docs`. |
+| `EMBISTO_PUBLIC_URL` | | The address clients reach the API at, an http or https URL such as `https://embisto.example.com`, with no query: listed as the server in `/openapi.json` and `/docs`, and the start of every thumbnail's URL. Anything else stops startup. |
 | `EMBISTO_IMAGE_KEY` | | Signs the URLs of [thumbnails](thumbnails.md), at least 32 bytes (`openssl rand -hex 32`). Empty turns thumbnails off. |
 | `EMBISTO_IMAGE_PRESETS` | `thumb=160x160-fill,card=600x0-fit,large=1200x0-fit` | The sizes of thumbnails. |
 | `EMBISTO_DEBUG` | `false` | Serve `/debug` on the internal listener, never on the API's. |

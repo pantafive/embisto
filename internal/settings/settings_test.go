@@ -44,7 +44,10 @@ func TestLoadDefaultsAnEmptyEnvironment(t *testing.T) {
 }
 
 func TestLoadRefusesWhatItCannotHonour(t *testing.T) {
-	tests := []string{"EMBISTO_CACHE_URL=memcached://cache:11211", "EMBISTO_CACHE_MEMORY=-1", "EMBISTO_CACHE_MEMORY=lots", "EMBISTO_LOG_LEVEL=loud", "EMBISTO_DEFAULT_ACCEPT_LANGUAGE=not a language!", "EMBISTO_IMAGE_KEY=short", "EMBISTO_IMAGE_PRESETS=huge", "EMBISTO_YOUTUBE_NOCOOKIE=maybe", "EMBISTO_CACHE_MIN_TTL=soon", "EMBISTO_CACHE_MIN_TTL=48h"}
+	tests := []string{
+		"EMBISTO_CACHE_URL=memcached://cache:11211", "EMBISTO_CACHE_MEMORY=-1", "EMBISTO_CACHE_MEMORY=lots", "EMBISTO_LOG_LEVEL=loud", "EMBISTO_DEFAULT_ACCEPT_LANGUAGE=not a language!", "EMBISTO_IMAGE_KEY=short", "EMBISTO_IMAGE_PRESETS=huge", "EMBISTO_YOUTUBE_NOCOOKIE=maybe", "EMBISTO_CACHE_MIN_TTL=soon", "EMBISTO_CACHE_MIN_TTL=48h",
+		"EMBISTO_PUBLIC_URL=embisto.example.com", "EMBISTO_PUBLIC_URL=ftp://embisto.example.com", "EMBISTO_PUBLIC_URL=https://", "EMBISTO_PUBLIC_URL=https://embisto.example.com/?a=1",
+	}
 	for _, variable := range tests {
 		t.Run(variable, func(t *testing.T) {
 			_, err := settings.Load(environ(variable))

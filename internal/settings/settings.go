@@ -77,17 +77,19 @@ func Load(environ func() []string) (Settings, error) {
 	loaded := Settings{
 		Addr:         cmp.Or(env["EMBISTO_ADDR"], defaultAddr),
 		MetricsAddr:  cmp.Or(env["EMBISTO_METRICS_ADDR"], defaultMetricsAddr),
-		PublicURL:    strings.TrimRight(env["EMBISTO_PUBLIC_URL"], "/"),
 		TemplatesDir: env["EMBISTO_TEMPLATES_DIR"],
 		// Sites answer in the language of wherever the server runs, unless asked otherwise.
 		DefaultAcceptLanguage: cmp.Or(env["EMBISTO_DEFAULT_ACCEPT_LANGUAGE"], defaultLanguage),
 		CacheTTL:              cacheTTL,
 		FailureTTL:            failureTTL,
 	}
+	var err error
+	if loaded.PublicURL, err = publicURL(env["EMBISTO_PUBLIC_URL"]); err != nil {
+		return Settings{}, err
+	}
 	if err := loaded.readCache(env); err != nil {
 		return Settings{}, err
 	}
-	var err error
 	if _, _, err := language.ParseAcceptLanguage(loaded.DefaultAcceptLanguage); err != nil {
 		return Settings{}, fmt.Errorf("%w: EMBISTO_DEFAULT_ACCEPT_LANGUAGE=%q is not an Accept-Language value", ErrInvalid, loaded.DefaultAcceptLanguage)
 	}
@@ -174,6 +176,19 @@ func flag(env map[string]string, name string) (bool, error) {
 		return false, fmt.Errorf("%w: %s=%q is not true or false", ErrInvalid, name, raw)
 	}
 	return value, nil
+}
+
+// publicURL is the address clients reach the server at, without its trailing slash: the paths of the API and of
+// thumbnails are appended to it, so it is an absolute http or https URL with no query or fragment.
+func publicURL(raw string) (string, error) {
+	if raw == "" {
+		return "", nil
+	}
+	parsed, err := url.Parse(raw)
+	if err != nil || parsed.Scheme != "http" && parsed.Scheme != "https" || parsed.Host == "" || parsed.RawQuery != "" || parsed.Fragment != "" {
+		return "", fmt.Errorf("%w: EMBISTO_PUBLIC_URL=%q is not an http or https address such as https://embisto.example.com", ErrInvalid, raw)
+	}
+	return strings.TrimRight(raw, "/"), nil
 }
 
 // cacheURL accepts the schemes of the shared caches embisto can talk to; the URL itself, which may hold a password, is
