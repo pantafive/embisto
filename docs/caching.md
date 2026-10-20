@@ -8,7 +8,7 @@ Identical requests that arrive at once make one fetch. In one instance this alwa
 
 - The instance that first misses takes a lock in the shared cache (`SET NX PX`), makes the preview, writes it and frees the lock.
 - The others wait for the value, polling the cache.
-- An instance that waits longer than the lock's 15 seconds makes the preview itself rather than fail; a holder that crashed frees its lock this soon.
+- An instance that waits longer than the lock's 15 seconds makes the preview itself rather than fail; the lock of a holder that crashed expires after the same 15 seconds.
 
 Use a shared cache when there are several instances: they then share one cache, make one preview between them for identical requests, and purge together. While it does not answer, each instance serves from its own memory, logs a warning when that starts and ends, and counts the failures. Requests are then coalesced per instance, and a purge answers 503, since what it would drop comes back with the cache. When it answers again, each instance empties its own memory, so that nothing kept during the outage outlives a purge made since. A request whose client gave up never counts as the shared cache failing.
 

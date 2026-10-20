@@ -103,7 +103,7 @@ A failed request returns a non-2xx status with an [RFC 9457](https://www.rfc-edi
 | `unknown_format` | 400 | The server has no such `format`. |
 | `busy` | 503 | The server is making as many previews as `EMBISTO_MAX_CONCURRENT_PREVIEWS` allows; `Retry-After` says when to ask again. |
 | `not_cached` | 404 | A purge found nothing of the URL cached. |
-| `cache_unavailable` | 503 | A purge the shared cache did not answer. |
+| `cache_unavailable` | 503 | The shared cache did not answer a purge. |
 | `canceled` | 503 | The client closed the request before the preview was ready. |
 | `internal` | 500 | embisto itself failed; the cause is logged, never answered. |
 

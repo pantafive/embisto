@@ -2,7 +2,7 @@
 
 A server started with `EMBISTO_TEMPLATES_DIR` makes an output format of every file at the top of that directory named `<name>.<ext>.tmpl`: `slack.json.tmpl` answers `/v1/preview?format=slack`. The name is lowercase letters, digits, `-` and `_`, and cannot be one of embisto's own formats (`json`, `text`, `html`, `iframely`, `oembed`). Every loaded format is listed in the `format` parameter's enum in `/openapi.json`. A request only names a format; template code comes from the directory alone.
 
-The extension, in any case, sets the `Content-Type`. Every answer also carries the `html` format's Content-Security-Policy and `X-Content-Type-Options: nosniff`, so that no output runs a script in a browser.
+The extension, in upper or lower case, sets the `Content-Type`. Every answer also carries the `html` format's Content-Security-Policy and `X-Content-Type-Options: nosniff`, so that no output runs a script in a browser.
 
 | Extension | Content-Type |
 |---|---|

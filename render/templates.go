@@ -135,7 +135,7 @@ func LoadTemplates(fsys fs.FS) ([]card.Renderer, error) {
 
 func load(fsys fs.FS, file string) (Template, error) {
 	name, extension, ok := strings.Cut(strings.TrimSuffix(file, templateSuffix), ".")
-	// Read once, so that the engine, the checks and the media type all go by the same extension: CARD.HTML is html.
+	// Read once, so that the engine, the checks and the media type all go by the same extension: card.HTML.tmpl is html.
 	extension = strings.ToLower(extension)
 	switch {
 	case !ok || strings.Contains(extension, "."):
