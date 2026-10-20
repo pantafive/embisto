@@ -4,6 +4,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-20
+
 ### Added
 
 - `EMBISTO_MAX_CONCURRENT_PREVIEWS` (default 32) caps the previews made at once; any more get 503 `busy` with `Retry-After`. Cache hits take no slot.
@@ -72,4 +74,5 @@ The first release, retracted: its test data held third-party pictures.
 - Prometheus metrics, an OpenAPI spec with a reference page, and a debug page showing how a card was made.
 - The Go library behind the server: `embisto.New`, the `cache` layers, and the `card`, `sites`, `render` and `thumbs` packages.
 
-[Unreleased]: https://github.com/pantafive/embisto/commits/main
+[Unreleased]: https://github.com/pantafive/embisto/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/pantafive/embisto/releases/tag/v0.2.0
