@@ -36,7 +36,7 @@ type answer struct {
 }
 
 type config struct {
-	iframely, embisto, key, out string
+	iframely, embisto, out string
 }
 
 func main() {
@@ -44,7 +44,6 @@ func main() {
 	urls := flag.String("urls", filepath.Join("scripts", "iframely-compare", "urls.txt"), "the URLs to ask about, one a line")
 	flag.StringVar(&cfg.iframely, "iframely", "http://127.0.0.1:8061", "a running Iframely")
 	flag.StringVar(&cfg.embisto, "embisto", "http://127.0.0.1:8080", "a running embisto")
-	flag.StringVar(&cfg.key, "key", "", "embisto's API key, when it requires one")
 	flag.StringVar(&cfg.out, "out", "iframely-compare-out", "where the answers and report.md go")
 	flag.Parse()
 	if err := run(context.Background(), cfg, *urls); err != nil {
@@ -86,11 +85,11 @@ func compareURL(ctx context.Context, cfg config, target string) (string, error) 
 	cells := make([]string, 0, 2)
 	for _, path := range []string{"iframely", "oembed"} {
 		query := url.Values{"url": {target}}
-		theirs, err := ask(ctx, cfg.iframely+"/"+path+"?group=true&"+query.Encode(), "")
+		theirs, err := ask(ctx, cfg.iframely+"/"+path+"?group=true&"+query.Encode())
 		if err != nil {
 			return "", err
 		}
-		ours, err := ask(ctx, cfg.embisto+"/"+path+"?"+query.Encode(), cfg.key)
+		ours, err := ask(ctx, cfg.embisto+"/"+path+"?"+query.Encode())
 		if err != nil {
 			return "", err
 		}
@@ -105,15 +104,12 @@ func compareURL(ctx context.Context, cfg config, target string) (string, error) 
 	return fmt.Sprintf("| %s | %s | %s |\n", target, cells[0], cells[1]), nil
 }
 
-func ask(ctx context.Context, address, key string) (answer, error) {
+func ask(ctx context.Context, address string) (answer, error) {
 	ctx, cancel := context.WithTimeout(ctx, requestTimeout)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, address, nil)
 	if err != nil {
 		return answer{}, fmt.Errorf("asking %s: %w", address, err)
-	}
-	if key != "" {
-		req.Header.Set("Authorization", "Bearer "+key)
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
