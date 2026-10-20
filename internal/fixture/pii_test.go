@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"slices"
 	"testing"
+	"unicode/utf8"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,8 +25,9 @@ var tracking = regexp.MustCompile(`(?i)visitor-payload|visitor-hmac|name="reques
 
 var linkedDataBlock = regexp.MustCompile(`(?is)<script[^>]*application/ld\+json[^>]*>(.*?)</script>`)
 
-// TestTestdataHoldsNoPersonalData scans every saved file for what a visitor or a commenter left in a page: tracking
-// markers, and in JSON-LD any key the trimmer does not keep, such as a video's comments with their authors' handles.
+// TestTestdataHoldsNoPersonalData scans every saved file for the markers in tracking, and in JSON-LD blocks of a page
+// for any key the trimmer does not keep, such as a video's comments with their authors' handles. Nothing else is
+// looked for: an address, a signed URL or a name in a kept field passes.
 func TestTestdataHoldsNoPersonalData(t *testing.T) {
 	var found []string
 	err := filepath.WalkDir(root, func(path string, entry os.DirEntry, err error) error {
@@ -82,7 +84,57 @@ func unreadKeys(block []byte) []string {
 	return unread
 }
 
-func TestTheScanFindsWhatTheReviewFound(t *testing.T) {
+// TestTestdataHoldsNoPicture checks every saved file is text, and no fixture keeps the body of a peek: a picture is
+// saved as its size.
+func TestTestdataHoldsNoPicture(t *testing.T) {
+	var scan pictureScan
+	err := filepath.WalkDir(root, func(path string, entry os.DirEntry, err error) error {
+		if err != nil || entry.IsDir() {
+			return err
+		}
+		raw, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		return scan.file(path, raw)
+	})
+
+	require.NoError(t, err)
+	require.Positive(t, scan.peeks)
+	assert.Equal(t, [][]string{nil, nil}, [][]string{scan.binary, scan.keptBodies})
+}
+
+// pictureScan is what TestTestdataHoldsNoPicture found: the files that are not text, and the peeks and the bodies
+// they kept.
+type pictureScan struct {
+	binary, keptBodies []string
+	peeks              int
+}
+
+func (s *pictureScan) file(path string, raw []byte) error {
+	if !utf8.Valid(raw) || bytes.IndexByte(raw, 0) >= 0 {
+		s.binary = append(s.binary, path)
+	}
+	if filepath.Base(path) != fixture.FixtureFile {
+		return nil
+	}
+	var saved fixture.Fixture
+	if err := json.Unmarshal(raw, &saved); err != nil {
+		return err
+	}
+	for _, exchange := range saved.Exchanges {
+		if exchange.Method != "peek" {
+			continue
+		}
+		s.peeks++
+		if exchange.File != "" {
+			s.keptBodies = append(s.keptBodies, path+": "+exchange.File)
+		}
+	}
+	return nil
+}
+
+func TestTheScanFindsATrackingMarkerAndAnUnreadKey(t *testing.T) {
 	page := `<meta name="visitor-payload" content="eyJ"><script type="application/ld+json">{"comment":[{"author":{"name":"@someone"}}]}</script>`
 
 	marker := tracking.FindString(page)
