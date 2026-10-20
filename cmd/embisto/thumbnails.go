@@ -77,7 +77,10 @@ func templateFormats(ctx context.Context, loaded settings.Settings, log *slog.Lo
 	return templates, nil
 }
 
-var errNoImageKey = errors.New("EMBISTO_IMAGE_KEY is not set: thumbnails are off")
+var (
+	errNoImageKey  = errors.New("EMBISTO_IMAGE_KEY is not set: thumbnails are off")
+	errNoPublicURL = errors.New("EMBISTO_PUBLIC_URL is not set: a thumbnail's URL starts with the address clients reach the server at")
+)
 
 // newThumbnails are the parts that serve thumbnails, and the enricher that hands out their URLs when clients have an
 // address to reach them at; nil and nil when thumbnails are off.
@@ -113,8 +116,11 @@ func runSign(args []string, environ func() []string, out io.Writer) error {
 	if err != nil {
 		return err //nolint:wrapcheck // it names the setting and what is wrong with it
 	}
-	if loaded.ImageKey == "" {
+	switch {
+	case loaded.ImageKey == "":
 		return errNoImageKey
+	case loaded.PublicURL == "":
+		return errNoPublicURL
 	}
 	signer, err := thumbnails.NewSigner([]byte(loaded.ImageKey), loaded.ImagePresets)
 	if err != nil {

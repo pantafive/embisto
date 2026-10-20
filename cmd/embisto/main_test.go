@@ -61,6 +61,22 @@ func TestRunPrintsUsageAndRefusesUnknownCommands(t *testing.T) {
 	})
 }
 
+func TestSignPrintsAURLOnlyWithThePublicAddress(t *testing.T) {
+	key := "EMBISTO_IMAGE_KEY=" + strings.Repeat("k", 32)
+	sign := func(env ...string) (string, error) {
+		var out strings.Builder
+		err := run(t.Context(), []string{"embisto", "sign", "card", "https://example.com/a.png"}, func() []string { return env }, &out)
+		return out.String(), err
+	}
+
+	signed, err := sign(key, "EMBISTO_PUBLIC_URL=https://embisto.example.com/")
+	require.NoError(t, err)
+	_, err = sign(key)
+
+	require.ErrorIs(t, err, errNoPublicURL)
+	assert.Regexp(t, `^https://embisto\.example\.com/i/[^/]+/card/[^/]+\n$`, signed)
+}
+
 func TestServerTimeoutsOutlastTheSlowestAnswer(t *testing.T) {
 	server := newServer(":0", http.NotFoundHandler())
 
