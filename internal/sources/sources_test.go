@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -28,4 +29,25 @@ func TestADateNoCardCanCarryIsDropped(t *testing.T) {
 	assert.True(t, facts.PublishedAt.IsZero())
 	_, err = json.Marshal(facts.PublishedAt)
 	require.NoError(t, err)
+}
+
+// TestJSONLDSkipsBlocksTooLargeToParse: a block parses to some twenty-five times its size, so a page of a few
+// megabytes of JSON-LD took over a hundred megabytes per preview. An oversize block is skipped, and so is one past
+// what a page's blocks may take together; the blocks within both are read.
+func TestJSONLDSkipsBlocksTooLargeToParse(t *testing.T) {
+	block := func(kind, headline string, size int) string {
+		padding := strings.Repeat("x", size)
+		return `<script type="application/ld+json">{"@type":"` + kind + `","headline":"` + headline + `","text":"` + padding + `"}</script>`
+	}
+	hostile := block("NewsArticle", "Too large", 600<<10) +
+		block("Organization", "", 400<<10) + block("Organization", "", 400<<10) + block("NewsArticle", "Past the page", 400<<10) +
+		block("NewsArticle", "Read", 0)
+	parsed := page.Parse(card.Response{
+		URL: &url.URL{Scheme: "https", Host: "example.com", Path: "/post"}, MediaType: "text/html", Body: []byte(hostile),
+	})
+
+	facts, err := sources.JSONLD{}.Read(context.Background(), card.Input{Page: parsed})
+
+	require.NoError(t, err)
+	assert.Equal(t, "Read", facts.Title)
 }

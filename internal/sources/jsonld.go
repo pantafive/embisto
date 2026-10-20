@@ -20,15 +20,28 @@ var (
 	organizationTypes = []string{"Organization", "NewsMediaOrganization", "Corporation", "WebSite"}
 )
 
+// What a page's JSON-LD may cost: a block takes some twenty-five times its size once parsed, so a page cannot spend
+// a hundred megabytes of the server's memory on structured data. Real blocks take a few kilobytes.
+const (
+	maxBlock     = 512 << 10
+	maxBlockPage = 1 << 20
+)
+
 // item is one JSON-LD node: values are strings, numbers, nodes or lists of them.
 type item map[string]any
 
-// JSONLD reads schema.org structured data. Malformed blocks are common and skipped, never failing the source.
+// JSONLD reads schema.org structured data. Malformed blocks are common and skipped, never failing the source, as are
+// a block over maxBlock and one that would take the page's blocks past maxBlockPage.
 type JSONLD struct{}
 
 func (JSONLD) Read(_ context.Context, in card.Input) (card.Facts, error) {
 	items := make([]item, 0, len(in.Page.LinkedData))
+	left := maxBlockPage
 	for _, block := range in.Page.LinkedData {
+		if len(block) > maxBlock || len(block) > left {
+			continue
+		}
+		left -= len(block)
 		items = append(items, nodes(block)...)
 	}
 	facts := card.Facts{Source: card.SourceJSONLD}
