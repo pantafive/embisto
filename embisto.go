@@ -4,6 +4,8 @@ import (
 	"cmp"
 	"context"
 	"log/slog"
+	"runtime/debug"
+	"strings"
 	"time"
 
 	"github.com/pantafive/embisto/card"
@@ -12,8 +14,42 @@ import (
 	"github.com/pantafive/embisto/internal/pipeline"
 )
 
-// Version is the library's release.
-const Version = "0.1.0"
+// Version is the library's release, without its v: the one the build stamped with
+// -ldflags "-X github.com/pantafive/embisto.release=…", else the module's version in the build, else devel.
+var Version = versionOf(release, debug.ReadBuildInfo)
+
+// release is what the build stamped; empty when it stamped nothing.
+var release string
+
+const (
+	modulePath = "github.com/pantafive/embisto"
+	devel      = "devel"
+)
+
+// versionOf is the stamped version, else the module's in the build: the main module's when the binary is embisto's
+// own, built by go install at a version or from a tagged checkout, or the dependency's when a program imports it.
+func versionOf(stamped string, read func() (*debug.BuildInfo, bool)) string {
+	if stamped != "" {
+		return strings.TrimPrefix(stamped, "v")
+	}
+	info, ok := read()
+	if !ok {
+		return devel
+	}
+	for _, module := range append([]*debug.Module{&info.Main}, info.Deps...) {
+		if module.Path != modulePath {
+			continue
+		}
+		if module.Replace != nil {
+			module = module.Replace
+		}
+		if module.Version == "" || module.Version == "(devel)" {
+			return devel
+		}
+		return strings.TrimPrefix(module.Version, "v")
+	}
+	return devel
+}
 
 // How long what a home page says is remembered, how long a home page that said nothing is, and how long reading one
 // may take of a preview's time.

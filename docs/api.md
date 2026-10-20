@@ -77,7 +77,7 @@ Empty fields are left out. `icon`, `image` and each of `images` are pictures wit
 | `DELETE /v1/preview?url=` | Drops the URL's cached previews; see [caching](caching.md). |
 | `GET /iframely?url=` | The same preview in the format of Iframely's API, with links grouped by rel. |
 | `GET /oembed?url=` | The same preview as an oEmbed answer, with the fields Iframely adds. |
-| `GET /healthz` | The process is up. |
+| `GET /healthz` | The process is up. Its `version` is the release the server was built from; an image of `main` reports the commit as `git describe` names it, such as `0.1.0-10-g3562582`, and a build that knows neither reports `devel`. |
 | `GET /readyz` | The server takes new requests. It returns 503 while the server shuts down. |
 | `GET /i/<signature>/<size>/<source>` | A thumbnail of a card's picture. The URLs come signed in the card's `variants`; see [thumbnails](thumbnails.md). |
 | `GET :9090/metrics` | Prometheus metrics, on a separate listener. |

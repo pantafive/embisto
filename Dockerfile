@@ -3,11 +3,15 @@
 
 FROM --platform=$BUILDPLATFORM golang:1.27 AS build
 ARG TARGETOS TARGETARCH
+# VERSION is what /healthz, the OpenAPI document and the User-Agent report, such as what git describe says; the build
+# context has no .git to read it from. Empty reports devel.
+ARG VERSION
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w" -o /out/embisto ./cmd/embisto
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath \
+    -ldflags="-s -w -X github.com/pantafive/embisto.release=${VERSION}" -o /out/embisto ./cmd/embisto
 
 FROM gcr.io/distroless/static-debian12:nonroot
 COPY --from=build /out/embisto /embisto
