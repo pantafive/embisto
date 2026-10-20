@@ -1,8 +1,13 @@
-.git
-.github
-.idea
-.vscode
+# Only what the image's build reads: the Go sources, the files they embed, and the notices the image ships. Anything
+# else in a checkout, such as .env or dist/, stays out of the build.
+*
+!go.mod
+!go.sum
+!**/*.go
 **/*_test.go
 **/testdata
-Dockerfile
-README.md
+!LICENSE
+!**/NOTICE
+!internal/oembed/providers.json
+!internal/debug/page.html
+!render/card.html
