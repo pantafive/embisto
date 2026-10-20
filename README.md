@@ -27,7 +27,7 @@ curl 'localhost:8080/v1/preview?url=https://go.dev/blog/'
   "type": "link",
   "title": "The Go Blog - The Go Programming Language",
   "icon": {"url": "https://go.dev/images/favicon-gopher-plain.png", "width": 180, "height": 180},
-  "image": {"url": "https://go.dev/doc/gopher/runningsquare.jpg", "width": 299, "height": 281},
+  "image": {"url": "https://go.dev/doc/gopher/gopher5logo.jpg", "width": 1262, "height": 733},
   "sources": ["opengraph", "twitter", "html"]
 }
 ```
