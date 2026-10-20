@@ -50,6 +50,16 @@ func TestEmbedHTMLIsKeptOnlyFromATrustedEndpoint(t *testing.T) {
 		{"a listed host on another port", "https://www.youtube.com/oembed?url=x", "https://www.youtube.com:8443/oembed?url=x", "application/json", false},
 		{"an answer that is not JSON", "https://www.youtube.com/oembed?url=x", "", "text/html", false},
 		{"an unlisted endpoint", "https://attacker.example/oembed?url=x", "", "application/json", false},
+		{"a listed endpoint without its trailing slash", "https://www.flickr.com/services/oembed?url=x", "", "application/json", true},
+		{"a listed endpoint with its trailing slash", "https://www.flickr.com/services/oembed/?url=x", "", "application/json", true},
+		{"a listed endpoint's format filled in", "https://vimeo.com/api/oembed.json?url=x", "", "application/json", true},
+		{"a listed endpoint with a format extension", "https://codepen.io/api/oembed.json?url=x", "", "application/json", true},
+		{"a path beneath a listed endpoint", "https://codepen.io/api/oembed/json?url=x", "", "application/json", true},
+		{"a path that only starts like a listed endpoint", "https://codepen.io/api/oembedX/anything.json", "", "application/json", false},
+		{"escaped dot segments out of a listed endpoint", "https://codepen.io/api/oembed/%2e%2e/%2E%2e/someone/x.json", "", "application/json", false},
+		{"dot segments out of a listed endpoint", "https://codepen.io/api/oembed/../../someone/x.json", "", "application/json", false},
+		{"a dot segment with a parameter", "https://codepen.io/api/oembed/..;/someone/x.json", "", "application/json", false},
+		{"an escaped slash", "https://codepen.io/api/oembed%2F..%2Fsomeone", "", "application/json", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

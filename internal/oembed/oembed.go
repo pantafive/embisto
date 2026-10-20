@@ -68,11 +68,31 @@ func trusts(asked *url.URL, resp card.Response, trusted []string) bool {
 		return false
 	}
 	for _, endpoint := range trusted {
-		if listed, err := url.Parse(endpoint); err == nil && isSecure(listed) && sameHost(final, listed) && strings.HasPrefix(final.EscapedPath(), listed.EscapedPath()) {
+		if listed, err := url.Parse(endpoint); err == nil && isSecure(listed) && sameHost(final, listed) && isUnder(final, listed.Path) {
 			return true
 		}
 	}
 	return false
+}
+
+// isUnder says whether the URL's path is the listed one or beneath it, segment by segment: /api/oembedX is not under
+// /api/oembed. The listed path also stands with or without its trailing slash and its .json or .xml extension. A path
+// with a dot segment or an escaped slash is under nothing, since the server may resolve it out of the listed path.
+func isUnder(u *url.URL, listed string) bool {
+	if escaped := strings.ToLower(u.EscapedPath()); strings.Contains(escaped, "%2f") || strings.Contains(escaped, "%5c") || strings.Contains(u.Path, `\`) {
+		return false
+	}
+	for segment := range strings.SplitSeq(u.Path, "/") {
+		if segment, _, _ = strings.Cut(segment, ";"); segment == "." || segment == ".." {
+			return false
+		}
+	}
+	base := strings.TrimSuffix(listed, "/")
+	return withoutFormat(strings.TrimSuffix(u.Path, "/")) == withoutFormat(base) || strings.HasPrefix(u.Path, base+"/")
+}
+
+func withoutFormat(path string) string {
+	return strings.TrimSuffix(strings.TrimSuffix(path, ".json"), ".xml")
 }
 
 func isSecure(u *url.URL) bool {
