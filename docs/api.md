@@ -43,7 +43,7 @@ Empty fields are left out. `icon`, `image` and each of `images` are pictures wit
 | `image` | picture | The card's picture: the first of `images`. |
 | `images` | array of pictures | Every picture of the item the sources found, by their priority. |
 | `image.url` | string | The picture's URL on its site. |
-| `image.width`, `image.height` | integer | Its size in pixels, as the page states it or measured from the file's first bytes (PNG, JPEG, GIF, WebP, SVG, ICO). |
+| `image.width`, `image.height` | integer | Its size in pixels, as the page states it or measured from the file's first bytes (PNG, JPEG, GIF, WebP, SVG, ICO); a measured JPEG is sized as its EXIF orientation shows it. |
 | `image.variants` | array | The picture's thumbnails, when the server has them on; see [thumbnails](thumbnails.md). |
 | `image.variants[].preset` | string | The preset's name, such as `thumb`, `card` or `large`. |
 | `image.variants[].url` | string | The thumbnail as JPEG, or PNG when it has transparency. |

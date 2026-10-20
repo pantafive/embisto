@@ -29,6 +29,15 @@ func encoded(t *testing.T, encode func(*bytes.Buffer, image.Image) error) []byte
 	return buf.Bytes()
 }
 
+// turned is a JPEG whose EXIF orientation, 6, turns it a quarter clockwise to be shown.
+func turned(file []byte) []byte {
+	exif := []byte{
+		0xff, 0xe1, 0, 34, 'E', 'x', 'i', 'f', 0, 0, 'M', 'M', 0, 42, 0, 0, 0, 8,
+		0, 1, 0x01, 0x12, 0, 3, 0, 0, 0, 1, 0, 6, 0, 0, 0, 0, 0, 0,
+	}
+	return append(append(file[:2:2], exif...), file[2:]...)
+}
+
 func entry(side byte) []byte {
 	return append([]byte{side, side}, make([]byte, 14)...)
 }
@@ -40,6 +49,7 @@ func TestEnrichMeasuresEveryPictureFormat(t *testing.T) {
 		"/a.png":  encoded(t, func(b *bytes.Buffer, i image.Image) error { return png.Encode(b, i) }),
 		"/a.gif":  encoded(t, func(b *bytes.Buffer, i image.Image) error { return gif.Encode(b, i, nil) }),
 		"/a.jpg":  encoded(t, func(b *bytes.Buffer, i image.Image) error { return jpeg.Encode(b, i, nil) }),
+		"/b.jpg":  turned(encoded(t, func(b *bytes.Buffer, i image.Image) error { return jpeg.Encode(b, i, nil) })),
 		"/a.webp": webp,
 		// Two entries, 16 and 32 pixels square; the rest of each entry is offsets the size does not need.
 		"/a.ico": append(append([]byte{0, 0, 1, 0, 2, 0}, entry(16)...), entry(32)...),
@@ -57,6 +67,7 @@ func TestEnrichMeasuresEveryPictureFormat(t *testing.T) {
 		{URL: server.URL + "/a.png"},
 		{URL: server.URL + "/a.gif"},
 		{URL: server.URL + "/a.jpg"},
+		{URL: server.URL + "/b.jpg"},
 		{URL: server.URL + "/a.webp"},
 		{URL: server.URL + "/a.svg"},
 		{URL: server.URL + "/b.svg"},
@@ -76,6 +87,7 @@ func TestEnrichMeasuresEveryPictureFormat(t *testing.T) {
 			{URL: server.URL + "/a.png", Width: 40, Height: 30},
 			{URL: server.URL + "/a.gif", Width: 40, Height: 30},
 			{URL: server.URL + "/a.jpg", Width: 40, Height: 30},
+			{URL: server.URL + "/b.jpg", Width: 30, Height: 40},
 			{URL: server.URL + "/a.webp", Width: 1, Height: 1},
 			{URL: server.URL + "/a.svg", Width: 120, Height: 60},
 			{URL: server.URL + "/b.svg", Width: 24, Height: 12},

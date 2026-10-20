@@ -1,7 +1,8 @@
 package thumbnails
 
 // Pictures are resized in pure Go: the size is read from the header before decoding, what is too large is refused,
-// x/image/draw scales, and PNG is encoded when the result has transparency, JPEG otherwise.
+// x/image/draw scales, a JPEG is turned the way its EXIF orientation says, and PNG is encoded when the result has
+// transparency, JPEG otherwise.
 
 import (
 	"bytes"
@@ -129,17 +130,24 @@ func fitted(width, height int, box Box) (int, int) {
 }
 
 // Cost is the memory resizing the picture into the box takes, from its header alone: the decoded picture, a
-// progressive JPEG's coefficients and the scaling. It fails as resize would for a picture it refuses.
+// progressive JPEG's coefficients, the scaling and, for a picture its orientation turns, the turned output. It fails
+// as resize would for a picture it refuses.
 func Cost(source []byte, box Box, maxPixels int) (int64, error) {
 	config, err := header(source, maxPixels)
 	if err != nil {
 		return 0, err
 	}
 	decoded := int64(config.Width) * int64(config.Height) * int64(bytesPerPixel(config.ColorModel))
-	if frame, ok := jpegheader.Read(source); ok {
-		decoded += coefficientBytes(frame)
+	frame, _ := jpegheader.Read(source)
+	decoded += coefficientBytes(frame)
+	turned := orientation(frame.Orientation)
+	stored := image.Rect(0, 0, config.Width, config.Height)
+	shaped := turned.storedPlan(planOf(turned.shown(stored), box), stored)
+	cost := decoded + shaped.scalingBytes()
+	if turned.isTurned() {
+		cost += int64(rgbaBytes * shaped.width * shaped.height)
 	}
-	return decoded + planOf(image.Rect(0, 0, config.Width, config.Height), box).scalingBytes(), nil
+	return cost, nil
 }
 
 // coefficientBytes is what image/jpeg holds of a progressive JPEG besides its pixels: a block of coefficients for
@@ -196,15 +204,16 @@ func resize(source []byte, box Box, maxPixels int, format Format) (resized, erro
 	if err != nil {
 		return resized{}, fmt.Errorf("%w: %w", ErrUnsupported, err)
 	}
-	scaled := scale(decoded, box)
+	frame, _ := jpegheader.Read(source)
+	scaled := scale(decoded, box, orientation(frame.Orientation))
 	if format == WebP {
 		return encodeWebP(scaled)
 	}
 	return encode(scaled)
 }
 
-// Scaled is the size a picture of the given size takes in the box: never larger than the picture itself, within the
-// aspect and the area every output keeps to.
+// Scaled is the size a picture shown at the given size takes in the box: never larger than the picture itself,
+// within the aspect and the area every output keeps to.
 func Scaled(width, height int, box Box) (int, int) {
 	if width <= 0 || height <= 0 {
 		return 0, 0
@@ -213,9 +222,11 @@ func Scaled(width, height int, box Box) (int, int) {
 	return shaped.width, shaped.height
 }
 
-func scale(source image.Image, box Box) image.Image {
-	shaped := planOf(source.Bounds(), box)
-	if shaped.crop == source.Bounds() && shaped.width == shaped.crop.Dx() && shaped.height == shaped.crop.Dy() {
+// scale makes the picture, shown as turned says, into the box.
+func scale(source image.Image, box Box, turned orientation) image.Image {
+	stored := source.Bounds()
+	shaped := turned.storedPlan(planOf(turned.shown(stored), box), stored)
+	if !turned.isTurned() && shaped.crop == stored && shaped.width == shaped.crop.Dx() && shaped.height == shaped.crop.Dy() {
 		return source
 	}
 	crop := shaped.crop
@@ -228,7 +239,7 @@ func scale(source image.Image, box Box) image.Image {
 	}
 	scaled := image.NewRGBA(image.Rect(0, 0, shaped.width, shaped.height))
 	draw.CatmullRom.Scale(scaled, scaled.Bounds(), source, crop, draw.Src, nil)
-	return scaled
+	return turned.turn(scaled)
 }
 
 // centered is the largest rectangle of the given proportions in the middle of bounds.

@@ -15,6 +15,8 @@ import (
 
 	// The webp header decoder, which the standard library lacks.
 	_ "golang.org/x/image/webp"
+
+	"github.com/pantafive/embisto/internal/jpegheader"
 )
 
 const (
@@ -28,7 +30,8 @@ const (
 
 var icoMagic = []byte{0, 0, 1, 0}
 
-// size reads a picture's width and height from the first bytes of its file; false when they say nothing readable.
+// size reads a picture's width and height as it is shown from the first bytes of its file, so a JPEG its EXIF
+// orientation turns a quarter has them swapped; false when they say nothing readable.
 func size(head []byte) (int, int, bool) {
 	switch {
 	case bytes.HasPrefix(head, icoMagic):
@@ -39,6 +42,9 @@ func size(head []byte) (int, int, bool) {
 	config, _, err := image.DecodeConfig(bytes.NewReader(head))
 	if err != nil {
 		return 0, 0, false
+	}
+	if header, ok := jpegheader.Read(head); ok && header.IsSwapped() {
+		config.Width, config.Height = config.Height, config.Width
 	}
 	return config.Width, config.Height, config.Width > 0 && config.Height > 0
 }
