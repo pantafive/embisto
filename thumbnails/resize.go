@@ -17,6 +17,8 @@ import (
 	"github.com/gen2brain/vpx/webp"
 	"golang.org/x/image/draw"
 
+	"github.com/pantafive/embisto/internal/jpegheader"
+
 	// The decoders the header check and the decoding use; GIF gives its first frame.
 	_ "image/gif"
 	// The webp decoder, which the standard library lacks.
@@ -57,6 +59,8 @@ const (
 	rgbaBytes   = 4
 	// encoderBytes is what an encoder holds of an output pixel at most, measured with WebP's, the largest.
 	encoderBytes = 16
+	// blockBytes is what image/jpeg keeps of an 8×8 block of a progressive JPEG between its scans: 64 int32s.
+	blockBytes = 256
 )
 
 // plan is how a picture is made into its box: the part of the source kept, the size of an intermediate the source is
@@ -124,15 +128,38 @@ func fitted(width, height int, box Box) (int, int) {
 	return max(1, int(float64(width)*ratio+0.5)), max(1, int(float64(height)*ratio+0.5))
 }
 
-// Cost is the memory resizing the picture into the box takes, from its header alone: the decoded picture and the
-// scaling. It fails as resize would for a picture it refuses.
+// Cost is the memory resizing the picture into the box takes, from its header alone: the decoded picture, a
+// progressive JPEG's coefficients and the scaling. It fails as resize would for a picture it refuses.
 func Cost(source []byte, box Box, maxPixels int) (int64, error) {
 	config, err := header(source, maxPixels)
 	if err != nil {
 		return 0, err
 	}
 	decoded := int64(config.Width) * int64(config.Height) * int64(bytesPerPixel(config.ColorModel))
+	if frame, ok := jpegheader.Read(source); ok {
+		decoded += coefficientBytes(frame)
+	}
 	return decoded + planOf(image.Rect(0, 0, config.Width, config.Height), box).scalingBytes(), nil
+}
+
+// coefficientBytes is what image/jpeg holds of a progressive JPEG besides its pixels: a block of coefficients for
+// every 8×8 block of every component, kept from the first scan to the last.
+func coefficientBytes(frame jpegheader.Header) int64 {
+	if !frame.Progressive {
+		return 0
+	}
+	sampling := frame.Sampling
+	if len(sampling) == 1 {
+		// One component is coded a block at a time, whatever factors it states.
+		sampling = []image.Point{{X: 1, Y: 1}}
+	}
+	maxH, maxV, blocks := 1, 1, 0
+	for _, factors := range sampling {
+		maxH, maxV, blocks = max(maxH, factors.X), max(maxV, factors.Y), blocks+factors.X*factors.Y
+	}
+	across := (frame.Width + 8*maxH - 1) / (8 * maxH)
+	down := (frame.Height + 8*maxV - 1) / (8 * maxV)
+	return int64(blockBytes) * int64(across) * int64(down) * int64(blocks)
 }
 
 // bytesPerPixel is what the decoder keeps a pixel of the colour model in.

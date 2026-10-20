@@ -2,9 +2,13 @@ package thumbnails_test
 
 import (
 	"bytes"
+	"compress/gzip"
 	"image"
 	"image/color"
+	"image/jpeg"
 	"image/png"
+	"io"
+	"os"
 	"runtime"
 	"runtime/metrics"
 	"sync/atomic"
@@ -79,4 +83,39 @@ func TestATallPictureStaysWithinItsAdmittedMemory(t *testing.T) {
 		assert.Equal(t, image.Pt(width, height), made)
 		assert.LessOrEqual(t, peak, uint64(cost)+16<<20, "peak %d MiB against a cost of %d MiB", peak>>20, cost>>20)
 	}
+}
+
+// progressive is a 4000×4000 JPEG coded in successive scans without chroma subsampling, of one flat grey.
+func progressive(t *testing.T) []byte {
+	t.Helper()
+	file, err := os.Open("testdata/progressive-444.jpg.gz")
+	require.NoError(t, err)
+	defer file.Close()
+	unzipped, err := gzip.NewReader(file)
+	require.NoError(t, err)
+	body, err := io.ReadAll(unzipped)
+	require.NoError(t, err)
+	return body
+}
+
+// TestAProgressiveJPEGIsChargedItsCoefficients: image/jpeg keeps 256 bytes for each 8×8 block of each component until
+// the last scan, 192 MB for this picture, on top of the pixels a sequential JPEG of its size is charged.
+func TestAProgressiveJPEGIsChargedItsCoefficients(t *testing.T) {
+	file := progressive(t)
+	var baseline bytes.Buffer
+	require.NoError(t, jpeg.Encode(&baseline, image.NewYCbCr(image.Rect(0, 0, 4000, 4000), image.YCbCrSubsampleRatio420), nil))
+	box := thumbnails.Box{Width: 600, Mode: thumbnails.Fit}
+	cost, err := thumbnails.Cost(file, box, 16_000_000)
+	require.NoError(t, err)
+	sequential, err := thumbnails.Cost(baseline.Bytes(), box, 16_000_000)
+	require.NoError(t, err)
+
+	assert.Equal(t, int64(3*500*500*256), cost-sequential)
+
+	peak := peakDuring(func() {
+		_, err := thumbnails.Resize(file, box, 16_000_000, thumbnails.Classic)
+		require.NoError(t, err)
+	})
+	t.Logf("cost %d MiB, peak %d MiB", cost>>20, peak>>20)
+	assert.LessOrEqual(t, peak, uint64(cost)+16<<20, "peak %d MiB against a cost of %d MiB", peak>>20, cost>>20)
 }
