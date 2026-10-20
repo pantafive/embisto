@@ -73,4 +73,4 @@ go test ./internal/golden -args -update
 
 ## Releasing
 
-Move the changes under a version in `CHANGELOG.md`, set `Version` in `embisto.go` to match, and push a tag such as `v0.1.0`. The release workflow then publishes static binaries for linux, darwin and windows on amd64 and arm64, and the image `ghcr.io/pantafive/embisto` tagged with the version and `latest`. `goreleaser build --snapshot --clean` tries the binaries locally.
+Move the changes under a version in `CHANGELOG.md`, set `Version` in `embisto.go` to match, and push a tag such as `v0.1.0`. The release workflow then publishes static binaries for linux, darwin and windows on amd64 and arm64, and the image `ghcr.io/pantafive/embisto` tagged with the version; a release that is not a pre-release such as `v0.2.0-rc.1` also moves `major.minor` and `latest`. The release notes are the version's section of `CHANGELOG.md`, and the workflow stops when the tag is not `v` and a semantic version or the section is missing. `goreleaser build --snapshot --clean` tries the binaries locally.

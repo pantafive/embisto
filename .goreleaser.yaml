@@ -31,11 +31,12 @@ archives:
 checksum:
   name_template: checksums.txt
 
-changelog:
-  disable: true
+# No changelog section: the release workflow passes the version's section of CHANGELOG.md with --release-notes, which
+# goreleaser reads only while its changelog is enabled.
 
 release:
   github:
     owner: pantafive
     name: embisto
-  footer: "See [CHANGELOG.md](https://github.com/pantafive/embisto/blob/main/CHANGELOG.md)."
+  prerelease: auto
+  footer: "See [CHANGELOG.md](https://github.com/pantafive/embisto/blob/{{ .Tag }}/CHANGELOG.md) for every version."

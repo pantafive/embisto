@@ -49,19 +49,26 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    # The same OCI labels as the release image. The workflow's own commit is main's newest, so the built one is named.
+    - id: meta
+      uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+      with:
+        images: ghcr.io/pantafive/embisto
+        flavor: latest=false
+        tags: |
+          type=raw,value=main
+          type=raw,value=sha-${{ steps.tag.outputs.sha }}
+        labels: |
+          org.opencontainers.image.revision=${{ steps.tag.outputs.revision }}
+
     - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
       with:
         context: .
         platforms: linux/amd64,linux/arm64
         push: true
         build-args: VERSION=${{ steps.tag.outputs.version }}
-        tags: |
-          ghcr.io/pantafive/embisto:main
-          ghcr.io/pantafive/embisto:sha-${{ steps.tag.outputs.sha }}
-        labels: |
-          org.opencontainers.image.source=https://github.com/pantafive/embisto
-          org.opencontainers.image.revision=${{ steps.tag.outputs.revision }}
-          org.opencontainers.image.licenses=MIT
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         # A separate cache tag with mode=max keeps the Go build stage too; an inline cache holds only the final one.
         cache-from: type=registry,ref=ghcr.io/pantafive/embisto:buildcache
         cache-to: type=registry,ref=ghcr.io/pantafive/embisto:buildcache,mode=max
