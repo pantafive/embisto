@@ -13,12 +13,14 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unicode"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/pantafive/embisto"
 	"github.com/pantafive/embisto/card"
+	"github.com/pantafive/embisto/render"
 )
 
 // hostile serves one page for every URL, and no picture.
@@ -153,4 +155,34 @@ func TestAPageThatDoesNotAnswerTimesOut(t *testing.T) {
 	_, err := embisto.New(opts).Extract(context.Background(), card.Request{URL: server.URL + "/never"})
 
 	assert.Equal(t, card.CodeTimeout, card.CodeOf(err))
+}
+
+// TestATextCardPrintsNoControlCharacter: a page's or an oEmbed answer's escapes reached format=text, made for
+// terminals, as they came: a clipboard write, a cleared screen, a line that seemed to be the card's URL.
+func TestATextCardPrintsNoControlCharacter(t *testing.T) {
+	tests := []struct {
+		name    string
+		fetcher card.Fetcher
+	}{
+		{"from Open Graph", hostile{page: []byte(`<meta property="og:title" content="Hi&#x1b;]52;c;cHduZWQ=&#x07;&#x1b;[2J&#x202e;txt.exe"><meta property="og:description" content="A line&#x0d;forged&#x2066;">`)}},
+		{"from oEmbed", replayOf(t, "control-characters")},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			opts := embisto.Defaults()
+			opts.Fetcher, opts.HomePages = tt.fetcher, nil
+
+			result, err := embisto.New(opts).Extract(context.Background(), card.Request{URL: "https://example.com/post"})
+			require.NoError(t, err)
+			var text strings.Builder
+			require.NoError(t, render.Text{}.Render(&text, result.Preview))
+
+			lines := strings.Split(strings.TrimSuffix(text.String(), "\n"), "\n")
+			assert.Len(t, lines, 3)
+			assert.Equal(t, "https://example.com/post", lines[len(lines)-1])
+			assert.Equal(t, -1, strings.IndexFunc(text.String(), func(r rune) bool {
+				return r != '\n' && unicode.IsControl(r) || r == '\u202e' || r == '\u2066'
+			}), text.String())
+		})
+	}
 }

@@ -1,0 +1,27 @@
+{
+  "url": "https://example.com/post",
+  "canonical_url": "https://example.com/post",
+  "type": "link",
+  "title": "]52;c;cHduZWQ=A post https://forged.example/",
+  "description": "A line[2K forged isolated text",
+  "site_name": "Example",
+  "author": "Some[31mone0m",
+  "icon": {
+    "url": "https://example.com/favicon.ico"
+  },
+  "links": [
+    {
+      "href": "https://example.com/favicon.ico",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/x-icon"
+    }
+  ],
+  "sources": [
+    "oembed",
+    "opengraph",
+    "html"
+  ]
+}

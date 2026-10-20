@@ -1,0 +1,24 @@
+{
+  "url": "https://example.com/post",
+  "meta": {
+    "title": "]52;c;cHduZWQ=A post https://forged.example/",
+    "description": "A line[2K forged isolated text",
+    "author": "Some[31mone0m",
+    "site": "Example",
+    "canonical": "https://example.com/post",
+    "medium": "link"
+  },
+  "links": {
+    "icon": [
+      {
+        "href": "https://example.com/favicon.ico",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/x-icon"
+      }
+    ]
+  },
+  "rel": []
+}
