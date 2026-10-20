@@ -10,9 +10,9 @@ import (
 	"github.com/pantafive/embisto/card"
 )
 
-// refused are the extensions of pictures /i/ refuses, so no thumbnail is handed out for them: it serves only what it
-// re-encodes, and SVG and ICO are not decoded.
-var refused = []string{".svg", ".svgz", ".ico"}
+// refused are the extensions of pictures /i/ refuses, so no thumbnail is handed out for them: it decodes only JPEG,
+// PNG, GIF and WebP. A URL without an extension, as many CDNs serve, keeps its thumbnails.
+var refused = []string{".svg", ".svgz", ".ico", ".avif", ".heic", ".heif", ".bmp", ".tif", ".tiff", ".jxl"}
 
 // Enricher gives a preview's icon and images their variants: a signed URL for every preset, at the address clients
 // reach the server at. Run it after the sizes are measured, so the variants know theirs.

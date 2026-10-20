@@ -33,7 +33,7 @@ When thumbnails are on and `EMBISTO_PUBLIC_URL` is set, cards list them, signed,
 }
 ```
 
-A preset that comes out the same size as one before it is left out. That happens to every preset after the first for a small icon. SVG and ICO sources get no thumbnails, because `/i/` refuses them.
+A preset that comes out the same size as one before it is left out. That happens to every preset after the first for a small icon. A source whose extension names a format `/i/` does not decode, such as SVG, ICO, AVIF, HEIC, BMP or TIFF, gets no thumbnails. A source without an extension is judged when a thumbnail is asked for: one in such a format answers 415 `unsupported_image`.
 
 `embisto sign <size> <url>` prints a thumbnail's URL, for a client backend that signs its own URLs or for a test.
 

@@ -113,6 +113,29 @@ func TestEnricherGivesEachPictureItsVariants(t *testing.T) {
 	}, enriched)
 }
 
+func TestEnricherSignsOnlyPicturesTheResizerDecodes(t *testing.T) {
+	enricher := thumbnails.Enricher{Signer: signer(t), BaseURL: "https://api.example.com"}
+	tests := []struct {
+		url       string
+		isResized bool
+	}{
+		{"https://example.com/photo.avif", false},
+		{"https://example.com/photo.HEIC", false},
+		{"https://example.com/scan.bmp?v=2", false},
+		{"https://example.com/logo.svg", false},
+		{"https://example.com/photo.webp", true},
+		{"https://cdn.example.com/media/7f3a9c", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.url, func(t *testing.T) {
+			enriched, err := enricher.Enrich(context.Background(), card.Preview{Image: card.Image{URL: tt.url}}, nil)
+
+			require.NoError(t, err)
+			assert.Equal(t, tt.isResized, len(enriched.Image.Variants) > 0)
+		})
+	}
+}
+
 func TestVerifyReadsTheFormatSignedWithTheSize(t *testing.T) {
 	signature, size, source := segments(t, signer(t).Path("card.webp", "https://example.com/a.jpg"))
 
