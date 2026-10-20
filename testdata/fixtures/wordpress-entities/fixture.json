@@ -1,0 +1,19 @@
+{
+  "request": {
+    "url": "https://example.com/2024/regina/"
+  },
+  "exchanges": [
+    {
+      "method": "fetch",
+      "url": "https://example.com/2024/regina/",
+      "media_type": "text/html",
+      "file": "1.html"
+    },
+    {
+      "method": "fetch",
+      "url": "https://example.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fexample.com%2F2024%2Fregina%2F",
+      "media_type": "application/json",
+      "file": "2.json"
+    }
+  ]
+}

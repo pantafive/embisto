@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"html"
 	"net/url"
 	"strconv"
 	"strings"
@@ -151,7 +152,7 @@ type response struct {
 
 func (r response) facts(endpoint *url.URL, isTrusted bool) card.Facts {
 	facts := card.Facts{
-		Source: card.SourceOEmbed, Title: r.Title, Author: r.AuthorName, AuthorURL: resolve(endpoint, r.AuthorURL), SiteName: r.ProviderName,
+		Source: card.SourceOEmbed, Title: text(r.Title), Author: text(r.AuthorName), AuthorURL: resolve(endpoint, r.AuthorURL), SiteName: text(r.ProviderName),
 	}
 	switch r.Type {
 	case "photo":
@@ -166,13 +167,19 @@ func (r response) facts(endpoint *url.URL, isTrusted bool) card.Facts {
 		facts.Images = append(facts.Images, card.Image{URL: thumbnail, Width: int(r.ThumbnailWidth), Height: int(r.ThumbnailHeight)})
 	}
 	if isTrusted && r.HTML != "" {
-		facts.Embed = card.Embed{HTML: r.HTML, Width: int(r.Width), Height: int(r.Height), Provider: r.ProviderName}
+		facts.Embed = card.Embed{HTML: r.HTML, Width: int(r.Width), Height: int(r.Height), Provider: facts.SiteName}
 		// Rich content is its HTML: without it, the page is a plain link.
 		if r.Type == "rich" {
 			facts.Type = card.TypeRich
 		}
 	}
 	return facts
+}
+
+// text is a text of the answer as a page's own reads: providers such as WordPress write entities in it, and markup's
+// whitespace runs.
+func text(s string) string {
+	return strings.Join(strings.Fields(html.UnescapeString(s)), " ")
 }
 
 // resolve makes an http or https reference absolute against the endpoint; empty for anything else.

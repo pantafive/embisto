@@ -1,0 +1,28 @@
+{
+  "url": "https://example.com/2024/regina/",
+  "canonical_url": "https://example.com/2024/regina/",
+  "type": "link",
+  "title": "WordPress 6.5 “Regina”",
+  "description": "Named after Regina Carter & her violin.",
+  "site_name": "Matt's Blog",
+  "author": "Dan O'Brien",
+  "author_url": "https://example.com/author/dan/",
+  "icon": {
+    "url": "https://example.com/favicon.ico"
+  },
+  "links": [
+    {
+      "href": "https://example.com/favicon.ico",
+      "rel": [
+        "icon",
+        "html"
+      ],
+      "type": "image/x-icon"
+    }
+  ],
+  "sources": [
+    "oembed",
+    "jsonld",
+    "html"
+  ]
+}

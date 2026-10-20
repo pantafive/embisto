@@ -51,3 +51,18 @@ func TestJSONLDSkipsBlocksTooLargeToParse(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "Read", facts.Title)
 }
+
+// TestJSONLDDecodesTheEntitiesOfItsTextsAlone: WordPress writes them in a headline, and a URL's query may hold a key
+// such as &reg that reads as one.
+func TestJSONLDDecodesTheEntitiesOfItsTextsAlone(t *testing.T) {
+	parsed := page.Parse(card.Response{
+		URL: &url.URL{Scheme: "https", Host: "example.com", Path: "/post"}, MediaType: "text/html",
+		Body: []byte(`<script type="application/ld+json">{"@type":"BlogPosting","headline":"WordPress 6.5 &#8220;Regina&#8221;","author":{"name":"Dan O&#039;Brien"},"image":{"url":"https://example.com/a.jpg?w=600&reg=eu"}}</script>`),
+	})
+
+	facts, err := sources.JSONLD{}.Read(context.Background(), card.Input{Page: parsed})
+
+	require.NoError(t, err)
+	require.Len(t, facts.Images, 1)
+	assert.Equal(t, []string{"WordPress 6.5 “Regina”", "Dan O'Brien", "https://example.com/a.jpg?w=600&reg=eu"}, []string{facts.Title, facts.Author, facts.Images[0].URL})
+}

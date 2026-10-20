@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"context"
 	"encoding/json"
+	"html"
 	"slices"
 	"strconv"
 	"strings"
@@ -46,14 +47,14 @@ func (JSONLD) Read(_ context.Context, in card.Input) (card.Facts, error) {
 	}
 	facts := card.Facts{Source: card.SourceJSONLD}
 	if organization, ok := find(items, organizationTypes); ok {
-		facts.SiteName = text(organization["name"])
+		facts.SiteName = prose(organization["name"])
 	}
 	main, ok := find(items, mainTypes)
 	if !ok {
 		return facts, nil
 	}
-	facts.Title = cmp.Or(text(main["headline"]), text(main["name"]))
-	facts.Description = text(main["description"])
+	facts.Title = cmp.Or(prose(main["headline"]), prose(main["name"]))
+	facts.Description = prose(main["description"])
 	facts.Author = names(main["author"])
 	facts.AuthorURL = in.Page.Resolve(authorURL(main["author"]))
 	facts.Keywords = keywords(main["keywords"])
@@ -129,13 +130,22 @@ func text(value any) string {
 	return ""
 }
 
+// prose is a text value as a page's own text reads: CMSs such as WordPress write entities in it. A URL is left as
+// it is, since its query may hold a key such as &reg that reads as an entity.
+func prose(value any) string {
+	if s, ok := value.(string); ok {
+		return clean(html.UnescapeString(s))
+	}
+	return ""
+}
+
 // names are the names of people or organizations given as text, nodes or a list of either.
 func names(value any) string {
 	var found []string
 	for _, each := range list(value) {
-		name := text(each)
+		name := prose(each)
 		if node, ok := each.(map[string]any); ok {
-			name = text(node["name"])
+			name = prose(node["name"])
 		}
 		if name != "" && !slices.Contains(found, name) {
 			found = append(found, name)
@@ -158,7 +168,7 @@ func authorURL(value any) string {
 func keywords(value any) string {
 	var found []string
 	for _, each := range list(value) {
-		if keyword := text(each); keyword != "" {
+		if keyword := prose(each); keyword != "" {
 			found = append(found, keyword)
 		}
 	}
