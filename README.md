@@ -57,7 +57,7 @@ fmt.Println(result.Preview.Title)
 - **Answers in the format you need:** the JSON card, plain text, a self-contained HTML card, Iframely-compatible `/iframely` and `/oembed`, or your own [template](docs/templates.md).
 - **Serves thumbnails:** signed, resized JPEG, PNG and WebP copies of a card's pictures, so clients never load them from other sites ([details](docs/thumbnails.md)).
 - **Caches by the origin's rules:** keeps a card as long as its page allows, makes one fetch for many identical requests, and shares the cache between instances through Redis or Valkey.
-- **Safe to point at the internet:** refuses private addresses at connect time, and caps sizes, time and memory ([details](docs/hardening.md)).
+- **Safe with URLs from strangers:** refuses private addresses at connect time, and caps sizes, time and memory ([details](docs/hardening.md)). It has no API keys or rate limits of its own; a public instance needs them in front of it.
 - **Easy to run:** a single static binary or a multi-arch image, Prometheus metrics, OpenAPI at `/openapi.json` with a reference at `/docs`, and a debug page that shows how a card was made.
 
 ## Documentation

@@ -1,6 +1,6 @@
 # Security
 
-embisto fetches URLs other people choose, so it is built to be pointed at the internet: [docs/hardening.md](docs/hardening.md) describes what it guards against.
+embisto fetches URLs other people choose, so it guards the network it runs in and its own memory against the pages it fetches: [docs/hardening.md](docs/hardening.md) describes how. Who may call it, and how often, is for whatever serves it to decide.
 
 ## Reporting a vulnerability
 
