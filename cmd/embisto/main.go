@@ -25,8 +25,9 @@ import (
 
 const (
 	headerTimeout = 10 * time.Second
-	// shutdownGrace is how long requests in flight get to finish once the server stops taking new ones.
-	shutdownGrace = 10 * time.Second
+	// shutdownGrace is how long requests in flight get to finish once the server stops taking new ones: longer than
+	// the slowest answer, and with unreadyFor within the 30 seconds Kubernetes gives a pod to stop.
+	shutdownGrace = 24 * time.Second
 	// unreadyFor is how long a stopping server reports not ready while still serving, so the load balancer stops
 	// sending before the server stops taking.
 	unreadyFor = 5 * time.Second

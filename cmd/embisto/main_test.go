@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -40,8 +41,12 @@ func TestServerTimeoutsOutlastTheSlowestAnswer(t *testing.T) {
 
 	slowestPreview := lockTTL + embisto.Defaults().Timeout
 	slowestPicture := imageWait + imageTimeout
-	assert.Equal(t, []bool{true, true, true, true}, []bool{
+	slowest := max(slowestPreview, slowestPicture)
+	assert.Equal(t, []bool{true, true, true, true, true, true}, []bool{
 		server.ReadHeaderTimeout > 0, server.ReadTimeout > 0, server.IdleTimeout > 0,
-		server.WriteTimeout > max(slowestPreview, slowestPicture),
+		server.WriteTimeout > slowest,
+		// An answer begun just before the server stops taking requests still finishes, and the process exits before
+		// Kubernetes' default grace of 30 seconds runs out.
+		shutdownGrace > slowest, unreadyFor+shutdownGrace < 30*time.Second,
 	})
 }

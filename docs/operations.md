@@ -33,3 +33,7 @@ With `EMBISTO_DEBUG=true`, the internal listener (`:9090`, beside `/metrics`) se
 - when thumbnails are on, the card's image in the `card` preset in both formats, with bytes and time.
 
 Everything a page says is shown escaped, never run. The page is for operators: the API's own listener never serves it.
+
+## Stopping
+
+On SIGTERM or an interrupt, the server answers `/readyz` with 503 for 5 seconds while it still serves, so the load balancer stops sending. It then stops taking requests and gives those in flight up to 24 seconds, longer than the slowest answer. The whole stop fits Kubernetes' default termination grace period of 30 seconds; a shorter one cuts answers off.
