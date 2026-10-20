@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -28,12 +30,35 @@ func TestRunStopsOnATemplateThatCannotServe(t *testing.T) {
 
 			err := run(context.Background(), []string{"embisto"}, func() []string {
 				return []string{"EMBISTO_TEMPLATES_DIR=" + dir, "EMBISTO_ADDR=127.0.0.1:0", "EMBISTO_METRICS_ADDR=127.0.0.1:0"}
-			})
+			}, io.Discard)
 
 			require.Error(t, err)
 			assert.Contains(t, err.Error(), tt.says)
 		})
 	}
+}
+
+func TestRunPrintsUsageAndRefusesUnknownCommands(t *testing.T) {
+	// Each environment is one the server would refuse, so a command taken for the server fails rather than serves.
+	refused := func() []string { return []string{"EMBISTO_LOG_LEVEL=loud"} }
+	for _, arg := range []string{"help", "-h", "--help"} {
+		t.Run(arg, func(t *testing.T) {
+			var out strings.Builder
+
+			err := run(t.Context(), []string{"embisto", arg}, refused, &out)
+
+			require.NoError(t, err)
+			assert.Contains(t, out.String(), "docs/configuration.md")
+		})
+	}
+	t.Run("an unknown command", func(t *testing.T) {
+		var out strings.Builder
+
+		err := run(t.Context(), []string{"embisto", "--port=80"}, refused, &out)
+
+		require.ErrorIs(t, err, errUnknownCommand)
+		assert.Equal(t, []any{true, ""}, []any{strings.Contains(err.Error(), "embisto sign"), out.String()})
+	})
 }
 
 func TestServerTimeoutsOutlastTheSlowestAnswer(t *testing.T) {

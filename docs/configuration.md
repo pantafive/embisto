@@ -1,6 +1,6 @@
 # Configuration
 
-The server reads its settings from the environment.
+The server reads its settings from the environment; `embisto help` lists its commands, and any other argument is refused.
 
 | Variable | Default | |
 |---|---|---|

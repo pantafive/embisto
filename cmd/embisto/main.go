@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -43,9 +44,21 @@ const (
 	idleTimeout = 2 * time.Minute
 )
 
+// usage lists the commands; the server reads its settings from the environment.
+const usage = `Usage:
+  embisto                    serve the API, configured by EMBISTO_* environment variables
+                             (see docs/configuration.md)
+  embisto sign <size> <url>  print the URL of a picture's thumbnail in a size
+  embisto pin [-dir dir] [-name name] <url>
+                             save a URL's responses and preview as a test fixture
+  embisto help               print this
+`
+
+var errUnknownCommand = errors.New("unknown command")
+
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	err := run(ctx, os.Args, os.Environ)
+	err := run(ctx, os.Args, os.Environ, os.Stdout)
 	cancel()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "fatal: %v\n", err)
@@ -53,15 +66,22 @@ func main() {
 	}
 }
 
-// run is the whole program as a testable function: it serves until the context ends, or pins a fixture.
-func run(ctx context.Context, args []string, environ func() []string) error {
-	if len(args) > 1 && args[1] == "pin" {
-		return runPin(ctx, args[2:], os.Stdout)
+// run is the whole program as a testable function: it serves until the context ends, or runs the command named.
+func run(ctx context.Context, args []string, environ func() []string, out io.Writer) error {
+	if len(args) < 2 {
+		return runServer(ctx, environ)
 	}
-	if len(args) > 1 && args[1] == "sign" {
-		return runSign(args[2:], environ, os.Stdout)
+	switch args[1] {
+	case "pin":
+		return runPin(ctx, args[2:], out)
+	case "sign":
+		return runSign(args[2:], environ, out)
+	case "help", "-h", "-help", "--help":
+		_, err := io.WriteString(out, usage)
+		return err //nolint:wrapcheck // a failed print to the terminal
+	default:
+		return fmt.Errorf("%w %q\n%s", errUnknownCommand, args[1], usage)
 	}
-	return runServer(ctx, environ)
 }
 
 // runServer serves the API and, on the internal listener, the metrics, until the context ends.
