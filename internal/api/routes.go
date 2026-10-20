@@ -80,7 +80,7 @@ func addPreviewRoute(api huma.API, deps Deps) {
 				"200": {Description: "The card, or with format=text its plain lines.", Content: previewContent(api, renderer, deps.formats[formatText])},
 				responseDefault: {
 					Description: "The preview failed; `code` says why: invalid_request, invalid_url or unknown_format (400), blocked_url (403), " +
-						"not_found (404, or 410 when the site says the item was removed: a deleted video or post, a page answering 404), " +
+						"not_found (404, or 410 when the site answered 410 Gone), " +
 						"fetch_failed or too_large (502), timeout (504), canceled (503) when the client closed the request, " +
 						"busy (503, with Retry-After) when the server is making as many previews as it may, internal (500).",
 					Content: content(api, "application/problem+json", reflect.TypeFor[problem](), exampleProblem),
