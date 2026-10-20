@@ -37,6 +37,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Fixed
 
+- Instagram, Facebook and LinkedIn are recognised on any subdomain, such as `de.linkedin.com` or `web.facebook.com`, so their login walls and refusals give the honest minimal card instead of an error.
 - Concurrent previews of pages with several pictures whose responses carry `Cache-Control` or `Expires` no longer crash the server with a concurrent map write.
 - A preview whose page arrived no longer fails with `timeout` when its oEmbed endpoint, home page, provider or a picture does not answer; the card is made from what did.
 - A client that disconnects mid-preview gets 503 `canceled` instead of 500 `internal`, and the library returns the caller's context error instead of `timeout`.

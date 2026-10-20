@@ -51,7 +51,7 @@ Site providers handle the platforms where a page alone makes a poor card. The fi
 | `sites.X` | Posts on x.com and twitter.com, from X's oEmbed endpoint without the page, which needs JavaScript. A deleted post is `not_found`. | — |
 | `sites.Reddit` | Posts, from Reddit's oEmbed endpoint; Reddit refuses most servers' requests for its pages. A deleted post is `not_found`. | — |
 | `sites.TikTok` | Videos and photo posts, from TikTok's oEmbed endpoint, after following short links. It adds TikTok's own player. | — |
-| `sites.Walled` | Instagram, Facebook and LinkedIn pages are read as any other when served. When the page is a login wall, or the site refuses the request (LinkedIn answers 999), the card is an honest minimal one: the URL, the site's name and icon, `limited: login_wall`. | — |
+| `sites.Walled` | Instagram, Facebook and LinkedIn pages, on any of their subdomains, are read as any other when served. When the page is a login wall, or the site refuses the request (LinkedIn answers 999), the card is an honest minimal one: the URL, the site's name and icon, `limited: login_wall`. | — |
 | `sites.OEmbedList` | Every site on the [oembed.com provider list](https://oembed.com/providers.json), which ships inside the binary. | — |
 
 Any other page that turns out to be a wall also gets a minimal card marked `limited` instead of the wall's text. Three signals count:

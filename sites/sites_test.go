@@ -74,6 +74,10 @@ func TestProvidersMatchOnlyTheirItems(t *testing.T) {
 		{sites.TikTok{}, "https://www.tiktok.com/@scout2015", card.Unmatched},
 		{sites.Walled{}, "https://www.instagram.com/p/C0Q8vYvR5u6/", card.MatchedWithPage},
 		{sites.Walled{}, "https://www.linkedin.com/in/someone", card.MatchedWithPage},
+		{sites.Walled{}, "https://de.linkedin.com/in/someone", card.MatchedWithPage},
+		{sites.Walled{}, "https://m.instagram.com/p/C0Q8vYvR5u6/", card.MatchedWithPage},
+		{sites.Walled{}, "https://web.facebook.com/story.php?id=1", card.MatchedWithPage},
+		{sites.Walled{}, "https://notlinkedin.com/in/someone", card.Unmatched},
 		{sites.Walled{}, "https://example.com/p/1", card.Unmatched},
 	}
 	for _, tt := range tests {
@@ -91,6 +95,13 @@ func TestWalledStandsInForAPageItCouldNotRead(t *testing.T) {
 		SiteName: "LinkedIn", CanonicalURL: "https://www.linkedin.com/company/google",
 		Icons: []card.Image{{URL: "https://www.linkedin.com/favicon.ico"}}, Limited: card.LimitLoginWall,
 	}, facts)
+}
+
+func TestWalledNamesTheSiteOfASubdomain(t *testing.T) {
+	facts, err := sites.Walled{}.Provide(context.Background(), card.Input{URL: parse(t, "https://web.facebook.com/story.php?id=1")})
+
+	require.NoError(t, err)
+	assert.Equal(t, "Facebook", facts.SiteName)
 }
 
 // refusing answers every request as YouTube's oEmbed answers a private video, or one whose embedding is off.

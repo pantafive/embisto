@@ -8,14 +8,13 @@ import (
 	"github.com/pantafive/embisto/card"
 )
 
-// walledSites are sites that show their posts to logged-in visitors only, or refuse servers outright; keyed by host
-// without www.
+// walledSites are sites that show their posts to logged-in visitors only, or refuse servers outright; keyed by
+// domain, which covers its subdomains too.
 var walledSites = map[string]string{
-	"instagram.com":  "Instagram",
-	"facebook.com":   facebook,
-	"m.facebook.com": facebook,
-	"fb.com":         facebook,
-	"linkedin.com":   "LinkedIn",
+	"instagram.com": "Instagram",
+	"facebook.com":  facebook,
+	"fb.com":        facebook,
+	"linkedin.com":  "LinkedIn",
 }
 
 const facebook = "Facebook"
@@ -30,7 +29,7 @@ func (Walled) Name() string {
 }
 
 func (Walled) Match(u *url.URL) card.Match {
-	if _, ok := walledSites[strings.TrimPrefix(strings.ToLower(u.Hostname()), "www.")]; ok {
+	if walledSite(u) != "" {
 		return card.MatchedWithPage
 	}
 	return card.Unmatched
@@ -42,10 +41,21 @@ func (Walled) Provide(ctx context.Context, in card.Input) (card.Facts, error) {
 	if in.Page.URL != nil {
 		return OEmbedList{}.Provide(ctx, in)
 	}
-	host := strings.TrimPrefix(strings.ToLower(in.URL.Hostname()), "www.")
 	icon := url.URL{Scheme: schemeHTTPS, Host: in.URL.Host, Path: "/favicon.ico"}
 	return card.Facts{
-		SiteName: walledSites[host], CanonicalURL: in.URL.String(), Icons: []card.Image{{URL: icon.String()}},
+		SiteName: walledSite(in.URL), CanonicalURL: in.URL.String(), Icons: []card.Image{{URL: icon.String()}},
 		Limited: card.LimitLoginWall,
 	}, nil
+}
+
+// walledSite is the name of the walled site a URL's host belongs to, such as de.linkedin.com to LinkedIn; empty for
+// any other host.
+func walledSite(u *url.URL) string {
+	host := strings.TrimSuffix(strings.ToLower(u.Hostname()), ".")
+	for domain, name := range walledSites {
+		if host == domain || strings.HasSuffix(host, "."+domain) {
+			return name
+		}
+	}
+	return ""
 }
