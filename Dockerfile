@@ -16,5 +16,6 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath \
 FROM gcr.io/distroless/static-debian12:nonroot
 COPY --from=build /out/embisto /embisto
 USER nonroot:nonroot
-EXPOSE 8080 9090
+# Only the API: the internal listener on 9090 serves the purge and must never be published.
+EXPOSE 8080
 ENTRYPOINT ["/embisto"]
