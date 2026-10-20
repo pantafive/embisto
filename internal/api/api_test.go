@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"testing/fstest"
 	"time"
@@ -415,4 +416,55 @@ func TestPreviewAnswers500WhenATemplateFailsOnARealCard(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, []any{http.StatusInternalServerError, "application/problem+json", false, false},
 		[]any{resp.StatusCode, resp.Header.Get("Content-Type"), strings.Contains(string(body), "start"), strings.Contains(string(body), "picky.txt.tmpl")})
+}
+
+func TestPreviewsBeyondTheLimitAreRefusedAsBusyButHitsAreServed(t *testing.T) {
+	arrived, held := make(chan struct{}), make(chan struct{})
+	site := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		if r.URL.Path == "/slow" {
+			arrived <- struct{}{}
+			<-held
+		}
+		_, _ = io.WriteString(w, "<title>Hello</title>")
+	}))
+	t.Cleanup(site.Close)
+	release := sync.OnceFunc(func() { close(held) })
+	t.Cleanup(release)
+	opts := embisto.Defaults()
+	opts.AllowedNetworks = []netip.Prefix{netip.MustParsePrefix("127.0.0.0/8")}
+	previews := cache.New(api.Limited(embisto.New(opts), 1), cache.NewMemory(1<<20, nil), cache.Options{TTL: time.Hour, FailureTTL: time.Minute})
+	server := httptest.NewServer(api.NewServer(api.Deps{Previews: previews, Renderers: renderers}))
+	t.Cleanup(server.Close)
+	previewOf := func(path string) string { return server.URL + "/v1/preview?url=" + url.QueryEscape(site.URL+path) }
+	get(t, previewOf("/cached"))
+	slow := make(chan int, 1)
+	go func() {
+		defer close(slow)
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, previewOf("/slow"), nil)
+		if err != nil {
+			return
+		}
+		if resp, err := http.DefaultClient.Do(req); err == nil {
+			_ = resp.Body.Close()
+			slow <- resp.StatusCode
+		}
+	}()
+	<-arrived
+
+	busy := get(t, previewOf("/other"))
+	compatible := get(t, server.URL+"/iframely?url="+url.QueryEscape(site.URL+"/other"))
+	hit := get(t, previewOf("/cached"))
+	release()
+	slowStatus := <-slow
+	again := get(t, previewOf("/other"))
+
+	var refused struct {
+		Code string `json:"code"`
+	}
+	require.NoError(t, json.NewDecoder(busy.Body).Decode(&refused))
+	assert.Equal(t, []any{http.StatusServiceUnavailable, "busy", "1", http.StatusServiceUnavailable, "1", http.StatusOK, http.StatusOK, http.StatusOK}, []any{
+		busy.StatusCode, refused.Code, busy.Header.Get("Retry-After"), compatible.StatusCode, compatible.Header.Get("Retry-After"),
+		hit.StatusCode, slowStatus, again.StatusCode,
+	})
 }

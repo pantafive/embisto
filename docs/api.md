@@ -83,7 +83,7 @@ Empty fields are left out. `icon`, `image` and each of `images` are pictures wit
 | `GET :9090/debug?url=` | With `EMBISTO_DEBUG=true`: how a preview is made, on the internal listener only. |
 | `DELETE :9090/v1/preview?url=` | Drops the URL's cached previews, on the internal listener only; see [caching](caching.md). |
 
-embisto has no API keys and no request limits of its own: whatever serves it to clients decides who may call it and how often. It protects itself from the pages it fetches; see [hardening](hardening.md).
+embisto has no API keys and no limits per client: whatever serves it to clients decides who may call it and how often. It only refuses previews beyond `EMBISTO_MAX_CONCURRENT_PREVIEWS` being made at once, as `busy`. It protects itself from the pages it fetches; see [hardening](hardening.md).
 
 `/iframely` and `/oembed` let a client of Iframely switch by changing the address. They fail in Iframely's shape rather than as problem+json. [Iframely compatibility](iframely-compat.md) lists where they differ from a local Iframely on a fixed set of URLs.
 
@@ -101,6 +101,7 @@ A failed request returns a non-2xx status with an [RFC 9457](https://www.rfc-edi
 | `too_large` | 502 | The page is larger than the body limit. |
 | `not_found` | 404 or 410 | The item does not exist or was removed: the page answered 404 or 410, or a provider says the video or post is gone. |
 | `unknown_format` | 400 | The server has no such `format`. |
+| `busy` | 503 | The server is making as many previews as `EMBISTO_MAX_CONCURRENT_PREVIEWS` allows; `Retry-After` says when to ask again. |
 | `not_cached` | 404 | A purge found nothing of the URL cached. |
 | `cache_unavailable` | 503 | A purge the shared cache did not answer. |
 | `canceled` | 503 | The client closed the request before the preview was ready. |

@@ -25,6 +25,9 @@ const (
 	// defaultCacheMemory holds some ten thousand cards of an ordinary size.
 	defaultCacheMemory = 128 << 20
 	defaultLanguage    = "en"
+	// defaultMaxConcurrentPreviews is far more than an instance makes at once for ordinary traffic, few enough that
+	// pages being read stay a fraction of the memory the rest takes.
+	defaultMaxConcurrentPreviews = 32
 	// cacheTTL is how long a preview is served from the cache when its origin says nothing: pages change their cards
 	// rarely.
 	cacheTTL = time.Hour
@@ -64,7 +67,9 @@ type Settings struct {
 	CacheMinTTL time.Duration
 	CacheMaxTTL time.Duration
 	FailureTTL  time.Duration
-	LogLevel    slog.Level
+	// MaxConcurrentPreviews is how many previews are made at once; any more is refused as busy.
+	MaxConcurrentPreviews int
+	LogLevel              slog.Level
 }
 
 // Load reads EMBISTO_* variables; an unset variable takes its default.
@@ -84,8 +89,7 @@ func Load(environ func() []string) (Settings, error) {
 		CacheTTL:              cacheTTL,
 		FailureTTL:            failureTTL,
 	}
-	var err error
-	if loaded.PublicURL, err = publicURL(env["EMBISTO_PUBLIC_URL"]); err != nil {
+	if err := loaded.readServer(env); err != nil {
 		return Settings{}, err
 	}
 	if err := loaded.readCache(env); err != nil {
@@ -97,6 +101,7 @@ func Load(environ func() []string) (Settings, error) {
 	if err := loaded.readFlags(env); err != nil {
 		return Settings{}, err
 	}
+	var err error
 	if loaded.ImageKey, loaded.ImagePresets, err = images(env); err != nil {
 		return Settings{}, err
 	}
@@ -153,6 +158,29 @@ func duration(env map[string]string, name string, fallback time.Duration) (time.
 	value, err := time.ParseDuration(raw)
 	if err != nil || value < 0 {
 		return 0, fmt.Errorf("%w: %s=%q is not a duration such as 5m or 24h", ErrInvalid, name, raw)
+	}
+	return value, nil
+}
+
+// readServer reads where clients reach the server and how many previews it makes at once.
+func (s *Settings) readServer(env map[string]string) error {
+	var err error
+	if s.PublicURL, err = publicURL(env["EMBISTO_PUBLIC_URL"]); err != nil {
+		return err
+	}
+	s.MaxConcurrentPreviews, err = count(env, "EMBISTO_MAX_CONCURRENT_PREVIEWS", defaultMaxConcurrentPreviews)
+	return err
+}
+
+// count reads a number from one.
+func count(env map[string]string, name string, fallback int) (int, error) {
+	raw := env[name]
+	if raw == "" {
+		return fallback, nil
+	}
+	value, err := strconv.Atoi(raw)
+	if err != nil || value < 1 {
+		return 0, fmt.Errorf("%w: %s=%q is not a number from 1", ErrInvalid, name, raw)
 	}
 	return value, nil
 }

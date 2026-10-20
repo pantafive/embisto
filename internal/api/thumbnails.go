@@ -54,7 +54,7 @@ type imageOutput struct {
 	Body         []byte
 }
 
-// retryBusy is how soon a processing slot frees, for a picture refused as busy.
+// retryBusy is how soon a slot frees, for a picture or a preview refused as busy.
 const retryBusy = "1"
 
 // imageRefusals are the codes of the failures of /i/ itself.
@@ -134,8 +134,8 @@ func (deps Deps) refuseImage(ctx context.Context, err error, observe func(string
 	deps.Log.InfoContext(ctx, "no picture", slog.Any("error", refused))
 	problem := problemOf(refused)
 	problem.headers = http.Header{"Cache-Control": {cacheNever}}
-	if refused.Code == card.CodeBusy {
-		problem.headers.Set("Retry-After", retryBusy)
+	if after := retryAfter(refused); after != "" {
+		problem.headers.Set("Retry-After", after)
 	}
 	return problem
 }

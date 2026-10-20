@@ -12,6 +12,7 @@ embisto fetches URLs that other people choose, so the fetcher guards the network
   - A JSON-LD block over 512 KiB, or one that would take a page's blocks past 1 MiB, is skipped unread.
   - A card finished past the deadline fails with `timeout` rather than being served.
   - The in-memory caches of cards and of home pages are bounded in bytes, not in entries.
+  - At most `EMBISTO_MAX_CONCURRENT_PREVIEWS` previews are made at once; any more is refused as `busy`.
   - Proxy environment variables are ignored.
 - **Plain text.** A card's title, description, site name, author and keywords, whichever source gave them, lose their control characters, such as a terminal's escape sequences, and the bidi controls that reorder the text around them; whitespace runs become one space. The `text` format thus prints no escape to a terminal, and no text spans lines.
 - **Embed HTML.** The embed HTML is kept only when the oEmbed answer, after any redirects, came over https as JSON from an endpoint on the oembed.com provider list, on the host asked: at the listed path, with or without its trailing slash and format extension, or beneath it segment by segment. A path with a dot segment, literal or escaped, or with an escaped slash is never trusted, since the server may resolve it out of the listed path. A page can name any oEmbed endpoint, and a listed host may redirect elsewhere, so any other answer contributes its title and thumbnail but not its HTML.

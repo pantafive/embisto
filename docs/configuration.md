@@ -17,6 +17,7 @@ The server reads its settings from the environment; `embisto help` lists its com
 | `EMBISTO_CACHE_MIN_TTL` | `5m` | The shortest time a preview is kept, even when its page forbids caching. |
 | `EMBISTO_CACHE_MAX_TTL` | `24h` | The longest time a preview is kept, whatever its page allows. |
 | `EMBISTO_CACHE_URL` | | A `redis://` or `rediss://` URL of a cache shared by every instance: Redis, Valkey, KeyDB or Dragonfly. Empty keeps previews in each instance's memory. |
+| `EMBISTO_MAX_CONCURRENT_PREVIEWS` | `32` | How many previews an instance makes at once. Any more is refused with 503 `busy` and `Retry-After`; a preview served from the cache, or one a request already waits for, takes no slot. |
 | `EMBISTO_LOG_LEVEL` | `info` | `debug`, `info`, `warn` or `error`. Logs are JSON. |
 
 ## Memory
@@ -26,5 +27,7 @@ What embisto keeps in memory is bounded, and adds up to some 450 MiB at the defa
 - the previews kept in the process, `EMBISTO_CACHE_MEMORY` (128 MiB); with a shared cache, the same amount serves while it does not answer;
 - what home pages say, 16 MiB;
 - thumbnails, at most 256 MiB for the pictures being resized and four 10 MiB source files at once.
+
+Previews being made come on top: each holds its page, up to 5 MiB, several times over while it reads it, and `EMBISTO_MAX_CONCURRENT_PREVIEWS` (32) bounds how many there are. Most pages are far smaller; lower the limit where large pages are common or memory is tight.
 
 Go's garbage collector lets the heap grow to about twice what is live unless told otherwise, so give the process 768 MiB or more and set `GOMEMLIMIT` to some 80% of it, such as `GOMEMLIMIT=600MiB`.

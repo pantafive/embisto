@@ -60,7 +60,9 @@ type renderedOutput struct {
 	// CSP and NoSniff confine an answer a browser renders: no script, pictures from anywhere, nothing loaded besides.
 	CSP     string `header:"Content-Security-Policy"`
 	NoSniff string `header:"X-Content-Type-Options"`
-	Body    []byte
+	// RetryAfter is set on a refusal as busy.
+	RetryAfter string `header:"Retry-After"`
+	Body       []byte
 }
 
 // noSniff keeps a browser to the answer's own media type.
@@ -100,9 +102,20 @@ func (deps Deps) preview(ctx context.Context, in *previewInput) (*renderedOutput
 			refused.headers = http.Header{}
 		}
 		refused.headers.Set("Cache-Control", deps.cacheControl(result.Expires))
+		if after := retryAfter(failed); after != "" {
+			refused.headers.Set("Retry-After", after)
+		}
 		return nil, refused
 	}
 	return deps.rendered(ctx, renderer, result)
+}
+
+// retryAfter is how soon a refusal may be asked again, for one refused as busy; empty for any other.
+func retryAfter(failed *card.Error) string {
+	if failed.Code == card.CodeBusy {
+		return retryBusy
+	}
+	return ""
 }
 
 // purge drops what GET with the same parameters would serve from the cache; with only url, every variant of it.
@@ -151,14 +164,21 @@ func (deps Deps) compatible(format string) func(context.Context, *compatibleInpu
 func (deps Deps) refusedAs(renderer card.Renderer, failed *card.Error, expires time.Time) (*renderedOutput, error) {
 	refuser, ok := renderer.(card.ErrorRenderer)
 	if !ok {
-		return nil, problemOf(failed)
+		refused := problemOf(failed)
+		if after := retryAfter(failed); after != "" {
+			refused.headers = http.Header{"Retry-After": {after}}
+		}
+		return nil, refused
 	}
 	var body bytes.Buffer
 	status, err := refuser.RenderError(&body, failed)
 	if err != nil {
 		return nil, fmt.Errorf("rendering the failure: %w", err)
 	}
-	return &renderedOutput{Status: status, ContentType: renderer.ContentType(), CacheControl: deps.cacheControl(expires), CSP: htmlPolicy, NoSniff: noSniff, Body: body.Bytes()}, nil
+	return &renderedOutput{
+		Status: status, ContentType: renderer.ContentType(), CacheControl: deps.cacheControl(expires), CSP: htmlPolicy, NoSniff: noSniff,
+		RetryAfter: retryAfter(failed), Body: body.Bytes(),
+	}, nil
 }
 
 // failed logs a preview that failed and gives its card error; an error without a code fails the request.
@@ -169,6 +189,10 @@ func (deps Deps) failed(ctx context.Context, target string, err error) (*card.Er
 		return &card.Error{Code: card.CodeCanceled, Err: err}, nil
 	}
 	var failed *card.Error
+	if errors.Is(err, errBusy) {
+		deps.Log.WarnContext(ctx, "no preview: as many as the limit are being made", slog.String("url", target))
+		return &card.Error{Code: card.CodeBusy, Detail: busyDetail, Err: err}, nil
+	}
 	if !errors.As(err, &failed) {
 		// Not a refusal the contract names, such as a module that panicked: its text is for the log, not the client.
 		level := slog.LevelError

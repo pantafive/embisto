@@ -116,7 +116,8 @@ func runServer(ctx context.Context, environ func() []string) error {
 		// Instances learn a site's home page once between them.
 		opts.HomePages = shared
 	}
-	previews := layered(embisto.New(opts), shared, loaded, log, measured)
+	// Inside the cache, so only the previews being made take a slot.
+	previews := layered(api.Limited(embisto.New(opts), loaded.MaxConcurrentPreviews), shared, loaded, log, measured)
 	var draining atomic.Bool
 	deps := api.Deps{
 		Log: log, Previews: previews, Renderers: renderers, PublicURL: loaded.PublicURL, Requests: measured, Thumbnails: served,
