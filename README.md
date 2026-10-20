@@ -62,6 +62,8 @@ fmt.Println(result.Preview.Title)
 
 ## Documentation
 
+These pages describe main, which can be ahead of the [latest release](https://github.com/pantafive/embisto/releases/latest): [CHANGELOG.md](CHANGELOG.md#unreleased) lists what is not released yet, and a release's own pages are in its tag.
+
 - [HTTP API](docs/api.md): the card, routes and error codes
 - [Configuration](docs/configuration.md): environment variables and memory
 - [Caching](docs/caching.md) and [operations](docs/operations.md): metrics and the debug page
