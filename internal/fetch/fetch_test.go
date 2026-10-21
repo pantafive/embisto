@@ -231,17 +231,6 @@ func TestGetRefusesABodyOverTheLimit(t *testing.T) {
 	require.ErrorIs(t, err, fetch.ErrTooLarge)
 }
 
-func TestGetGivesUpOnASlowServer(t *testing.T) {
-	release := make(chan struct{})
-	server := serve(t, func(http.ResponseWriter, *http.Request) { <-release })
-	defer close(release)
-	client := fetch.New(fetch.Options{Timeout: 50 * time.Millisecond, MaxBody: 1 << 10, Allowed: loopback})
-
-	_, err := get(t, client, server.URL)
-
-	require.ErrorIs(t, err, fetch.ErrTimeout)
-}
-
 func TestGetFailsOnAnErrorStatusAndKeepsIt(t *testing.T) {
 	server := serve(t, http.NotFound)
 

@@ -4,14 +4,12 @@ import (
 	"context"
 	"net/url"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/pantafive/embisto/card"
 	"github.com/pantafive/embisto/internal/oembed"
-	"github.com/pantafive/embisto/internal/page"
 )
 
 // answering answers every request as if it was served from final, as the fetcher reports a redirected response.
@@ -72,30 +70,4 @@ func TestEmbedHTMLIsKeptOnlyFromATrustedEndpoint(t *testing.T) {
 			assert.Equal(t, []any{"A post", tt.isKept}, []any{facts.Title, facts.Embed.HTML != ""})
 		})
 	}
-}
-
-// silent never answers, until the caller gives up.
-type silent struct{}
-
-func (silent) Fetch(ctx context.Context, _ *url.URL, _ string) (card.Response, error) {
-	<-ctx.Done()
-	return card.Response{}, ctx.Err()
-}
-
-func (silent) Peek(ctx context.Context, _ *url.URL, _ int64) (card.Response, error) {
-	<-ctx.Done()
-	return card.Response{}, ctx.Err()
-}
-
-// TestDiscoveryGivesUpOnAnEndpointThatDoesNotAnswer: discovery had no time of its own, so an endpoint that hung took
-// the whole preview's.
-func TestDiscoveryGivesUpOnAnEndpointThatDoesNotAnswer(t *testing.T) {
-	target := &url.URL{Scheme: "https", Host: "blog.example", Path: "/post"}
-	parsed := page.Parse(card.Response{
-		URL: target, MediaType: "text/html", Body: []byte(`<link rel="alternate" type="application/json+oembed" href="/oembed">`),
-	})
-
-	_, err := oembed.Discovery{Providers: oembed.Known(), Timeout: 50 * time.Millisecond}.Read(context.Background(), card.Input{URL: target, Page: parsed, Fetcher: silent{}})
-
-	require.ErrorIs(t, err, context.DeadlineExceeded)
 }

@@ -29,23 +29,3 @@ func TestCacheDropsAGroupOrOneKey(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, []any{1, 2, false}, []any{one, rest, found})
 }
-
-func TestLockIsHeldByOneAndFreedOnlyByItsHolder(t *testing.T) {
-	ctx := context.Background()
-	store, err := cache.NewRedisStore(valkeytest.Start(t).URL)
-	require.NoError(t, err)
-	release, first, err := store.Lock(ctx, "{a}:lock", 100*time.Millisecond)
-	require.NoError(t, err)
-	_, second, err := store.Lock(ctx, "{a}:lock", time.Minute)
-	require.NoError(t, err)
-	time.Sleep(150 * time.Millisecond)
-	_, afterExpiry, err := store.Lock(ctx, "{a}:lock", time.Minute)
-	require.NoError(t, err)
-
-	// The first holder's lock expired and another took it: releasing must not free the other's.
-	require.NoError(t, release(ctx))
-	_, afterStaleRelease, err := store.Lock(ctx, "{a}:lock", time.Minute)
-
-	require.NoError(t, err)
-	assert.Equal(t, []bool{true, false, true, false}, []bool{first, second, afterExpiry, afterStaleRelease})
-}

@@ -48,9 +48,3 @@ func Start(t *testing.T) *Container {
 	require.NoError(t, err)
 	return &Container{container: container, URL: "redis://" + net.JoinHostPort(host, port.Port())}
 }
-
-// Stop stops Valkey, as an outage would.
-func (c *Container) Stop(t *testing.T) {
-	t.Helper()
-	require.NoError(t, c.container.Stop(context.Background(), nil))
-}
