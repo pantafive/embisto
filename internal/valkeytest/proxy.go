@@ -9,26 +9,25 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
-// Proxy passes connections through to Valkey, and holds back the reply to the first SET ... NX it sees, once: the
-// lock is then taken while its taker hears nothing in time.
+// Proxy passes connections through to Valkey, and holds back the reply to the first SET ... NX it sees until its client
+// hangs up: the lock is then taken while its taker hears nothing, however long the taker would wait.
 type Proxy struct {
-	URL      string
-	upstream string
-	delay    time.Duration
-	fired    atomic.Bool
+	URL string
+	// LockAttempts counts the SET ... NX commands passed through.
+	LockAttempts atomic.Int32
+	upstream     string
 }
 
 // StartProxy listens on a port of its own in front of the Valkey at upstream.
-func StartProxy(t *testing.T, upstream string, delay time.Duration) *Proxy {
+func StartProxy(t *testing.T, upstream string) *Proxy {
 	t.Helper()
 	listener, err := (&net.ListenConfig{}).Listen(t.Context(), "tcp", "127.0.0.1:0")
 	require.NoError(t, err)
-	proxy := &Proxy{URL: "redis://" + listener.Addr().String(), upstream: strings.TrimPrefix(upstream, "redis://"), delay: delay}
+	proxy := &Proxy{URL: "redis://" + listener.Addr().String(), upstream: strings.TrimPrefix(upstream, "redis://")}
 	t.Cleanup(func() {
 		if err := listener.Close(); err != nil {
 			t.Logf("the proxy did not stop: %v", err)
@@ -48,26 +47,28 @@ func (p *Proxy) serve(listener net.Listener) {
 	}
 }
 
-// pass forwards one connection both ways, delaying the reply after the first SET NX.
+// pass forwards one connection both ways; the reply after the first SET NX waits for the client to hang up.
 func (p *Proxy) pass(client net.Conn) {
 	server, err := (&net.Dialer{}).DialContext(context.Background(), "tcp", p.upstream)
 	if err != nil {
 		closeQuietly(client)
 		return
 	}
-	var delayReply atomic.Bool
+	var holdReply atomic.Bool
+	hungUp := make(chan struct{})
 	go func() {
+		defer close(hungUp)
 		defer closeQuietly(server)
 		copyChunks(server, client, func(chunk []byte) {
-			if isSetNX(chunk) && p.fired.CompareAndSwap(false, true) {
-				delayReply.Store(true)
+			if isSetNX(chunk) && p.LockAttempts.Add(1) == 1 {
+				holdReply.Store(true)
 			}
 		})
 	}()
 	defer closeQuietly(client)
 	copyChunks(client, server, func([]byte) {
-		if delayReply.CompareAndSwap(true, false) {
-			time.Sleep(p.delay)
+		if holdReply.CompareAndSwap(true, false) {
+			<-hungUp
 		}
 	})
 }

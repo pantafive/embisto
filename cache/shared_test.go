@@ -26,14 +26,20 @@ import (
 // the pipeline also fetches.
 func countingOrigin(t *testing.T, hits *atomic.Int32) *httptest.Server {
 	t.Helper()
+	// Slow enough that every caller arrives while the first is still waiting.
+	return heldOrigin(t, hits, func(*http.Request) { time.Sleep(200 * time.Millisecond) })
+}
+
+// heldOrigin is countingOrigin with the page served once hold returns.
+func heldOrigin(t *testing.T, hits *atomic.Int32, hold func(*http.Request)) *httptest.Server {
+	t.Helper()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		if r.URL.Path != "/post" {
 			return
 		}
 		hits.Add(1)
-		// Slow enough that every caller arrives while the first is still waiting.
-		time.Sleep(200 * time.Millisecond)
+		hold(r)
 		_, _ = io.WriteString(w, `<title>One post</title><meta name="description" content="Said once.">`)
 	}))
 	t.Cleanup(server.Close)
@@ -146,35 +152,52 @@ func TestAnInstanceServesFromMemoryWhileTheSharedStoreIsDown(t *testing.T) {
 }
 
 // TestALockWhoseReplyCameLateIsStillTheTakersOwn covers a latency skew: instance A reaches Valkey through a
-// link that holds back the reply to its SET NX past the client's timeout, so the lock is taken while A hears
-// nothing; instance B asks for the same URL just after. A once retried, found its own lock, and waited for nobody.
+// link that holds back the reply to its SET NX until the client gives up on it, so the lock is taken while A hears
+// nothing; instance B asks for the same URL once the lock is in Valkey. A once retried, found its own lock, and waited
+// for nobody.
 func TestALockWhoseReplyCameLateIsStillTheTakersOwn(t *testing.T) {
 	valkey := valkeytest.Start(t)
-	slowLink := valkeytest.StartProxy(t, valkey.URL, 300*time.Millisecond)
+	slowLink := valkeytest.StartProxy(t, valkey.URL)
 	var hits atomic.Int32
-	origin := countingOrigin(t, &hits)
-	a, b := instance(t, slowLink.URL, &recorder{}), instance(t, valkey.URL, &recorder{})
+	seenByB := make(chan struct{})
+	origin := heldOrigin(t, &hits, func(r *http.Request) {
+		select {
+		case <-seenByB:
+		case <-r.Context().Done():
+		}
+	})
+	observers := []*recorder{{}, {}}
+	a, b := instance(t, slowLink.URL, observers[0]), instance(t, valkey.URL, observers[1])
 	req := card.Request{URL: origin.URL + "/post"}
+	settings, err := redis.ParseURL(valkey.URL)
+	require.NoError(t, err)
+	control := redis.NewClient(settings)
+	t.Cleanup(func() { require.NoError(t, control.Close()) })
 
 	var wg sync.WaitGroup
-	var tookA time.Duration
 	var titles [2]string
 	var errs [2]error
 	wg.Go(func() {
-		started := time.Now()
 		result, err := a.Extract(context.Background(), req)
-		tookA, titles[0], errs[0] = time.Since(started), result.Preview.Title, err
+		titles[0], errs[0] = result.Preview.Title, err
 	})
-	time.Sleep(700 * time.Millisecond)
+	// B asks once A's lock is in Valkey, and A's page is held until B has missed it in the store: B can only wait for A.
+	require.Eventually(t, func() bool {
+		return control.Exists(context.Background(), cache.LockKeyOf(req.URL)).Val() == 1
+	}, 10*time.Second, 10*time.Millisecond, "A's lock never reached Valkey")
 	wg.Go(func() {
 		result, err := b.Extract(context.Background(), req)
 		titles[1], errs[1] = result.Preview.Title, err
 	})
+	require.Eventually(t, func() bool { return observers[1].has("looked up miss") }, 10*time.Second, 10*time.Millisecond,
+		"B never looked in the store")
+	close(seenByB)
 	wg.Wait()
 
 	require.NoError(t, errors.Join(errs[:]...))
-	assert.Equal(t, []any{int32(1), [2]string{"One post", "One post"}}, []any{hits.Load(), titles})
-	assert.Less(t, tookA, 2*time.Second, "A made the preview rather than wait out its own lock")
+	// One SET NX: A made the preview under the lock it took, rather than ask again until its own lock ran out.
+	assert.Equal(t, []any{int32(1), [2]string{"One post", "One post"}, int32(1), true},
+		[]any{hits.Load(), titles, slowLink.LockAttempts.Load(), observers[1].has("locked waited")})
 }
 
 // backends hears whether a shared store answers.
