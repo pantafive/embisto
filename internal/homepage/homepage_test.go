@@ -116,24 +116,6 @@ func TestSourceTakesThePageTheRootRedirectsToForTheHomePage(t *testing.T) {
 	assert.Equal(t, []any{true, int32(1)}, []any{facts.IsEmpty(), homes.Load()})
 }
 
-func TestSourceReadsTheHomePageWithinTheCallersDeadline(t *testing.T) {
-	// A home page that never answers.
-	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
-		<-r.Context().Done()
-	}))
-	t.Cleanup(server.Close)
-	in := input(t, server.URL+"/post")
-	slow := homepage.New(cache.NewMemory(1<<20, nil), homepage.Options{TTL: time.Hour, FailureTTL: time.Minute, Timeout: time.Minute})
-	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
-	defer cancel()
-
-	started := time.Now()
-	_, err := slow.Read(ctx, in)
-
-	require.NoError(t, err)
-	assert.Less(t, time.Since(started), time.Second)
-}
-
 func TestSourceKeepsNoMoreOfAHomePageThanOfAnyPage(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/html")

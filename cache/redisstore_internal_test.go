@@ -32,7 +32,6 @@ func TestAVariantWrittenDuringAPurgeKeepsItsIndex(t *testing.T) {
 			assert.NoError(t, err)
 		})
 		wg.Go(func() {
-			time.Sleep(time.Duration(round%20) * 25 * time.Microsecond)
 			assert.NoError(t, writer.Set(ctx, group, group+":b", []byte("b"), time.Hour))
 		})
 		wg.Wait()

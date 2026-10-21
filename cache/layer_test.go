@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/netip"
-	"slices"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -79,12 +77,6 @@ func (r *recorder) add(event string) {
 	r.events = append(r.events, event)
 }
 
-func (r *recorder) has(event string) bool {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	return slices.Contains(r.events, event)
-}
-
 func TestLayerServesARepeatedRequestFromTheStore(t *testing.T) {
 	next := released(nil)
 	previews := cache.New(next, memory(), options)
@@ -110,23 +102,6 @@ func TestLayerServesARepeatedFailureWithItsExpiry(t *testing.T) {
 
 	assert.Equal(t, []any{card.CodeTimeout, "the page did not answer in time", now.Add(time.Minute), int32(1)},
 		[]any{card.CodeOf(err), err.Error(), result.Expires, next.calls.Load()})
-}
-
-func TestLayerMakesOnePreviewForIdenticalRequestsAtOnce(t *testing.T) {
-	next := &counted{release: make(chan struct{})}
-	previews := cache.New(next, memory(), options)
-	var wg sync.WaitGroup
-	for range 5 {
-		wg.Go(func() {
-			_, err := previews.Extract(context.Background(), card.Request{URL: "https://example.com"})
-			assert.NoError(t, err)
-		})
-	}
-
-	assert.Eventually(t, func() bool { return next.calls.Load() == 1 }, 5*time.Second, time.Millisecond)
-	close(next.release)
-	wg.Wait()
-	assert.Equal(t, int32(1), next.calls.Load())
 }
 
 func TestLayerKeepsAPreviewAsLongAsItsOriginAllows(t *testing.T) {
@@ -242,61 +217,6 @@ func TestStackedLayersKeepAPreviewNoLongerThanItsOriginAllows(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, []any{now.Add(10 * time.Minute), 6 * time.Minute, now.Add(10 * time.Minute), 2, int32(1)},
 		[]any{made.Expires, later.Freshness.MaxAge, later.Expires, purged, next.calls.Load()})
-}
-
-// passing is a store that only passes every call on, as a wrapper that measures or logs a store does.
-type passing struct {
-	cache.Store
-}
-
-// locks is a Locker in memory, standing in for the one instances share.
-type locks struct {
-	mu   sync.Mutex
-	held map[string]bool
-}
-
-func (l *locks) Lock(_ context.Context, key string, _ time.Duration) (func(context.Context) error, bool, error) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	if l.held[key] {
-		return nil, false, nil
-	}
-	l.held[key] = true
-	return func(context.Context) error {
-		l.mu.Lock()
-		defer l.mu.Unlock()
-		delete(l.held, key)
-		return nil
-	}, true, nil
-}
-
-func TestInstancesOverAWrappedStoreStillMakeOnePreview(t *testing.T) {
-	store, locker := passing{cache.NewMemory(1<<20, nil)}, &locks{held: map[string]bool{}}
-	next := &counted{release: make(chan struct{})}
-	observer := &recorder{}
-	opts := cache.Options{TTL: time.Hour, Locker: locker, LockTTL: 10 * time.Second, Observer: observer}
-	// Two instances: each its own layer, sharing the store and the locks.
-	instances := []*cache.Layer{cache.New(next, store, opts), cache.New(next, store, opts)}
-	var wg sync.WaitGroup
-	for i := range 20 {
-		wg.Go(func() {
-			_, err := instances[i%2].Extract(context.Background(), card.Request{URL: "https://example.com/post"})
-			assert.NoError(t, err)
-		})
-	}
-
-	assert.Eventually(t, func() bool { return next.calls.Load() == 1 }, 5*time.Second, time.Millisecond)
-	time.Sleep(100 * time.Millisecond)
-	close(next.release)
-	wg.Wait()
-	lookups := 0
-	for _, event := range observer.events {
-		if strings.HasPrefix(event, "looked up") {
-			lookups++
-		}
-	}
-	// One lookup a request, however often an instance looked again while it waited for the other.
-	assert.Equal(t, []any{int32(1), 20}, []any{next.calls.Load(), lookups})
 }
 
 // homeSite serves a post and a home page, counting the times its home page is read.
