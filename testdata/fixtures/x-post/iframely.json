@@ -22,6 +22,16 @@
         },
         "html": "<blockquote class=\"twitter-tweet\"><p lang=\"en\" dir=\"ltr\">just setting up my twttr</p>&mdash; jack (@jack) <a href=\"https://x.com/jack/status/20?ref_src=twsrc%5Etfw\">March 21, 2006</a></blockquote>\n<script async src=\"https://platform.x.com/widgets.js\" charset=\"utf-8\"></script>\n\n"
       }
+    ],
+    "icon": [
+      {
+        "href": "https://x.com/favicon.ico",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/x-icon"
+      }
     ]
   },
   "rel": [

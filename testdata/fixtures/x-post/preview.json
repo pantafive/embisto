@@ -7,6 +7,9 @@
   "site_name": "X",
   "author": "jack",
   "author_url": "https://x.com/jack",
+  "icon": {
+    "url": "https://x.com/favicon.ico"
+  },
   "embed": {
     "html": "<blockquote class=\"twitter-tweet\"><p lang=\"en\" dir=\"ltr\">just setting up my twttr</p>&mdash; jack (@jack) <a href=\"https://x.com/jack/status/20?ref_src=twsrc%5Etfw\">March 21, 2006</a></blockquote>\n<script async src=\"https://platform.x.com/widgets.js\" charset=\"utf-8\"></script>\n\n",
     "width": 550,
@@ -24,6 +27,13 @@
         "width": 550
       },
       "html": "<blockquote class=\"twitter-tweet\"><p lang=\"en\" dir=\"ltr\">just setting up my twttr</p>&mdash; jack (@jack) <a href=\"https://x.com/jack/status/20?ref_src=twsrc%5Etfw\">March 21, 2006</a></blockquote>\n<script async src=\"https://platform.x.com/widgets.js\" charset=\"utf-8\"></script>\n\n"
+    },
+    {
+      "href": "https://x.com/favicon.ico",
+      "rel": [
+        "icon"
+      ],
+      "type": "image/x-icon"
     }
   ],
   "sources": [

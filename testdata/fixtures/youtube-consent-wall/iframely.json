@@ -9,6 +9,16 @@
     "medium": "video"
   },
   "links": {
+    "icon": [
+      {
+        "href": "https://www.youtube.com/favicon.ico",
+        "rel": [
+          "icon",
+          "ssl"
+        ],
+        "type": "image/x-icon"
+      }
+    ],
     "player": [
       {
         "href": "https://www.youtube.com/embed/dQw4w9WgXcQ",

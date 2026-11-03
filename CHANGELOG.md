@@ -12,7 +12,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 - Preview and home-page caches respect upstream storage restrictions; a minimum TTL no longer extends explicit origin lifetimes.
 - Thumbnail validators identify encoded bytes, not source URLs, and caching follows source freshness instead of claiming immutable content. New signed paths avoid previously immutable cache entries; legacy paths remain accepted.
-- Favicon fallback uses the page origin even with a CDN base URL, multi-size icons use their largest declared size, and SVG URLs with query parameters rank behind raster icons.
+- Standalone provider cards also receive a favicon fallback. Favicon fallback uses the page origin even with a CDN base URL, multi-size icons use their largest declared size, and SVG URLs with query parameters rank behind raster icons.
 
 ## [0.2.0] - 2026-10-20
 

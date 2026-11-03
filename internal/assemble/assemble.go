@@ -3,6 +3,7 @@ package assemble
 
 import (
 	"cmp"
+	"net/url"
 	"slices"
 	"strings"
 	"time"
@@ -86,6 +87,13 @@ func Traced(t *trace.Trace, requested, final string, providers, generic []card.F
 	preview.Limited = first(&merger{providers: providers, generic: generic, trace: t}, limited, func(f card.Facts) card.Limit { return f.Limited })
 	preview.Sources = m.sources()
 	preview.Links = links(preview.CanonicalURL, slices.Concat(providers, generic))
+	// Standalone providers can supply a card without ever reading the page's icon declarations.
+	if preview.Icon.URL == "" {
+		if origin, err := url.Parse(final); err == nil && origin.Host != "" {
+			preview.Icon.URL = origin.ResolveReference(&url.URL{Path: "/favicon.ico"}).String()
+			preview.Links = append(preview.Links, card.Link{Href: preview.Icon.URL, Rel: []string{card.RelIcon}, Type: "image/x-icon"})
+		}
+	}
 	return preview
 }
 
