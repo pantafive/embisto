@@ -13,6 +13,7 @@ import (
 	"net/http/httptest"
 	"net/netip"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -41,9 +42,14 @@ func opaquePNG(t *testing.T, width, height int) []byte {
 // imageServer serves pictures and the /i/ handler that resizes them, signed with one key.
 func imageServer(t *testing.T, files map[string][]byte) (*httptest.Server, *httptest.Server, *thumbnails.Signer) {
 	t.Helper()
-	origin := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return imageServerHandler(t, func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(files[r.URL.Path])
-	}))
+	})
+}
+
+func imageServerHandler(t *testing.T, handler http.HandlerFunc) (*httptest.Server, *httptest.Server, *thumbnails.Signer) {
+	t.Helper()
+	origin := httptest.NewServer(handler)
 	t.Cleanup(origin.Close)
 	signer, err := thumbnails.NewSigner([]byte(strings.Repeat("k", thumbnails.MinKeyLength)), thumbnails.DefaultPresets)
 	require.NoError(t, err)
@@ -56,7 +62,7 @@ func imageServer(t *testing.T, files map[string][]byte) (*httptest.Server, *http
 	return origin, server, signer
 }
 
-func TestImageServesTheResizedPictureForGood(t *testing.T) {
+func TestImageServesTheResizedPictureWithRevalidation(t *testing.T) {
 	origin, server, signer := imageServer(t, map[string][]byte{"/cover.png": opaquePNG(t, 1280, 720)})
 
 	resp := get(t, server.URL+signer.Path("card", origin.URL+"/cover.png"))
@@ -64,7 +70,7 @@ func TestImageServesTheResizedPictureForGood(t *testing.T) {
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 	config, err := jpeg.DecodeConfig(resp.Body)
 	require.NoError(t, err)
-	assert.Equal(t, []any{"image/jpeg", "public, max-age=31536000, immutable", "nosniff", true, 600, 338},
+	assert.Equal(t, []any{"image/jpeg", "no-cache", "nosniff", true, 600, 338},
 		[]any{
 			resp.Header.Get("Content-Type"), resp.Header.Get("Cache-Control"), resp.Header.Get("X-Content-Type-Options"),
 			resp.Header.Get("ETag") != "", config.Width, config.Height,
@@ -137,4 +143,47 @@ func TestImageServesWebPWhenTheSizeSaysSo(t *testing.T) {
 	decoded, err := webp.Decode(resp.Body)
 	require.NoError(t, err)
 	assert.Equal(t, []any{"image/webp", 600, 338}, []any{resp.Header.Get("Content-Type"), decoded.Bounds().Dx(), decoded.Bounds().Dy()})
+}
+
+func TestImageAtTheSameURLIsCheckedBeforeReturningNotModified(t *testing.T) {
+	var revision atomic.Int32
+	pictures := [][]byte{opaquePNG(t, 64, 64), opaquePNG(t, 32, 16)}
+	origin, server, signer := imageServerHandler(t, func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write(pictures[revision.Load()])
+	})
+	address := server.URL + signer.Path("thumb", origin.URL+"/cover.png")
+	original := get(t, address)
+	tag := original.Header.Get("ETag")
+	revision.Store(1)
+	req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, address, nil)
+	require.NoError(t, err)
+	req.Header.Set("If-None-Match", tag)
+	changed, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	defer changed.Body.Close()
+	require.Equal(t, http.StatusOK, changed.StatusCode)
+	assert.NotEqual(t, tag, changed.Header.Get("ETag"))
+	config, err := jpeg.DecodeConfig(changed.Body)
+	require.NoError(t, err)
+	assert.Equal(t, []int{32, 16}, []int{config.Width, config.Height})
+}
+
+func TestThumbnailCachePolicyFollowsItsSource(t *testing.T) {
+	for _, tt := range []struct{ header, want string }{
+		{"no-store, max-age=600", "no-store"},
+		{"no-cache", "no-store"},
+		{"private, max-age=600", "no-store"},
+		{"max-age=0", "no-store"},
+		{"", "no-cache"},
+	} {
+		t.Run(tt.header, func(t *testing.T) {
+			file := opaquePNG(t, 16, 16)
+			origin, server, signer := imageServerHandler(t, func(w http.ResponseWriter, _ *http.Request) {
+				w.Header().Set("Cache-Control", tt.header)
+				_, _ = w.Write(file)
+			})
+			resp := get(t, server.URL+signer.Path("thumb", origin.URL+"/cover.png"))
+			assert.Equal(t, tt.want, resp.Header.Get("Cache-Control"))
+		})
+	}
 }

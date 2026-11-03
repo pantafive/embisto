@@ -12,6 +12,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"testing/fstest"
 	"time"
@@ -467,4 +468,52 @@ func TestPreviewsBeyondTheLimitAreRefusedAsBusyButHitsAreServed(t *testing.T) {
 		busy.StatusCode, refused.Code, busy.Header.Get("Retry-After"), compatible.StatusCode, compatible.Header.Get("Retry-After"),
 		hit.StatusCode, slowStatus, again.StatusCode,
 	})
+}
+
+func TestRestrictedPreviewsAreNeitherStoredNorSharedDownstream(t *testing.T) {
+	for _, directive := range []string{"no-store", "private", "no-cache", "max-age=0"} {
+		t.Run(directive, func(t *testing.T) {
+			var calls atomic.Int32
+			site := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				w.Header().Set("Content-Type", "text/html")
+				w.Header().Set("Cache-Control", directive)
+				fmt.Fprintf(w, "<title>Revision %d</title>", calls.Add(1))
+			}))
+			defer site.Close()
+			opts := embisto.Defaults()
+			opts.AllowedNetworks = []netip.Prefix{netip.MustParsePrefix("127.0.0.0/8")}
+			opts.Enrichers = []card.Enricher{}
+			previews := cache.New(embisto.New(opts), cache.NewMemory(1<<20, nil), cache.Options{TTL: time.Hour, MinTTL: time.Minute})
+			server := httptest.NewServer(api.NewServer(api.Deps{Previews: previews, Renderers: renderers}))
+			defer server.Close()
+			for i := 1; i <= 2; i++ {
+				resp := get(t, server.URL+"/v1/preview?url="+url.QueryEscape(site.URL))
+				require.Equal(t, http.StatusOK, resp.StatusCode)
+				var preview card.Preview
+				require.NoError(t, json.NewDecoder(resp.Body).Decode(&preview))
+				assert.Equal(t, fmt.Sprintf("Revision %d", i), preview.Title)
+				assert.Equal(t, "no-store", resp.Header.Get("Cache-Control"))
+			}
+			assert.Equal(t, int32(2), calls.Load())
+		})
+	}
+}
+
+func TestPreviewPreservesAltFromAnotherSourceForTheSameImage(t *testing.T) {
+	site := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		_, _ = io.WriteString(w, `<title>Birds</title><meta property="og:image" content="/bird.jpg"><meta name="twitter:image" content="/bird.jpg"><meta name="twitter:image:alt" content="A red &amp; blue bird"><base href="https://cdn.example.com/">`)
+	}))
+	defer site.Close()
+	opts := embisto.Defaults()
+	opts.AllowedNetworks = []netip.Prefix{netip.MustParsePrefix("127.0.0.0/8")}
+	opts.Enrichers = []card.Enricher{}
+	server := httptest.NewServer(api.NewServer(api.Deps{Previews: embisto.New(opts), Renderers: renderers}))
+	defer server.Close()
+	resp := get(t, server.URL+"/v1/preview?url="+url.QueryEscape(site.URL))
+	var preview card.Preview
+	require.NoError(t, json.NewDecoder(resp.Body).Decode(&preview))
+	assert.Equal(t, card.Image{URL: "https://cdn.example.com/bird.jpg", Alt: "A red & blue bird"}, preview.Image)
+	assert.Equal(t, []card.Image{preview.Image}, preview.Images)
+	assert.Equal(t, site.URL+"/favicon.ico", preview.Icon.URL)
 }

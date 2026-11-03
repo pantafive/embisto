@@ -21,7 +21,7 @@ a.e-card:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
 {{- with .Picture}}
 <picture>
 {{- if .WebP}}<source type="image/webp" srcset="{{.WebP}}">{{end -}}
-<img class="e-picture" src="{{.URL}}" alt=""{{if .Width}} width="{{.Width}}" height="{{.Height}}"{{end}} referrerpolicy="no-referrer" style="display: block; width: 100%; max-width: 100%; height: auto;{{if .Width}} aspect-ratio: {{.Width}} / {{.Height}};{{end}} object-fit: cover; background: #eaeef2;">
+<img class="e-picture" src="{{.URL}}" alt="{{.Alt}}"{{if .Width}} width="{{.Width}}" height="{{.Height}}"{{end}} referrerpolicy="no-referrer" style="display: block; width: 100%; max-width: 100%; height: auto;{{if .Width}} aspect-ratio: {{.Width}} / {{.Height}};{{end}} object-fit: cover; background: #eaeef2;">
 </picture>
 {{- end}}
 <div style="padding: 12px 16px 14px;">

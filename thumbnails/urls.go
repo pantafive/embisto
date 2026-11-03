@@ -70,8 +70,8 @@ var (
 )
 
 // Signer makes and checks the URLs of thumbnails: /i/<signature>/<size>/<source>, the signature an HMAC-SHA256 over the
-// size and the source, the source in unpadded base64url. The URL of a picture never changes, so it can be cached for
-// good.
+// size and the source, the source in unpadded base64url. A v2 prefix separates new URLs from
+// older URLs that were incorrectly served as immutable; legacy signatures remain valid.
 type Signer struct {
 	key     []byte
 	presets []Preset
@@ -98,7 +98,7 @@ func (s *Signer) Presets() []Preset {
 // Path is the path of a source's variant in a size: a preset's name or an explicit WxH-mode, followed by .webp for WebP.
 func (s *Signer) Path(size, source string) string {
 	encoded := base64.RawURLEncoding.EncodeToString([]byte(source))
-	return "/i/" + s.signature(size, encoded) + "/" + size + "/" + encoded
+	return "/i/v2-" + s.signature(size, encoded) + "/" + size + "/" + encoded
 }
 
 // Format is the encoding a URL asks for: the size's suffix, signed with it, so that no cache mixes formats.
@@ -124,7 +124,7 @@ type Request struct {
 // Verify checks a URL's signature before reading anything else in it, so that a tampered URL is refused the same way
 // whatever was changed, and reads the size and the source.
 func (s *Signer) Verify(signature, size, encodedSource string) (Request, error) {
-	given, err := base64.RawURLEncoding.DecodeString(signature)
+	given, err := base64.RawURLEncoding.DecodeString(strings.TrimPrefix(signature, "v2-"))
 	if err != nil || !hmac.Equal(given, s.mac(size, encodedSource)) {
 		return Request{}, ErrSignature
 	}

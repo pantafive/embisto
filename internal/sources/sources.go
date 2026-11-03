@@ -5,6 +5,7 @@ package sources
 import (
 	"cmp"
 	"context"
+	"net/url"
 	"slices"
 	"strconv"
 	"strings"
@@ -67,6 +68,8 @@ func openGraphImage(doc card.Page, image *card.Image, t card.Tag) {
 	switch t.Key {
 	case "og:image:secure_url":
 		image.URL = cmp.Or(doc.Resolve(t.Value), image.URL)
+	case "og:image:alt":
+		image.Alt = t.Value
 	case "og:image:width":
 		image.Width = number(t.Value)
 	case "og:image:height":
@@ -100,7 +103,7 @@ func (Twitter) Read(_ context.Context, in card.Input) (card.Facts, error) {
 	}
 	if u := doc.Resolve(doc.Value("twitter:image", "twitter:image:src")); u != "" {
 		fields.Images = []card.Image{{
-			URL: u, Width: number(doc.Value("twitter:image:width")), Height: number(doc.Value("twitter:image:height")),
+			URL: u, Alt: doc.Value("twitter:image:alt"), Width: number(doc.Value("twitter:image:width")), Height: number(doc.Value("twitter:image:height")),
 		}}
 	}
 	if u := doc.Resolve(doc.Value("twitter:player")); u != "" {
@@ -146,7 +149,10 @@ func icons(doc card.Page) []card.Image {
 		}
 	}
 	if len(found) == 0 {
-		return []card.Image{{URL: doc.Resolve("/favicon.ico")}}
+		if doc.URL == nil {
+			return nil
+		}
+		return []card.Image{{URL: doc.URL.ResolveReference(&url.URL{Path: "/favicon.ico"}).String()}}
 	}
 	slices.SortStableFunc(found, func(a, b rankedIcon) int { return b.rank - a.rank })
 	icons := make([]card.Image, len(found))
@@ -171,20 +177,23 @@ func iconOf(l card.PageLink) (rankedIcon, bool) {
 		width, height = appleTouchSize, appleTouchSize
 	}
 	rank := width
-	if l.Type == "image/svg+xml" || strings.HasSuffix(strings.ToLower(l.Href), ".svg") {
+	parsed, err := url.Parse(l.Href)
+	if l.Type == "image/svg+xml" || err == nil && strings.HasSuffix(strings.ToLower(parsed.Path), ".svg") {
 		rank = -1
 	}
 	return rankedIcon{card.Image{URL: l.Href, Width: width, Height: height}, rank}, true
 }
 
-// size reads the first WxH of a sizes attribute.
+// size reads the largest valid WxH of a sizes attribute.
 func size(sizes string) (int, int) {
-	first, _, _ := strings.Cut(strings.TrimSpace(sizes), " ")
-	width, height, ok := strings.Cut(first, "x")
-	if !ok {
-		return 0, 0
+	var width, height int
+	for size := range strings.FieldsSeq(sizes) {
+		w, h, ok := strings.Cut(size, "x")
+		if ok && number(w) > width && number(h) > 0 {
+			width, height = number(w), number(h)
+		}
 	}
-	return number(width), number(height)
+	return width, height
 }
 
 func number(s string) int {

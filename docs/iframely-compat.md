@@ -61,7 +61,7 @@ Fields Iframely gives and embisto does not:
 - `messages`, such as Iframely's advice about PDFs in Google Docs Viewer.
 - `meta.medium` values other than `link`, `video`, `image` and `file`. Iframely also says `article`, from `og:type`, and `audio`, for music.
 - Players that autoplay. Iframely adds a second link with `autoplay=1` for providers on its whitelist.
-- An icon for X posts: embisto answers them from X's oEmbed endpoint without fetching the page, where the icon is.
+- Declared page icons for providers that answer without fetching HTML. embisto supplies a `/favicon.ico` fallback on the page origin, including for X posts; it does not discover those pages' declared icons.
 
 Behaviour:
 

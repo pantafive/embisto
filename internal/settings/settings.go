@@ -31,7 +31,7 @@ const (
 	// cacheTTL is how long a preview is served from the cache when its origin says nothing: pages change their cards
 	// rarely.
 	cacheTTL = time.Hour
-	// defaultMinTTL keeps even a page that forbids caching for a while, so that identical requests make one preview.
+	// defaultMinTTL bounds the default lifetime only when the origin supplies no caching policy.
 	defaultMinTTL = 5 * time.Minute
 	defaultMaxTTL = 24 * time.Hour
 	// failureTTL is how long a failed preview is: long enough to absorb a burst of retries, short enough that a page

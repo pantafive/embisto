@@ -56,6 +56,7 @@ type said struct {
 	// Root is the home page's address after its redirects, such as a site's /en/; a page there is the home page.
 	Root        string           `json:"root,omitempty"`
 	Boilerplate card.Boilerplate `json:"boilerplate"`
+	Freshness   card.Freshness   `json:"freshness"`
 }
 
 func (s *Source) Read(ctx context.Context, in card.Input) (card.Facts, error) {
@@ -88,7 +89,7 @@ func (s *Source) Forget(ctx context.Context, site *url.URL) (int, error) {
 
 // groupOf holds every language of a site's home page; the host is in braces, a Redis hash tag, so they live together.
 func groupOf(host string) string {
-	return "embisto:home:v1:{" + host + "}"
+	return "embisto:home:v2:{" + host + "}"
 }
 
 func keyOf(host, language string) string {
@@ -108,6 +109,9 @@ func (s *Source) remember(ctx context.Context, host, key string, home said) {
 	ttl := s.opts.TTL
 	if len(home.Boilerplate.Texts) == 0 && len(home.Boilerplate.Images) == 0 {
 		ttl = s.opts.FailureTTL
+	}
+	if home.Freshness.Known {
+		ttl = min(ttl, home.Freshness.MaxAge)
 	}
 	raw, err := json.Marshal(home)
 	if err == nil && ttl > 0 {
@@ -132,7 +136,7 @@ func (s *Source) read(ctx context.Context, fetcher card.Fetcher, home *url.URL) 
 		return said{}, true
 	}
 	parsed := page.Parse(resp)
-	found := said{Root: resp.URL.String()}
+	found := said{Root: resp.URL.String(), Freshness: resp.Freshness}
 	for _, key := range []string{"og:description", "description", "twitter:description"} {
 		if text := parsed.Value(key); text != "" {
 			found.Boilerplate.Texts = append(found.Boilerplate.Texts, firstRunes(text, maxText))

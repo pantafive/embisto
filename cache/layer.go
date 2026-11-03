@@ -22,8 +22,8 @@ import (
 type Options struct {
 	// TTL is how long a preview is kept when its origin says nothing about it.
 	TTL time.Duration
-	// MinTTL and MaxTTL bound how long a preview is kept, whatever its origin says or does not say; a page that
-	// forbids keeping it is kept MinTTL, so identical requests still make one preview. Zero lifts the bound.
+	// MinTTL bounds the default when the origin says nothing; MaxTTL caps all positive lifetimes.
+	// Explicit origin lifetimes, including zero, are never extended. Zero lifts the bound.
 	MinTTL time.Duration
 	MaxTTL time.Duration
 	// FailureTTL is how long a failure with a code is kept.
@@ -45,7 +45,7 @@ type Options struct {
 }
 
 // version changes when a kept entry's shape does, so a shared store never serves an old one.
-const version = "v1"
+const version = "v2"
 
 const (
 	defaultLockTTL = time.Minute
@@ -226,7 +226,7 @@ func (l *Layer) ttl(said card.Freshness) (time.Duration, string) {
 		ttl, source = said.MaxAge, TTLOrigin
 	}
 	switch {
-	case l.opts.MinTTL > 0 && ttl < l.opts.MinTTL:
+	case !said.Known && l.opts.MinTTL > 0 && ttl < l.opts.MinTTL:
 		return l.opts.MinTTL, TTLMin
 	case l.opts.MaxTTL > 0 && ttl > l.opts.MaxTTL:
 		return l.opts.MaxTTL, TTLMax

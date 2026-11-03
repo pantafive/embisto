@@ -129,3 +129,25 @@ func TestSourceKeepsNoMoreOfAHomePageThanOfAnyPage(t *testing.T) {
 	require.Len(t, facts.Boilerplate.Texts, 1)
 	assert.LessOrEqual(t, utf8.RuneCountInString(facts.Boilerplate.Texts[0]), 4096)
 }
+
+func TestRestrictedHomePagesAreNotRemembered(t *testing.T) {
+	for _, directive := range []string{"no-store", "private", "no-cache", "max-age=0"} {
+		t.Run(directive, func(t *testing.T) {
+			var calls atomic.Int32
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				calls.Add(1)
+				w.Header().Set("Content-Type", "text/html")
+				w.Header().Set("Cache-Control", directive)
+				_, _ = io.WriteString(w, home)
+			}))
+			defer server.Close()
+			src := source()
+			for range 2 {
+				facts, err := src.Read(t.Context(), input(t, server.URL+"/post"))
+				require.NoError(t, err)
+				assert.Equal(t, []string{"Everything about everything."}, facts.Boilerplate.Texts)
+			}
+			assert.Equal(t, int32(2), calls.Load())
+		})
+	}
+}

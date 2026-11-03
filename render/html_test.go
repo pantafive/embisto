@@ -31,14 +31,14 @@ func TestHTMLCardEscapesWhatAPageSaysAndRunsNothing(t *testing.T) {
 func TestHTMLCardSizesThePictureAndOffersWebP(t *testing.T) {
 	out := htmlOf(t, card.Preview{
 		URL: "https://example.com/post", Title: "A post",
-		Image: card.Image{URL: "https://example.com/cover.jpg", Width: 1280, Height: 720, Variants: []card.Variant{
+		Image: card.Image{URL: "https://example.com/cover.jpg", Alt: `A "blue" bird`, Width: 1280, Height: 720, Variants: []card.Variant{
 			{Preset: "card", URL: "https://embisto.test/i/s/card/x", WebPURL: "https://embisto.test/i/s/card.webp/x", Width: 600, Height: 338},
 		}},
 	})
 
 	assert.Equal(t, []bool{true, true, true}, []bool{
 		strings.Contains(out, `<source type="image/webp" srcset="https://embisto.test/i/s/card.webp/x">`),
-		strings.Contains(out, `src="https://embisto.test/i/s/card/x" alt="" width="600" height="338"`),
+		strings.Contains(out, `src="https://embisto.test/i/s/card/x" alt="A &#34;blue&#34; bird" width="600" height="338"`),
 		strings.Contains(out, "aspect-ratio: 600 / 338"),
 	})
 }

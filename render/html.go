@@ -69,6 +69,7 @@ type htmlCard struct {
 }
 
 type htmlPicture struct {
+	Alt           string
 	URL           string
 	WebP          string
 	Width, Height int
@@ -84,7 +85,7 @@ func cardOf(preview card.Preview) htmlCard {
 	if preview.Image.URL != "" {
 		chosen := pictureFor(preview, cardWidth, false)
 		webp := pictureFor(preview, cardWidth, true)
-		shown.Picture = &htmlPicture{URL: chosen.URL, Width: chosen.Width, Height: chosen.Height}
+		shown.Picture = &htmlPicture{Alt: preview.Image.Alt, URL: chosen.URL, Width: chosen.Width, Height: chosen.Height}
 		if webp.Type == "image/webp" {
 			shown.Picture.WebP = webp.URL
 		}

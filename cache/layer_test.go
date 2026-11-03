@@ -111,7 +111,7 @@ func TestLayerKeepsAPreviewAsLongAsItsOriginAllows(t *testing.T) {
 		want      time.Duration
 	}{
 		{"what the origin says", card.Freshness{MaxAge: 10 * time.Minute, Known: true}, 10 * time.Minute},
-		{"no shorter than the minimum", card.Freshness{Known: true}, 5 * time.Minute},
+		{"origin shorter than minimum", card.Freshness{Known: true, MaxAge: time.Second}, time.Second},
 		{"no longer than the maximum", card.Freshness{MaxAge: 1000 * time.Hour, Known: true}, 24 * time.Hour},
 		{"the default when it says nothing", card.Freshness{}, time.Hour},
 	}

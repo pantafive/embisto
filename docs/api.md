@@ -39,9 +39,10 @@ Empty fields are left out. `icon`, `image` and each of `images` are pictures wit
 | `author_url` | string | The author's page. |
 | `keywords` | string | The page's keywords, separated by commas. |
 | `published_at` | string | When the item was published, as RFC 3339. |
-| `icon` | picture | The site's icon. |
+| `icon` | picture | The site's favicon or touch icon, preferring larger raster candidates. Without a declared icon, uses `/favicon.ico` on the final page's origin; this fallback URL is not a guarantee that a file exists. |
 | `image` | picture | The card's picture: the first of `images`. |
 | `images` | array of pictures | Every picture of the item the sources found, by their priority. |
+| `image.alt` | string | Alternative text declared by the source (`og:image:alt` or `twitter:image:alt`). Omitted when absent; never generated from the title. |
 | `image.url` | string | The picture's URL on its site. |
 | `image.width`, `image.height` | integer | Its size in pixels, as the page states it or measured from the file's first bytes (PNG, JPEG, GIF, WebP, SVG, ICO); a measured JPEG is sized as its EXIF orientation shows it. |
 | `image.variants` | array | The picture's thumbnails, when the server has them on; see [thumbnails](thumbnails.md). |
