@@ -4,9 +4,15 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-03
+
 ### Added
 
 - Source-provided image alternative text in `image.alt` and `images[].alt`, extracted from Open Graph and Twitter Cards and escaped in HTML cards.
+
+### Changed
+
+- Update Huma to v2.40.0, golang.org/x/net to v0.62.0, and the image publishing login action to v4.7.0.
 
 ### Fixed
 
@@ -84,5 +90,6 @@ The first release, retracted: its test data held third-party pictures.
 - Prometheus metrics, an OpenAPI spec with a reference page, and a debug page showing how a card was made.
 - The Go library behind the server: `embisto.New`, the `cache` layers, and the `card`, `sites`, `render` and `thumbs` packages.
 
-[Unreleased]: https://github.com/pantafive/embisto/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/pantafive/embisto/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/pantafive/embisto/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/pantafive/embisto/releases/tag/v0.2.0
