@@ -21,7 +21,9 @@ const (
 
 // Image is a picture with its size in pixels, when known.
 type Image struct {
-	URL    string `json:"url"`
+	URL string `json:"url"`
+	// Alt is the source-provided alternative text; empty when none was supplied.
+	Alt    string `json:"alt,omitempty"`
 	Width  int    `json:"width,omitempty"`
 	Height int    `json:"height,omitempty"`
 	// Variants are the picture's thumbnails, resized and served by embisto at /i/, when the server has them on.

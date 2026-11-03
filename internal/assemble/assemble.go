@@ -198,7 +198,7 @@ func firstOf[T any](m *merger, f field, get func(card.Facts) []T) T {
 }
 
 // images are every source's pictures, each URL once: the first source to name it places it, a later one only fills
-// in a size the first did not know.
+// in a size or alternative text the first did not know.
 func (m *merger) images() []card.Image {
 	var all []card.Image
 	seen := map[string]int{}
@@ -214,8 +214,11 @@ func (m *merger) images() []card.Image {
 			case !ok:
 				seen[image.URL] = len(all)
 				all = append(all, image)
-			case all[at].Width == 0 && image.Width != 0:
-				all[at].Width, all[at].Height = image.Width, image.Height
+			default:
+				if all[at].Width == 0 && image.Width != 0 {
+					all[at].Width, all[at].Height = image.Width, image.Height
+				}
+				all[at].Alt = cmp.Or(all[at].Alt, image.Alt)
 			}
 		}
 	}

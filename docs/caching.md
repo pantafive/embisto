@@ -1,10 +1,10 @@
 # Caching
 
-A preview is kept as long as the response it was made from allows: its `Cache-Control` (`s-maxage` before `max-age`), or `Expires` against its own `Date`, less its `Age`. The response is the page's own, or a provider's API answer when the provider made the card without the page. The time is kept within `EMBISTO_CACHE_MIN_TTL` and `EMBISTO_CACHE_MAX_TTL`. A page that forbids caching (`no-store`, `no-cache`, `private`) is kept for the minimum, so that identical requests still share one fetch. A page that says nothing is kept for an hour, also within those bounds, and a failure for a minute.
+A preview is kept as long as the response it was made from allows: its `Cache-Control` (`s-maxage` before `max-age`), or `Expires` against its own `Date`, less its `Age`. The response is the page's own, or a provider's API answer when the provider made the card without the page. An explicit origin lifetime is capped by `EMBISTO_CACHE_MAX_TTL`, never extended by the minimum. Responses with `no-store`, `no-cache`, `private`, or no remaining freshness are not stored; embisto does not revalidate stored source pages. Concurrent requests within an instance can still share the in-flight fetch. A page that says nothing is kept for an hour, within `EMBISTO_CACHE_MIN_TTL` and `EMBISTO_CACHE_MAX_TTL`, and a failure for a minute. Home-page metadata also respects the origin's lifetime and storage restrictions.
 
-Every answer of `/v1/preview`, `/iframely` and `/oembed` carries `Cache-Control: public, max-age=<seconds left>`, so a cache after embisto expires the preview when embisto does.
+Every answer of `/v1/preview`, `/iframely` and `/oembed` carries `Cache-Control: public, max-age=<seconds left>`, so a cache after embisto expires the preview when embisto does. An uncached preview carries `Cache-Control: no-store`.
 
-Identical requests that arrive at once make one fetch. In one instance this always holds: 500 requests for one URL fetch its page once. With `EMBISTO_CACHE_URL`, it holds across instances too:
+For cacheable previews, identical requests that arrive at once make one fetch. In one instance this always holds: 500 requests for one URL fetch its page once. With `EMBISTO_CACHE_URL`, it holds across instances too:
 
 - The instance that first misses takes a lock in the shared cache (`SET NX PX`), makes the preview, writes it and frees the lock.
 - The others wait for the value, polling the cache.

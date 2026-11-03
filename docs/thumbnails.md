@@ -8,7 +8,7 @@ Pictures in previews point at other sites. Those URLs cause several problems:
 - A phone downloads a 1280-pixel original to show an 80-pixel thumbnail.
 - An `http` picture breaks on an `https` page.
 
-So embisto serves thumbnails: resized, re-encoded copies of a card's pictures, from its own address at `/i/`, with immutable cache headers.
+So embisto serves thumbnails: resized, re-encoded copies of a card's pictures, from its own address at `/i/`, with cache lifetimes limited by the source.
 
 ## How it works
 
@@ -87,7 +87,11 @@ A picture at the pixel limit takes about half a second to resize. The pictures b
 
 ## Caching
 
-A picture's URL names its content for good, so a 200 carries `Cache-Control: public, max-age=31536000, immutable`, `X-Content-Type-Options: nosniff` and an `ETag` that is the URL's signature. A matching `If-None-Match` gets 304 without the source being fetched.
+A signed URL authorizes a source and size; it does not identify immutable image content. A source may replace its bytes at the same URL. Each request reaching embisto fetches and processes the source before checking `If-None-Match` against a SHA-256 ETag of the encoded result. An unchanged, cacheable result can answer 304; changed bytes answer 200.
+
+An explicit positive source lifetime becomes `Cache-Control: public, max-age=<remaining seconds>`, with processing time deducted. `no-store`, `no-cache`, `private`, and exhausted lifetimes produce `no-store`. A source with no cache policy produces `no-cache`, allowing storage but requiring validation before reuse. All successful pictures carry `X-Content-Type-Options: nosniff`. Custom processors should return `Picture.Freshness` to preserve the source policy.
+
+New thumbnail paths prefix the signature with `v2-` to avoid entries previously cached as immutable. Legacy signed paths still verify, but existing copies in browsers or CDNs cannot be recalled by changing response headers. Preview cache keys have a new version so fresh previews generate the new paths.
 
 Every failure carries `Cache-Control: no-store`, so a passing upstream fault does not stay in a cache for a year.
 
@@ -99,7 +103,7 @@ Rotating the key invalidates every URL signed with the old one. Cards in the pre
 
 ## Limits of the approach
 
-embisto fetches a source only when one of its thumbnails is first requested; the response carries immutable cache headers, so caches keep the thumbnail after that. A source that expires before anyone opens a thumbnail of it, such as an Instagram link a card was made from hours earlier, leaves its thumbnails nothing to fetch, so their URLs fail.
+embisto fetches a source when a thumbnail request reaches it; a downstream cache may serve its copy while fresh. A source that expires before anyone opens a thumbnail of it, such as an Instagram link a card was made from hours earlier, leaves its thumbnails nothing to fetch, so their URLs fail.
 
 ## Evaluation: WebP and AVIF output
 

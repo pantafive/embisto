@@ -21,6 +21,8 @@ var (
 
 // Picture is an encoded picture to serve.
 type Picture struct {
+	// Freshness limits caching to what the source permits.
+	Freshness   card.Freshness
 	Body        []byte
 	ContentType string
 	// SourceBytes is how much of the source was read, for metrics.
@@ -95,7 +97,7 @@ func (r *Resizer) Process(ctx context.Context, source *url.URL, box Box, format 
 	if err != nil {
 		return Picture{}, err
 	}
-	return Picture{Body: result.Body, ContentType: result.ContentType, SourceBytes: len(resp.Body)}, nil
+	return Picture{Freshness: resp.Freshness, Body: result.Body, ContentType: result.ContentType, SourceBytes: len(resp.Body)}, nil
 }
 
 // admit waits up to Wait for room for a picture that will take cost bytes; one that could never fit is refused.

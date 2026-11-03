@@ -14,7 +14,7 @@ The server reads its settings from the environment; `embisto help` lists its com
 | `EMBISTO_YOUTUBE_NOCOOKIE` | `false` | Embed YouTube's player from youtube-nocookie.com, which sets no cookies until the video plays. |
 | `EMBISTO_DEFAULT_ACCEPT_LANGUAGE` | `en` | The `Accept-Language` pages are asked in. Without it, sites answer in the language of wherever the server runs. A request can name its own with `?lang=`. |
 | `EMBISTO_CACHE_MEMORY` | `128MiB` | How much memory the previews kept in the process may take, such as `512MiB`; the least recently used go first. Without `EMBISTO_CACHE_URL`, `0` turns the cache off; with it, the shared cache stays on, and at least 1 MiB serves while it does not answer. |
-| `EMBISTO_CACHE_MIN_TTL` | `5m` | The shortest time a preview is kept, even when its page forbids caching. |
+| `EMBISTO_CACHE_MIN_TTL` | `5m` | The minimum default lifetime when the origin supplies no caching policy; never overrides an explicit origin lifetime or restriction. |
 | `EMBISTO_CACHE_MAX_TTL` | `24h` | The longest time a preview is kept, whatever its page allows. |
 | `EMBISTO_CACHE_URL` | | A `redis://` or `rediss://` URL of a cache shared by every instance: Redis, Valkey, KeyDB or Dragonfly. Empty keeps previews in each instance's memory. |
 | `EMBISTO_MAX_CONCURRENT_PREVIEWS` | `32` | How many previews an instance makes at once. Any more is refused with 503 `busy` and `Retry-After`; a preview served from the cache, or one a request already waits for, takes no slot. |

@@ -152,3 +152,12 @@ func TestVerifyRefusesAFormatChangedAfterSigning(t *testing.T) {
 
 	require.ErrorIs(t, err, thumbnails.ErrSignature)
 }
+
+func TestNewPathsAvoidImmutableCachesAndLegacyPathsStillVerify(t *testing.T) {
+	path := signer(t).Path("card", "https://example.com/a.jpg")
+	require.True(t, strings.HasPrefix(path, "/i/v2-"))
+	signature, size, source := segments(t, path)
+	request, err := signer(t).Verify(strings.TrimPrefix(signature, "v2-"), size, source)
+	require.NoError(t, err)
+	assert.Equal(t, "https://example.com/a.jpg", request.Source.String())
+}

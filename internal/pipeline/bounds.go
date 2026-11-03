@@ -33,6 +33,12 @@ func bound(facts card.Facts) card.Facts {
 	facts.CanonicalURL = address(facts.CanonicalURL)
 	facts.Icons = first(addressed(facts.Icons, func(image card.Image) string { return image.URL }), maxPictures)
 	facts.Images = first(addressed(facts.Images, func(image card.Image) string { return image.URL }), maxPictures)
+	for i := range facts.Images {
+		facts.Images[i].Alt = runes(plain(facts.Images[i].Alt), maxText)
+	}
+	for i := range facts.Icons {
+		facts.Icons[i].Alt = runes(plain(facts.Icons[i].Alt), maxText)
+	}
 	facts.Videos = first(addressed(facts.Videos, func(video card.Video) string { return video.URL }), maxVideos)
 	if len(facts.Embed.HTML) > maxEmbed {
 		facts.Embed = card.Embed{}
